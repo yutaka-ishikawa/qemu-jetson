@@ -18,8 +18,13 @@ NVIDIA版ATFも必須なら、MC、MCE/ARI、電源・リセットなどの依�
 
 ## 標準virtとの相違
 
-比較用に [QEMU v9.2.0のhw/arm/virt.c](https://github.com/qemu/qemu/blob/v9.2.0/hw/arm/virt.c)
-を確認した。これは比較の固定参照であり、今後の実装に使うQEMUバージョンは未選定。
+実装基準は調査時点の最新安定版 **QEMU 11.1.3** とする。
+公式タグ `v11.1.3` のコミットは `005c61c0ef6f6ae615283440b4bb7be51b2c6ddd`。
+[同版のhw/arm/virt.c](https://gitlab.com/qemu-project/qemu/-/blob/v11.1.3/hw/arm/virt.c)
+で以下の配置を再確認した。
+公式ダウンロードページには開発候補版11.2.0-rc0も掲載されているが、今回は安定版を採用する。
+masterやstableブランチの移動する先端ではなく、タグとコミットで固定する。
+更新時は最新安定版を確認し、基準版・差分・試験結果を記録してから移行する。
 
 - virtのFlash範囲は `0x00000000–0x07ffffff`。T234のFuse、SE、RNG1、QSPIのアドレスと重なる。
 - virtのSecure RAMは `0x0e000000`、16 MiB。T234ビルドのTZDRAM設定は
@@ -123,3 +128,5 @@ fTPM機能試験へ進む際に、EKB・ストレージ鍵・Fuse SNとの整合
 次に着手するのは**段階A**。CPUはまず1コアのTCGを使い、Pointer Authentication対応を確認する。
 実機のCortex-A78AEや12コア構成の完全再現を前提にしない。
 段階AのログだけをもってOP-TEE正常起動やfTPM同等性の達成とは報告しない。
+
+具体的な作業順序、コード配置、検証条件は [実装手順](implementation-plan.md) を参照。
