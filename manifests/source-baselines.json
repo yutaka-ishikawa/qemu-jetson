@@ -10,7 +10,8 @@
     "release": "NVIDIA L4T R36.5.2",
     "archive": "kernel_src.tbz2",
     "sha256": "2a26015d13a2c4551c1266c8ec7503fc27b487d1cf74ccf3965d0633dacced1d",
-    "path": "kernel/kernel/kernel-jammy-src"
+    "path": "kernel/kernel/kernel-jammy-src",
+    "version": "5.15.199"
   },
   "optee": {
     "release": "NVIDIA L4T R36.5.2",

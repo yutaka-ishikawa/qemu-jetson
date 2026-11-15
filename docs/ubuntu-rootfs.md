@@ -14,7 +14,7 @@ OP-TEE clientはNVIDIA R36.5.2でビルドしたものを使う。fTPMとHelper 
 - fTPM driverはLinuxカーネルの `CONFIG_TCG_FTPM_TEE`。ユーザーランド側のサービスとは別に用意する。
 
 rootfs、ダウンロード、ビルドコンテキストは `work/` 以下でGit管理外。
-ソース同梱の要望に対するQEMU／OP-TEE／Linux本体の取り込みは、今回のrootfs構築とは別の未実施作業。
+QEMU／OP-TEE／Linuxのソースはその後同梱した。[ソース配置](source-layout.md)を参照。
 
 ## ビルド
 

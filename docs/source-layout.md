@@ -22,6 +22,9 @@ OP-TEEのCCCヘッダ・暗号ライブラリ、一部ビルドヘルパーや�
 対象リストは [optee-excluded-files.json](../manifests/optee-excluded-files.json)。
 加えて `kernel/nvcommon_build.sh` も同様に扱う。元のLICENSE類は同梱し、条件を保持する。
 
+公式配布物の取得から復元まで自動で行う場合は `scripts/fetch-nvidia-components.sh` を実行する。
+既に内包アーカイブを持っている場合は次の方法も使える。
+
 ```bash
 scripts/restore-nvidia-components.py \
   /path/to/nvidia-jetson-optee-source.tbz2 \
@@ -65,3 +68,27 @@ Linuxのrootfs連携設定は [optee-ftpm.config](../configs/kernel/optee-ftpm.c
 配布ファイル／シンボリックリンクがGitの追跡対象に揃っていることを確認した。
 上記件数は別条件で除外したファイルを含まない。ファイル名はすべてASCII。
 復元対象7件は追跡されていないことを確認した。
+
+Dockerを使う場合は `scripts/build-qemu.sh` が専用ビルドイメージを作り、同梱ソースをビルドする。出力先は `work/qemu-container-build/`。
+
+ビルド用Dockerイメージを再生成する場合は `QEMU_REBUILD_BUILDER=1 scripts/build-qemu.sh` を使う。
+既存の同名イメージは通常再利用する。基準試験スクリプトは `scripts/check-qemu-baseline.py`。
+
+## QEMU基準試験結果
+
+2026-11-16（日本時間）：同梱QEMU 11.1.3のAArch64 system emulatorをビルドし、
+`scripts/build-qemu.sh` が終了コード0で完了した。
+Ubuntu 22.04のビルド用コンテナと、上記の最小機能構成を使用。
+
+`scripts/check-qemu-baseline.py` で以下を確認した。
+
+- `virt,secure=on`、TCG、`max` CPU、1コア、128MiB RAMで起動できる。
+- QMPのcapabilities、query-status、CPUモデル照会、quitがエラーなく応答する。
+- 停止状態はprelaunchで、CPUモデルの `pauth` がtrue。
+- プロセスが正常終了する。
+
+これは**QEMU本体の基準試験のみ**。ファームウェア、Linux、OP-TEE、TPMを起動していない。
+専用T234マシン、TCU、EL3起動コードは未実装。
+ソース取り込み時点のGitパックは手元で約387MiB。ビルド用には追加の空き容量が必要。
+この作業環境は約8GiBの上限があるため、検証済みrootfsの再生成可能なtarとDockerビルドキャッシュを整理した。
+ソース、Git履歴、OP-TEEの圧縮済みビルド基準資料は保持している。

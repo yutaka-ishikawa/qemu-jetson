@@ -14,7 +14,7 @@ Use the OP-TEE client built from NVIDIA R36.5.2. fTPM and its Helper TA are Secu
 - The fTPM driver is Linux kernel `CONFIG_TCG_FTPM_TEE`, separate from userland services.
 
 Rootfs archives, downloads, and build contexts live under Git-ignored `work/`.
-Importing QEMU, OP-TEE, and Linux sources as previously requested remains separate outstanding work.
+QEMU, OP-TEE, and Linux sources were subsequently bundled. See the [source layout](source-layout.md).
 
 ## Build
 

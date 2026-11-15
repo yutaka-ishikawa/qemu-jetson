@@ -23,8 +23,10 @@ QEMU implementation, boot testing, and TPM execution testing have not started.
 
 ## Documentation policy
 
-Maintain both Japanese and English versions of every documentation page, with English filenames and directory names.
+Maintain both Japanese and English versions of every project documentation page, with English filenames and directory names.
 Update both versions together and preserve technical values, commands, and verification status.
 The Python dependency file is shared by both languages.
 
 Push changes directly to `main` without creating pull requests.
+
+Preserve original upstream documentation and licenses inside bundled source trees.
