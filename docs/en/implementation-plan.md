@@ -144,3 +144,5 @@ At each stage, document and push implementation changes, build instructions, exe
 If NVIDIA source changes become necessary, identify the location and reason, estimate the QEMU-only alternative, and update the design.
 
 Do not automatically upgrade QEMU. When a new stable release appears, port patches and pass all tests for completed stages before updating the baseline commit.
+
+The selected userland is Ubuntu 22.04 ARM64. See the [rootfs procedure](ubuntu-rootfs.md).

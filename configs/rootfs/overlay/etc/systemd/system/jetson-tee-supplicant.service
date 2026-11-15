@@ -1,0 +1,13 @@
+[Unit]
+Description=OP-TEE supplicant for the Jetson QEMU development environment
+After=systemd-udev-trigger.service
+
+[Service]
+Type=simple
+ExecStartPre=/usr/bin/install -d -m 0700 /data/tee
+ExecStart=/usr/sbin/tee-supplicant -f /data/tee -l /lib/optee_armtz
+Restart=on-failure
+RestartSec=2
+
+[Install]
+WantedBy=multi-user.target

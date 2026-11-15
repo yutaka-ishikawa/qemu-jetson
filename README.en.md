@@ -8,6 +8,7 @@ This project aims to run NVIDIA's OP-TEE and fTPM with minimal changes to NVIDIA
 
 ## Design and procedures
 
+- [Ubuntu 22.04 ARM64 rootfs build](docs/en/ubuntu-rootfs.md)
 - [Requirements and approach](docs/en/requirements.md)
 - [QEMU boot design](docs/en/qemu-boot-design.md)
 - [Implementation procedure](docs/en/implementation-plan.md)
