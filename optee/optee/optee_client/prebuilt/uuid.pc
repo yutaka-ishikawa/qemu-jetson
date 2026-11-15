@@ -1,0 +1,10 @@
+prefix=/prebuilt
+exec_prefix=/prebuilt
+libdir=${exec_prefix}
+includedir=${prefix}/include
+
+Name: uuid
+Description: UUID library
+Version: 2.38
+Cflags: -I${includedir}
+Libs: -L${libdir} -luuid

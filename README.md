@@ -7,6 +7,7 @@ NVIDIA版OP-TEE／fTPMを、ソース変更を極力抑えてQEMU上で動かす
 
 ## 設計と手順
 
+- [同梱ソースとビルド構成](docs/source-layout.md)
 - [Ubuntu 22.04 ARM64 rootfs構築](docs/ubuntu-rootfs.md)
 - [要件と作業方針](docs/requirements.md)
 - [QEMU起動設計](docs/qemu-boot-design.md)

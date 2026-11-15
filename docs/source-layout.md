@@ -1,0 +1,67 @@
+# 同梱ソースとビルド構成
+
+日本語 | [English](en/source-layout.md)
+
+## ソース配置
+
+- `qemu/`：公式QEMU 11.1.3のリリースソース。直接この配下を修正する。別Gitリポジトリやsubmoduleではない。
+- `optee/`：NVIDIA R36.5.2のOP-TEEパッケージ。内包ディレクトリ構成を維持する。
+- `kernel/`：NVIDIA R36.5.2のkernel_srcパッケージ。カーネル本体は `kernel/kernel/kernel-jammy-src/`。
+- `work/`：ビルド、ダウンロード、rootfs、実行時状態。Git管理外。
+
+取得元、ハッシュ、QEMUの基準コミットは [source-baselines.json](../manifests/source-baselines.json) に記録。
+上流の全Git履歴は取り込まず、配布版のスナップショットから本プロジェクトの変更を記録する。
+QEMUのリリースアーカイブにはROM関連ソースやテスト用データも含まれ、展開後約899MiB。
+カーネルソースは約1.3GiB。生成されたビルド成果物はコミットしない。
+NVIDIAの別配布Out-of-treeモジュールやディスプレイドライバは今回のkernel_src取り込みに含めていない。
+
+## 別条件のNVIDIA部品
+
+OP-TEEのCCCヘッダ・暗号ライブラリ、一部ビルドヘルパーや文書には、BSD系コードとは別の条件が記載されている。
+これらを公開Gitへ一括転載せず、公式アーカイブから利用者の作業ツリーに復元する。
+対象リストは [optee-excluded-files.json](../manifests/optee-excluded-files.json)。
+加えて `kernel/nvcommon_build.sh` も同様に扱う。元のLICENSE類は同梱し、条件を保持する。
+
+```bash
+scripts/restore-nvidia-components.py \
+  /path/to/nvidia-jetson-optee-source.tbz2 \
+  /path/to/kernel_src.tbz2
+```
+
+両アーカイブはNVIDIA公式R36.5.2のpublic_sources.tbz2内の `Linux_for_Tegra/source/` にある。
+復元スクリプトはSHA-256を検証し、対象ファイルだけを取り出す。異なる既存ファイルは上書きしない。
+復元部品は.gitignore対象なので、公開ソースと混同してpushしない。
+したがって、初回cloneだけでNVIDIAのT234公式ビルド入力がすべて揃うという意味ではない。
+
+## QEMUビルド
+
+ソースを再cloneする必要はない。ビルドディレクトリを分離する。
+LinuxホストのGCC、Make、Python、venv、Ninja、pkg-config、GLib開発パッケージ等が必要。
+実際のconfigureで不足依存を確認する。
+
+```bash
+mkdir -p work/qemu-build
+cd work/qemu-build
+../../qemu/configure --target-list=aarch64-softmmu \
+  --without-default-features --disable-werror --disable-docs
+ninja -j2 qemu-system-aarch64
+./qemu-system-aarch64 --version
+```
+
+これはAArch64 system emulationの最小機能ビルド。まだ専用Jetsonマシンを追加していないため、
+このコマンドだけでNVIDIA版OP-TEEを起動できるわけではない。
+
+## OP-TEEとLinux
+
+OP-TEEの既存手順は[ビルド記録](r36.5.2-build.md)を参照し、ソース作業先を同梱 `optee/` に置き換える。
+ツールチェーン、StMM、復元対象の部品は別途用意する。
+Linuxのrootfs連携設定は [optee-ftpm.config](../configs/kernel/optee-ftpm.config) と
+[Ubuntu rootfs手順](ubuntu-rootfs.md)を基準にする。
+カーネル設定・DT・モジュールのビルドとQEMU上での実行試験は今後の段階で行う。
+
+## 取り込み検証
+
+2026-11-16（日本時間）：QEMU 78,773件、kernel_src 73,920件、OP-TEE 4,209件の
+配布ファイル／シンボリックリンクがGitの追跡対象に揃っていることを確認した。
+上記件数は別条件で除外したファイルを含まない。ファイル名はすべてASCII。
+復元対象7件は追跡されていないことを確認した。

@@ -1,0 +1,22 @@
+{
+  "qemu": {
+    "version": "11.1.3",
+    "url": "https://download.qemu.org/qemu-11.1.3.tar.xz",
+    "sha256": "5a8289c7940dc77d3873c81a6c29ba3afe1446fc9d36e77fa1658cdbecb84b22",
+    "upstream_commit": "005c61c0ef6f6ae615283440b4bb7be51b2c6ddd",
+    "path": "qemu"
+  },
+  "linux": {
+    "release": "NVIDIA L4T R36.5.2",
+    "archive": "kernel_src.tbz2",
+    "sha256": "2a26015d13a2c4551c1266c8ec7503fc27b487d1cf74ccf3965d0633dacced1d",
+    "path": "kernel/kernel/kernel-jammy-src"
+  },
+  "optee": {
+    "release": "NVIDIA L4T R36.5.2",
+    "archive": "nvidia-jetson-optee-source.tbz2",
+    "sha256": "3dc770bdb4852d0f6cfb3a3cc8fbf6a81459e1db4011590c2a2f3a534cf1a9d9",
+    "path": "optee",
+    "exclusions": "optee-excluded-files.json"
+  }
+}

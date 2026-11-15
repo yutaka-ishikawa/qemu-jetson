@@ -39,3 +39,12 @@ google-services.json
 /output/
 *.img
 *.qcow2
+
+# Separately licensed NVIDIA components, restored locally from official archives
+/optee/nvcommon_build.sh
+/optee/optee/optee_os/core/drivers/tegra/t234/include/tegra_se_ccc.h
+/optee/optee/optee_os/core/drivers/tegra/t234/include/tegra_se_ccc_errno.h
+/optee/optee/optee_os/prebuilt/t234/libcommon_crypto.a
+/optee/optee/samples/ftpm-helper/README.md
+/optee/optee/samples/ftpm-helper/host/tool/README_keylime_TPM_for_unfused_Jetson.md
+/kernel/nvcommon_build.sh

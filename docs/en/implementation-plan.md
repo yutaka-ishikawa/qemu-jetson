@@ -33,16 +33,20 @@ Start with TCG and one CPU. CUDA/GPU emulation is excluded.
 docs/                       Design, build, execution, and validation records
 manifests/                  Download URLs, pinned commits, input hashes
 scripts/                    Fetch, build, run, and artifact checks
-patches/qemu/11.1.3/         Additions and changes to official QEMU
+qemu/                       Official QEMU sources, edited directly
+optee/                      NVIDIA OP-TEE / fTPM sources
+kernel/                     NVIDIA Linux kernel sources
 firmware/                   Project-owned test EL3 firmware
 configs/                    VM, DT generation, and test Fuse configuration
 tests/                      MMIO model, boot, and TPM tests
 ```
 
 This is a planned layout, not a claim that these directories already exist.
-Fetch QEMU originals from the official repository and manage additions as patches.
+Bundle QEMU sources in this repository and edit qemu/ directly. See the current [source layout](source-layout.md).
 Keep NVIDIA distributions, original third-party trees, large build outputs, and virtual-device secret state out of Git.
 Preserve licenses and copyright notices for each imported file.
+
+The fresh-clone procedure below is the earlier plan, superseded by bundled sources. Use the build procedure in [source-layout.md](source-layout.md).
 
 ## 3. Pin QEMU and establish a baseline
 

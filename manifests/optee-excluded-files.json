@@ -1,0 +1,11 @@
+{
+  "archive_sha256": "3dc770bdb4852d0f6cfb3a3cc8fbf6a81459e1db4011590c2a2f3a534cf1a9d9",
+  "excluded": [
+    "optee/samples/ftpm-helper/README.md",
+    "optee/samples/ftpm-helper/host/tool/README_keylime_TPM_for_unfused_Jetson.md",
+    "optee/optee_os/core/drivers/tegra/t234/include/tegra_se_ccc.h",
+    "optee/optee_os/core/drivers/tegra/t234/include/tegra_se_ccc_errno.h",
+    "optee/optee_os/prebuilt/t234/libcommon_crypto.a",
+    "nvcommon_build.sh"
+  ]
+}

@@ -33,16 +33,20 @@ NVIDIA版ATFやMB2全体の無変更実行は初期実装の対象外。
 docs/                       設計、ビルド、実行、検証記録
 manifests/                  取得元、固定コミット、入力ハッシュ
 scripts/                    取得・ビルド・起動・成果物確認
-patches/qemu/11.1.3/         公式QEMUへの追加・変更パッチ
+qemu/                       公式QEMUソースと直接の変更
+optee/                      NVIDIA OP-TEE／fTPMソース
+kernel/                     NVIDIA Linuxカーネルソース
 firmware/                   本プロジェクトの試験用EL3ファームウェア
 configs/                    仮想マシン、DT生成、テスト用Fuseの設定
 tests/                      MMIOモデル、起動、TPMの試験
 ```
 
 上記は予定構成であり、既に存在するディレクトリを意味しない。
-QEMU原本は公式リポジトリから取得し、追加コードをパッチとして管理する。
+QEMU原本を本リポジトリに同梱し、qemu/を直接修正する。ソース配置の現状は[source-layout.md](source-layout.md)を参照。
 NVIDIA配布物、第三者原本、大容量ビルド成果物、仮想デバイスの秘密状態はGit管理外に置く。
 取り込むコードのライセンスと著作権表示をファイルごとに維持する。
+
+同梱方針への変更により、以下の新規clone手順は旧計画。今後は[source-layout.md](source-layout.md)のビルド手順を使用する。
 
 ## 3. QEMU原本の固定とベースライン確認
 
