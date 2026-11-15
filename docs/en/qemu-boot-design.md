@@ -127,3 +127,5 @@ Do not assume exact Cortex-A78AE or 12-core emulation.
 Stage A log output alone must not be reported as successful OP-TEE initialization or equivalent fTPM behavior.
 
 See the [implementation procedure](implementation-plan.md) for work order, code layout, checks, and completion criteria.
+
+See [t234-fuse.md](t234-fuse.md) for the current read-only Fuse model and validation results.

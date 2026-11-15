@@ -11,13 +11,19 @@ parser = argparse.ArgumentParser(description=__doc__)
 parser.add_argument('qemu', type=Path)
 parser.add_argument('--firmware-dir', type=Path, default=Path('work/t234-firmware'))
 parser.add_argument('--optee', type=Path)
+parser.add_argument('--fuse-image', type=Path)
 parser.add_argument('--optee-sha256',
                     default='96bcd44d8a4ceee39fa8a4ffd97b5bc0e193c6b3d5fc6cdc2208b806aeb9beb9',
                     help='expected input hash; override explicitly for a separately recorded rebuild')
 parser.add_argument('--output-dir', type=Path, default=Path('work/t234-results'))
 args = parser.parse_args()
 args.output_dir.mkdir(parents=True, exist_ok=True)
-base = [str(args.qemu.resolve()), '-machine', 'jetson-t234-dev', '-accel', 'tcg',
+machine = 'jetson-t234-dev'
+if args.fuse_image:
+    if ',' in str(args.fuse_image):
+        parser.error('fuse-image path must not contain a comma')
+    machine += ',fuse-image=' + str(args.fuse_image)
+base = [str(args.qemu.resolve()), '-machine', machine, '-accel', 'tcg',
         '-cpu', 'max', '-smp', '1', '-m', '128M', '-display', 'none',
         '-monitor', 'none', '-serial', 'stdio',
         '-semihosting-config', 'enable=on,target=native']
@@ -79,6 +85,9 @@ for name, options in [('reject_ram', ['-m', '256M']),
     report['tests'][name] = result
     if not result['passed']:
         raise SystemExit(f'{name} unexpectedly accepted an unsupported configuration')
+
+if args.fuse_image:
+    report['fuse_image_sha256'] = hashlib.sha256(args.fuse_image.read_bytes()).hexdigest()
 
 if args.optee:
     digest = hashlib.sha256(args.optee.read_bytes()).hexdigest()

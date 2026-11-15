@@ -1,6 +1,10 @@
 /* Minimal development monitor, not a production Secure Monitor.
  * SPDX-License-Identifier: BSD-2-Clause
  */
+#ifndef NS_PROBE_ADDR
+#define NS_PROBE_ADDR 0x80000000
+#endif
+
 .section .text.boot, "ax"
 .global _start
 _start:
@@ -36,6 +40,16 @@ _start:
     add x0, x0, x1
     msr vbar_el1, x0
 #endif
+#if defined(BOOT_FUSE_WRITE_TEST)
+    ldr x0, =0x03810200
+    mov w1, #-1
+    str w1, [x0]
+    b fail
+#elif defined(BOOT_FUSE_BAD_READ_TEST)
+    ldr x0, =0x03810000
+    ldr w1, [x0]
+    b fail
+#endif
     /* AArch64 Secure EL1, secure timer and PAUTH access allowed. */
     ldr x0, =0x30c30
 #ifdef BOOT_NS_TEST
@@ -59,6 +73,8 @@ _start:
     msr spsr_el3, x0
 #ifdef BOOT_SELF_TEST
     adr x0, self_test_el1
+#elif defined(BOOT_FUSE_PROBE)
+    adr x0, fuse_probe_el1
 #elif defined(BOOT_NS_TEST)
     ldr x0, =0x90010000
 #else
@@ -92,6 +108,70 @@ self_test_el1:
     ldr x0, =0xc2000001
     smc #0
     b fail
+#endif
+
+#ifdef BOOT_FUSE_PROBE
+fuse_probe_el1:
+    ldr x0, =0x03810000
+    ldr x1, =0x83fc1000
+    ldr x2, =0x83fc1020
+    ldr x3, =FUSE_GENERATE_ECID_ADDR
+    blr x3
+    cbnz w0, fail
+    adr x0, msg_ecid128
+    bl puts
+    ldr x19, =0x83fc1000
+    mov x20, #4
+1:  ldr w0, [x19], #4
+    bl hex
+    mov x0, #' '
+    bl putc
+    subs x20, x20, #1
+    b.ne 1b
+    mov x0, #10
+    bl putc
+    adr x0, msg_ecid64
+    bl puts
+    ldr x0, =0x83fc1020
+    ldr x0, [x0]
+    bl hex
+    mov x0, #10
+    bl putc
+
+    ldr x2, =0x83fc1040
+    mov w0, #10
+    str w0, [x2]
+    ldr x0, =0x03810000
+    ldr x1, =0x83fc1030
+    ldr x3, =FUSE_GENERATE_SN_ADDR
+    blr x3
+    cbnz w0, fail
+    ldr x0, =0x83fc1040
+    ldr w0, [x0]
+    cmp w0, #10
+    b.ne fail
+    adr x0, msg_sn
+    bl puts
+    ldr x19, =0x83fc1030
+    mov x20, #10
+1:  ldrb w21, [x19], #1
+    lsr x0, x21, #4
+    bl nibble
+    and x0, x21, #0xf
+    bl nibble
+    subs x20, x20, #1
+    b.ne 1b
+    mov x0, #10
+    bl putc
+    ldr x0, =0xc2000004
+    smc #0
+    b fail
+nibble:
+    cmp x0, #10
+    add x0, x0, #'0'
+    b.lo 1f
+    add x0, x0, #7
+1:  b putc
 #endif
 
 /* Each vector keeps a slot number without destroying x0-x3. */
@@ -160,7 +240,7 @@ exception:
     lsr x0, x20, #26
     cmp x0, #0x25
     b.ne fail
-    ldr x0, =0x80000000
+    ldr x0, =NS_PROBE_ADDR
     cmp x21, x0
     b.ne fail
     adr x0, msg_ns_pass
@@ -171,6 +251,52 @@ exception:
     bl putc
     mov x0, x21
     bl hex
+    mov x0, #10
+    bl putc
+    mov x0, #0
+    b exit
+#elif defined(BOOT_FUSE_PROBE)
+    ldr x0, =0xc2000004
+    cmp x19, x0
+    b.ne fail
+    mrs x0, esr_el3
+    lsr x0, x0, #26
+    cmp x0, #0x17
+    b.ne fail
+    adr x0, msg_fuse_pass
+    bl puts
+#ifdef BOOT_FUSE_WAIT_RESET
+1:  wfi
+    b 1b
+#else
+    mov x0, #0
+    b exit
+#endif
+#elif defined(BOOT_FUSE_WRITE_TEST) || defined(BOOT_FUSE_BAD_READ_TEST)
+    mrs x0, esr_el3
+    lsr x1, x0, #26
+    cmp x1, #0x25
+    b.ne fail
+#ifdef BOOT_FUSE_WRITE_TEST
+    tbz x0, #6, fail
+    mrs x0, far_el3
+    ldr x1, =0x03810200
+    cmp x0, x1
+    b.ne fail
+    ldr w19, [x1]
+    adr x0, msg_fuse_write
+    bl puts
+    mov x0, x19
+    bl hex
+#else
+    tbnz x0, #6, fail
+    mrs x0, far_el3
+    ldr x1, =0x03810000
+    cmp x0, x1
+    b.ne fail
+    adr x0, msg_fuse_bad_read
+    bl puts
+#endif
     mov x0, #10
     bl putc
     mov x0, #0
@@ -232,7 +358,7 @@ hex:
 #ifdef BOOT_NS_TEST
 .balign 2048
 ns_probe_start:
-    mov x0, #0x80000000
+    ldr x0, =NS_PROBE_ADDR
     ldr x1, [x0]
     ldr x0, =0xc2000003
     smc #0
@@ -267,3 +393,10 @@ msg_fail: .asciz "BOOT: SELFTEST FAIL\n"
 msg_stop: .asciz "BOOT: STOP (monitor service not implemented)\n"
 
 msg_ns_pass: .asciz "BOOT: NS isolation PASS ESR_EL1/FAR_EL1="
+
+msg_ecid128: .asciz "FUSE: ECID128="
+msg_ecid64: .asciz "FUSE: ECID64="
+msg_sn: .asciz "FUSE: SN="
+msg_fuse_pass: .asciz "BOOT: FUSE probe PASS\n"
+msg_fuse_write: .asciz "BOOT: FUSE write rejected, vendor="
+msg_fuse_bad_read: .asciz "BOOT: FUSE unsupported read rejected"

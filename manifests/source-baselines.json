@@ -8,7 +8,8 @@
     "project_changes": [
       "hw/arm/jetson-t234-dev.c",
       "hw/arm/Kconfig",
-      "hw/arm/meson.build"
+      "hw/arm/meson.build",
+      "hw/arm/trace-events"
     ]
   },
   "linux": {

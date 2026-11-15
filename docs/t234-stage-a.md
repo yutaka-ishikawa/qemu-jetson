@@ -6,6 +6,8 @@
 OP-TEE初期化完了、Linux起動、fTPM機能の達成ではない。
 機械可読の結果は [t234-stage-a.json](results/t234-stage-a.json)。
 
+本書は段階Aの記録。[後続のFuse実装](t234-fuse.md)も参照。Fuseイメージ未指定時は引き続き本書の構成になる。
+
 ## 実装
 
 - QEMUの `hw/arm/jetson-t234-dev.c` に `jetson-t234-dev` を追加。

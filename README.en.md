@@ -8,6 +8,7 @@ This project aims to run NVIDIA's OP-TEE and fTPM with minimal changes to NVIDIA
 
 ## Design and procedures
 
+- [Fuse model and validation](docs/en/t234-fuse.md)
 - [Stage A: first OP-TEE log](docs/en/t234-stage-a.md)
 - [Bundled sources and build layout](docs/en/source-layout.md)
 - [Ubuntu 22.04 ARM64 rootfs build](docs/en/ubuntu-rootfs.md)
@@ -20,7 +21,7 @@ This project aims to run NVIDIA's OP-TEE and fTPM with minimal changes to NVIDIA
 
 The QEMU implementation baseline is **11.1.3**, the latest stable release verified on November 16, 2026 (Japan time).
 The unmodified T234 build of NVIDIA's OP-TEE and fTPM has succeeded.
-Unmodified OP-TEE emits its first logs on the dedicated QEMU machine and currently stops at an unimplemented Fuse read.
+Unmodified OP-TEE emits its first logs on the dedicated QEMU machine. A read-only Fuse model now passes Fuse initialization; execution stops in the unimplemented SE0 configuration function.
 Complete OP-TEE initialization, Linux boot, and TPM functionality remain unverified.
 
 ## Documentation policy

@@ -1,0 +1,115 @@
+{
+  "date_jst": "2026-11-16",
+  "stage": "B: read-only Fuse only",
+  "nvidia_source_changes": false,
+  "input_sha256": "96bcd44d8a4ceee39fa8a4ffd97b5bc0e193c6b3d5fc6cdc2208b806aeb9beb9",
+  "image_sha256": {
+    "a": "ea2fda5f74386a5e806322fe5885a75abfe1caea63887b3fcd883843571ff779",
+    "b": "ae9ced7270046df8a2f01c72c21e2b5a13369e0fcbcfd91c6f6267411f4862a8"
+  },
+  "tests": {
+    "identity_a_0": {
+      "returncode": 0,
+      "identity": {
+        "ecid128_words": [
+          "d280956a",
+          "1448d159",
+          "540420c4",
+          "00000002"
+        ],
+        "ecid64": "82541b1d454a0255",
+        "sn": "01020123456789abcdef"
+      }
+    },
+    "identity_a_1": {
+      "returncode": 0,
+      "identity": {
+        "ecid128_words": [
+          "d280956a",
+          "1448d159",
+          "540420c4",
+          "00000002"
+        ],
+        "ecid64": "82541b1d454a0255",
+        "sn": "01020123456789abcdef"
+      }
+    },
+    "identity_b_0": {
+      "returncode": 0,
+      "identity": {
+        "ecid128_words": [
+          "138115ab",
+          "148d159e",
+          "540420c4",
+          "00000002"
+        ],
+        "ecid64": "82541b1d454e0456",
+        "sn": "03041032547698badcfe"
+      }
+    },
+    "identity_b_1": {
+      "returncode": 0,
+      "identity": {
+        "ecid128_words": [
+          "138115ab",
+          "148d159e",
+          "540420c4",
+          "00000002"
+        ],
+        "ecid64": "82541b1d454e0456",
+        "sn": "03041032547698badcfe"
+      }
+    },
+    "write_rejected": {
+      "returncode": 0
+    },
+    "unsupported_read": {
+      "returncode": 0
+    },
+    "secure_only": {
+      "returncode": 0
+    },
+    "reject_size": {
+      "returncode": 1
+    },
+    "reject_unsupported_data": {
+      "returncode": 1
+    },
+    "qmp_reset_and_immutable_property": {
+      "passed": true,
+      "runs": 2
+    }
+  },
+  "fuse_suite_passed": true,
+  "optee_diagnostic": {
+    "returncode": 0,
+    "timed_out": false,
+    "stop_reason": "observed_data_abort",
+    "input_sha256": "96bcd44d8a4ceee39fa8a4ffd97b5bc0e193c6b3d5fc6cdc2208b806aeb9beb9",
+    "first_log_observed": true,
+    "data_abort_observed": true,
+    "panic_observed": false,
+    "monitor_stop_observed": false,
+    "diagnostic_observed": true,
+    "initialization_verified": false,
+    "tpm_verified": false
+  },
+  "new_fault": {
+    "far_el1_virtual": "0x86550014",
+    "esr_el1": "0x96000010",
+    "elr_el1": "0x80003cf8",
+    "symbol": "tegra_se_ccc_configure_se0",
+    "caller": "optee/optee/optee_os/core/drivers/tegra/t234/tegra_se_map_device.c:45",
+    "physical_address_inferred_from_dt_and_call_argument": "0x03b50014"
+  },
+  "open_items": [
+    "SE0 and RNG behavior unimplemented",
+    "Minimal DT has no TPM event log",
+    "StMM DT initialization failure remains"
+  ],
+  "optee_initialization_verified": false,
+  "linux_boot_verified": false,
+  "tpm_verified": false,
+  "trace_probe_read_count": 12,
+  "stage_a_without_image_regression_passed": true
+}

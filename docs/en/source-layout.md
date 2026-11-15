@@ -91,3 +91,5 @@ See the subsequent [Stage A implementation and tests](t234-stage-a.md).
 The local Git pack after source import was approximately 387 MiB; builds need additional space.
 This environment has an approximately 8 GiB limit, so the reproducible validated rootfs tar and Docker build caches were cleaned up.
 Sources, Git history, and the compressed OP-TEE build baseline were preserved.
+
+See [t234-fuse.md](t234-fuse.md) for the current read-only Fuse model and validation results.

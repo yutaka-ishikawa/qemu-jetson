@@ -150,3 +150,5 @@ If NVIDIA source changes become necessary, identify the location and reason, est
 Do not automatically upgrade QEMU. When a new stable release appears, port patches and pass all tests for completed stages before updating the baseline commit.
 
 The selected userland is Ubuntu 22.04 ARM64. See the [rootfs procedure](ubuntu-rootfs.md).
+
+The initial Stage B Fuse implementation and tests are recorded in [t234-fuse.md](t234-fuse.md). Stage B is not complete; SE0 is next.

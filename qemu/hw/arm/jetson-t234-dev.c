@@ -6,6 +6,7 @@
 #include "qemu/osdep.h"
 #include "qapi/error.h"
 #include "qemu/error-report.h"
+#include "qemu/bswap.h"
 #include "qemu/log.h"
 #include "qemu/module.h"
 #include "qemu/units.h"
@@ -15,11 +16,16 @@
 #include "hw/arm/machines-qom.h"
 #include "system/address-spaces.h"
 #include "system/system.h"
+#include "system/reset.h"
 #include "system/tcg.h"
 #include "target/arm/cpu.h"
+#include "trace.h"
 
 #define TYPE_JETSON_T234_DEV MACHINE_TYPE_NAME("jetson-t234-dev")
 OBJECT_DECLARE_SIMPLE_TYPE(JetsonT234DevState, JETSON_T234_DEV)
+
+#define FUSE_BASE      0x03810000
+#define FUSE_SIZE      0x600
 
 #define TCU_BASE       0x0c198000
 #define TCU_SIZE       0x1000
@@ -39,6 +45,10 @@ struct JetsonT234DevState {
     MemoryRegion secure_ram;
     MemoryRegion boot_rom;
     MemoryRegion tcu;
+    MemoryRegion fuse;
+    uint32_t fuse_words[FUSE_SIZE / 4];
+    char *fuse_image;
+    bool initialized;
     AddressSpace secure_as;
     CharFrontend console;
 };
@@ -89,6 +99,119 @@ static const MemoryRegionOps tcu_ops = {
     .impl = { .min_access_size = 4, .max_access_size = 4 },
 };
 
+/* Only the public identity/configuration registers used by this driver. */
+static bool fuse_supported(hwaddr offset)
+{
+    switch (offset) {
+    case 0x1a0: /* security mode */
+    case 0x200: /* vendor */
+    case 0x204: /* fab */
+    case 0x208: /* lot 0 */
+    case 0x20c: /* lot 1 */
+    case 0x210: /* wafer */
+    case 0x214: /* X coordinate */
+    case 0x218: /* Y coordinate */
+    case 0x220: /* reserved ECID field */
+    case 0x268: /* boot security info */
+    case 0x29c: /* ODM info */
+    case 0x408: /* ODM ID 0 */
+    case 0x40c: /* ODM ID 1 */
+        return true;
+    default:
+        return false;
+    }
+}
+
+static MemTxResult fuse_read(void *opaque, hwaddr offset, uint64_t *value,
+                              unsigned size, MemTxAttrs attrs)
+{
+    JetsonT234DevState *s = opaque;
+
+    if (!fuse_supported(offset)) {
+        qemu_log_mask(LOG_GUEST_ERROR,
+                      "jetson-fuse: unsupported read offset 0x%"
+                      HWADDR_PRIx "\n", offset);
+        return MEMTX_DECODE_ERROR;
+    }
+    *value = s->fuse_words[offset / 4];
+    trace_jetson_t234_fuse_read(offset, *value);
+    return MEMTX_OK;
+}
+
+static MemTxResult fuse_write(void *opaque, hwaddr offset, uint64_t value,
+                               unsigned size, MemTxAttrs attrs)
+{
+    trace_jetson_t234_fuse_write_rejected(offset, value);
+    qemu_log_mask(LOG_GUEST_ERROR,
+                  "jetson-fuse: read-only write rejected at offset 0x%"
+                  HWADDR_PRIx "\n", offset);
+    return MEMTX_ACCESS_ERROR;
+}
+
+static const MemoryRegionOps fuse_ops = {
+    .read_with_attrs = fuse_read,
+    .write_with_attrs = fuse_write,
+    .endianness = DEVICE_LITTLE_ENDIAN,
+    .valid = { .min_access_size = 4, .max_access_size = 4,
+               .unaligned = false },
+    .impl = { .min_access_size = 4, .max_access_size = 4 },
+};
+
+static void create_fuse(JetsonT234DevState *s)
+{
+    g_autofree char *contents = NULL;
+    g_autoptr(GError) error = NULL;
+    gsize length;
+
+    if (!s->fuse_image) {
+        return; /* Keep the Stage A configuration available. */
+    }
+    if (!g_file_get_contents(s->fuse_image, &contents, &length, &error)) {
+        error_report("jetson-fuse: %s", error->message);
+        exit(EXIT_FAILURE);
+    }
+    if (length != FUSE_SIZE) {
+        error_report("jetson-fuse: image must be exactly 0x600 bytes");
+        exit(EXIT_FAILURE);
+    }
+    for (unsigned i = 0; i < FUSE_SIZE / 4; i++) {
+        uint32_t value = ldl_le_p(contents + 4 * i);
+
+        if (!fuse_supported(4 * i) && value) {
+            error_report("jetson-fuse: nonzero unsupported offset 0x%x", 4 * i);
+            exit(EXIT_FAILURE);
+        }
+        s->fuse_words[i] = value;
+    }
+    memory_region_init_io(&s->fuse, OBJECT(s), &fuse_ops, s,
+                          "jetson-t234-dev.fuse", FUSE_SIZE);
+    memory_region_add_subregion(&s->secure_memory, FUSE_BASE, &s->fuse);
+}
+
+static char *get_fuse_image(Object *obj, Error **errp)
+{
+    JetsonT234DevState *s = JETSON_T234_DEV(obj);
+
+    return g_strdup(s->fuse_image ?: "");
+}
+
+static void set_fuse_image(Object *obj, const char *value, Error **errp)
+{
+    JetsonT234DevState *s = JETSON_T234_DEV(obj);
+
+    if (s->initialized) {
+        error_setg(errp,
+                   "fuse-image is immutable after machine initialization");
+        return;
+    }
+    if (!value || !*value) {
+        error_setg(errp, "fuse-image requires a nonempty filename");
+        return;
+    }
+    g_free(s->fuse_image);
+    s->fuse_image = g_strdup(value);
+}
+
 static void load_secure_image(JetsonT234DevState *s, const char *filename,
                               hwaddr address, uint64_t limit)
 {
@@ -133,17 +256,21 @@ static void jetson_t234_dev_init(MachineState *machine)
     /* Console access is shared; only secure RAM and boot ROM are private. */
     memory_region_add_subregion(sysmem, TCU_BASE, &s->tcu);
 
+    create_fuse(s);
+
     cpu = object_new(machine->cpu_type);
     object_property_set_bool(cpu, "has_el3", true, &error_fatal);
     object_property_set_link(cpu, "memory", OBJECT(sysmem), &error_fatal);
     object_property_set_link(cpu, "secure-memory", OBJECT(&s->secure_memory),
                              &error_fatal);
     qdev_realize(DEVICE(cpu), NULL, &error_fatal);
+    qemu_register_resettable(cpu);
     object_unref(cpu);
 
     load_secure_image(s, machine->firmware, 0, BOOT_SIZE);
     load_secure_image(s, machine->kernel_filename, SECURE_BASE, OPTEE_MAX_SIZE);
     load_secure_image(s, machine->dtb, DT_BASE, DT_MAX_SIZE);
+    s->initialized = true;
 }
 
 static void jetson_t234_dev_class_init(ObjectClass *oc, const void *data)
@@ -159,6 +286,10 @@ static void jetson_t234_dev_class_init(ObjectClass *oc, const void *data)
     mc->default_ram_size = 128 * MiB;
     mc->default_ram_id = "jetson-t234-dev.nonsecure-ram";
     mc->ignore_memory_transaction_failures = false;
+    object_class_property_add_str(oc, "fuse-image", get_fuse_image,
+                                   set_fuse_image);
+    object_class_property_set_description(oc, "fuse-image",
+        "Read-only test Fuse register image (0x600 bytes, secure-only)");
 }
 
 static const TypeInfo jetson_t234_dev_type = {

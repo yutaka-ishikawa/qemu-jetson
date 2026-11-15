@@ -6,6 +6,8 @@ November 16, 2026 (Japan time): **unmodified NVIDIA OP-TEE produced its first lo
 This does not establish completed OP-TEE initialization, Linux boot, or fTPM functionality.
 Machine-readable results: [t234-stage-a.json](../results/t234-stage-a.json).
 
+This is the Stage A record; see the [subsequent Fuse implementation](t234-fuse.md). Omitting a Fuse image still selects this configuration.
+
 ## Implementation
 
 - Added `jetson-t234-dev` in QEMU `hw/arm/jetson-t234-dev.c`.

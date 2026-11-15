@@ -156,3 +156,5 @@ initcall失敗、panic、未実装MMIO、乱数・暗号処理を確認してか
 到達済み段階の試験を通してから基準コミットを更新する。
 
 ユーザーランドはUbuntu 22.04 ARM64を採用する。[rootfs構築手順](ubuntu-rootfs.md)を参照。
+
+段階Bの最初のFuse実装と試験は[t234-fuse.md](t234-fuse.md)に記録した。段階B全体の完了ではなく、次の対象はSE0。
