@@ -1,5 +1,7 @@
 # Jetson Linuxリリース候補
 
+日本語 | [English](en/release-candidates.md)
+
 調査日：2026-11-16（日本時間）。公式Web資料を確認した段階。
 配布ソースの展開、ライセンスの個別確認、ビルド、QEMU実行は未実施。
 

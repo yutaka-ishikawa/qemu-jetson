@@ -1,4 +1,6 @@
 # qemu-jetson
+
+日本語 | [English](README.en.md)
 QEMU for NVIDIA Jetson Orin Nano
 
 NVIDIA版OP-TEE／fTPMを、ソース変更を極力抑えてQEMU上で動かすための開発プロジェクトです。
@@ -15,3 +17,11 @@ NVIDIA版OP-TEE／fTPMを、ソース変更を極力抑えてQEMU上で動かす
 QEMUの実装基準は、2026-11-16確認時点の最新安定版 **11.1.3** です。
 NVIDIA版OP-TEE／fTPMのT234向け無変更ビルドは成功しています。
 QEMU側の実装と起動・TPM実行試験は未実施です。
+
+## ドキュメント方針
+
+各ドキュメントは日本語版と英語版を用意し、ファイル名・ディレクトリ名は英語に統一します。
+更新時は両言語を同時に更新し、技術値・コマンド・検証状況を一致させます。
+Python依存定義は両言語で共用します。
+
+変更はPRを作成せず、`main`へ直接pushします。

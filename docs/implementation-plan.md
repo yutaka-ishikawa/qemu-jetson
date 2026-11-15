@@ -1,5 +1,7 @@
 # QEMU Jetson OP-TEE／fTPM 実装手順
 
+日本語 | [English](en/implementation-plan.md)
+
 作成日：2026-11-16（日本時間）。本書は実装前の手順書。
 完了済みはNVIDIA版OP-TEE／fTPMの無変更ビルドと依存調査まで。
 QEMUマシンモデル、起動ファームウェア、実行試験はこれから行う。
