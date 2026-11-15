@@ -69,3 +69,5 @@ The helper PTA load returns `ITEM_NOT_FOUND`; fTPM functionality is therefore no
 The [next decision](decisions/0002-ftpm-helper-pta.md) awaits the user.
 Ubuntu systemd-sysusers and systemd-resolved service failures also remain; overall Ubuntu service health is unverified.
 The DT reserves all secure RAM using memreserve so Linux cannot allocate it.
+
+See the [service comparison](optee-service-comparison.md) for daemon/TA/PTA roles and B1/B2 API differences.

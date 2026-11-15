@@ -69,3 +69,5 @@ helper PTAのロードは`ITEM_NOT_FOUND`となるため、fTPM動作済みと�
 [次の判断](decisions/0002-ftpm-helper-pta.md)を待つ。
 Ubuntuのsystemd-sysusers／systemd-resolvedサービスにも失敗が残っており、Ubuntu全サービスの健全性は未確認。
 DTではセキュアRAM全体をmemreserveで予約し、Linuxの割当対象から除外する。
+
+OP-TEEのデーモン・TA・PTAの役割とB1/B2のAPI差分は[サービス比較](optee-service-comparison.md)を参照。

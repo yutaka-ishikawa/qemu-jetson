@@ -19,3 +19,5 @@ Keeping the TA unchanged requires a decision about the OP-TEE implementation sco
 
 B1 would report the actual REE state, following NVIDIA's implementation, rather than hardcode a ready response.
 Neither implementation starts before the user chooses.
+
+See the [service comparison](../optee-service-comparison.md) for the complete API list, Linux daemon distinctions, and REE-state dependencies.
