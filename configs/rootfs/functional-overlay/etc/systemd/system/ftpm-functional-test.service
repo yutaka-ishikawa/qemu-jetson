@@ -1,0 +1,16 @@
+[Unit]
+Description=Functional TPM tests on the isolated QEMU test disk
+After=jetson-tee-supplicant.service
+Requires=jetson-tee-supplicant.service
+ConditionKernelCommandLine=|ftpm.test=first
+ConditionKernelCommandLine=|ftpm.test=second
+
+[Service]
+Type=oneshot
+ExecStart=/usr/local/sbin/ftpm-functional-test
+TimeoutStartSec=300
+StandardOutput=journal+console
+StandardError=journal+console
+
+[Install]
+WantedBy=multi-user.target

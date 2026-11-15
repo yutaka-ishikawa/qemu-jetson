@@ -36,3 +36,5 @@ Python依存定義は両言語で共用します。
 
 設計・互換性に重要な選択肢はユーザーへ提示し、選択後に両言語で判断記録を残してpushします。
 [今回のfTPM実行経路の選択](docs/decisions/0001-ftpm-execution-path.md)。
+
+B案の実装・起動・永続化検証手順は[機能検証構成](docs/ftpm-virt.md)を参照してください。

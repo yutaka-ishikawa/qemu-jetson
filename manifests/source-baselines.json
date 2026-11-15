@@ -9,7 +9,8 @@
       "hw/arm/jetson-t234-dev.c",
       "hw/arm/Kconfig",
       "hw/arm/meson.build",
-      "hw/arm/trace-events"
+      "hw/arm/trace-events",
+      "hw/arm/jetson-ftpm-virt.c"
     ]
   },
   "linux": {
@@ -25,5 +26,20 @@
     "sha256": "3dc770bdb4852d0f6cfb3a3cc8fbf6a81459e1db4011590c2a2f3a534cf1a9d9",
     "path": "optee",
     "exclusions": "optee-excluded-files.json"
+  },
+  "tf_a": {
+    "release": "NVIDIA L4T R36.5.2",
+    "version": "2.8",
+    "archive": "atf_src.tbz2",
+    "sha256": "dd79c4e9dd82f54ff2c3fa9c520530a4d5b7ef3b965f641036ddb9d1ecf1e1ad",
+    "path": "firmware/tf-a",
+    "project_changes": []
+  },
+  "functional_kernel": {
+    "release": "NVIDIA L4T R36.5.2",
+    "url": "https://developer.nvidia.com/downloads/embedded/l4t/r36_release_v5.2/releases/Jetson_Linux_r36.5.2_aarch64.tbz2",
+    "bsp_sha256": "752326264c5e16826d3044a78e59ae06109467d37705143b94e664c91a471f47",
+    "version": "5.15.199-tegra",
+    "binary_changes": false
   }
 }

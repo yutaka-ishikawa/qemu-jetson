@@ -1,0 +1,20 @@
+################################################################################
+# Copyright (c) 2024, NVIDIA CORPORATION. All rights reserved.
+#
+# NVIDIA Corporation and its licensors retain all intellectual property
+# and proprietary rights in and to this software, related documentation
+# and any modifications thereto.  Any use, reproduction, disclosure or
+# distribution of this software and related documentation without an express
+# license agreement from NVIDIA Corporation is strictly prohibited.
+################################################################################
+
+version = "1.0.0"
+[oss]
+
+[oss.excluded]
+
+[[oss.excluded.directories]]
+paths = ['tools/', 'services/spd/tlkd/', 'plat/xilinx/', 'plat/socionext/', 'tools/cert_create/src/','plat/rockchip','plat/qemu','plat/mediatek','plat/hisilicon']
+comment = 'unused packages'
+nspect_ids = ['NSPECT-Y3C8-T7YY']
+

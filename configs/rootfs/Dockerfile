@@ -18,6 +18,7 @@ RUN cp /etc/resolv.conf /target/etc/resolv.conf \
     install -d -m 0700 /data/tee; \
     mkdir -p /etc/systemd/system/multi-user.target.wants /usr/share/qemu-jetson; \
     ln -s ../jetson-tee-supplicant.service /etc/systemd/system/multi-user.target.wants/jetson-tee-supplicant.service; \
+    if [ -d /lib/modules ]; then for d in /lib/modules/*; do depmod -a "${d##*/}"; done; fi; \
     dpkg-query -W > /usr/share/qemu-jetson/packages.tsv; \
     /usr/sbin/tee-supplicant --help; \
     tpm2_getcap --version; \

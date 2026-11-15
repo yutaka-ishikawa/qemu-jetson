@@ -1,0 +1,30 @@
+{
+  "profile": "jetson-ftpm-virt",
+  "decision": "0001: option B approved",
+  "status": "boot_verified_ftpm_blocked",
+  "verified": [
+    "NVIDIA distributed Linux 5.15.199-tegra boots",
+    "Linux OP-TEE driver initializes",
+    "Ubuntu 22.04.5 ARM64 reaches multi-user target",
+    "NVIDIA tee-supplicant starts",
+    "NVIDIA fTPM TA source unchanged"
+  ],
+  "not_verified": [
+    "TPM commands",
+    "NV persistence",
+    "persistent signing key",
+    "seal/unseal",
+    "PCR extend and reset"
+  ],
+  "blocker": {
+    "uuid": "6c879517-2dfc-4663-863d-4896e8ccbe3a",
+    "error": "0xffff0008 ITEM_NOT_FOUND",
+    "decision": "0002: pending user selection"
+  },
+  "artifacts_sha256": {
+    "work/ftpm-virt/Image": "ac24d392d257d2ed358c167d37871c3d1702d45d57c65c598d1b6d62a6b0a1ec",
+    "work/ftpm-virt/flash.bin": "8d43e5da630b1996cb39736b843572f532f694e181d5caffa3663ab8ad8881e4",
+    "work/optee-virt/core/tee-pager_v2.bin": "45cac6f8e825d63fbd3290174ce091f22ae8f9ba0a2fd46834f8dd82f73a9442",
+    "work/optee-virt/early_ta/ms-tpm/bc50d971-d4c9-42c4-82cb-343fb7f37896.stripped.elf": "22fc64f2b7067b01de76d5633f47d7acbf44d71a86d26f03755ee352e99d4ea2"
+  }
+}

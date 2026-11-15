@@ -28,6 +28,9 @@ trap cleanup EXIT
 cp "$repo/work/downloads/ubuntu-base-22.04.5-base-arm64.tar.gz" "$context/"
 cp "$repo/configs/rootfs/Dockerfile" "$context/"
 cp -a "$repo/configs/rootfs/overlay" "$context/overlay"
+if [[ ${FTPM_FUNCTIONAL_PROFILE:-0} == 1 ]]; then
+    cp -a "$repo/configs/rootfs/functional-overlay/." "$context/overlay/"
+fi
 mkdir -p "$context/optee/usr/local/sbin"
 cp "$repo/scripts/check-ftpm-guest.sh" "$context/optee/usr/local/sbin/"
 mkdir -p "$context/optee/usr/sbin" "$context/optee/usr/lib" "$context/optee/usr/lib/optee_armtz"
@@ -38,6 +41,9 @@ shopt -s nullglob
 libs=("$optee_install"/usr/lib/libteec.so*)
 ((${#libs[@]} > 0)) || { echo 'libteec.so is missing' >&2; exit 1; }
 cp -a "${libs[@]}" "$context/optee/usr/lib/"
+if [[ -n ${KERNEL_MODULES_DIR:-} ]]; then
+    cp -a "$KERNEL_MODULES_DIR/lib/modules" "$context/optee/usr/lib/"
+fi
 # fTPM and its helper are embedded Early TAs; no external fTPM TA is required.
 docker build --platform linux/arm64 --tag qemu-jetson-rootfs:jammy "$context"
 container_id=$(docker create --platform linux/arm64 qemu-jetson-rootfs:jammy)

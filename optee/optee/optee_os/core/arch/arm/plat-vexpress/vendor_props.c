@@ -4,6 +4,9 @@
  */
 
 #include <kernel/tee_common_otp.h>
+#ifdef CFG_QEMU_DEVICE_IDENTITY
+#include <kernel/huk_subkey.h>
+#endif
 #include <kernel/tee_ta_manager.h>
 #include <kernel/user_access.h>
 #include <tee/tee_cryp_utl.h>
@@ -47,8 +50,13 @@ static TEE_Result get_prop_endorsement(struct ts_session *sess,
 			       ta_endorsement_seed_size))
 		return TEE_ERROR_BAD_STATE;
 
+#ifdef CFG_QEMU_DEVICE_IDENTITY
+	res = huk_subkey_derive(HUK_SUBKEY_UNIQUE_TA, data, sizeof(data),
+				bin_val, ta_endorsement_seed_size);
+#else
 	res = tee_hash_createdigest(TEE_ALG_SHA256, data, sizeof(data),
 				    bin_val, ta_endorsement_seed_size);
+#endif
 	if (res != TEE_SUCCESS)
 		return TEE_ERROR_BAD_STATE;
 

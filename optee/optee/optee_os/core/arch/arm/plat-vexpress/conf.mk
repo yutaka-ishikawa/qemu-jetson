@@ -171,3 +171,6 @@ endif
 endif
 
 CFG_PKCS11_TA ?= y
+
+# Opt-in project functional profile; normal platform defaults are unchanged.
+CFG_QEMU_DEVICE_IDENTITY ?= n

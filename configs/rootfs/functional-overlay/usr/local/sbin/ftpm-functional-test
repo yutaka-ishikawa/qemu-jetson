@@ -1,0 +1,66 @@
+#!/usr/bin/env bash
+set -euo pipefail
+exec > >(tee /var/log/ftpm-functional-test.log) 2>&1
+trap 'echo "FTPM_TEST: FAIL line=$LINENO"; sync' ERR
+phase=
+for arg in $(cat /proc/cmdline); do
+    case "$arg" in ftpm.test=*) phase=${arg#*=};; esac
+done
+[[ $phase == first || $phase == second ]]
+echo "FTPM_TEST: START phase=$phase"
+modprobe tpm_ftpm_tee
+for ((i=0; i<60; i++)); do [[ -c /dev/tpmrm0 ]] && break; sleep 1; done
+[[ -c /dev/tpmrm0 ]]
+export TPM2TOOLS_TCTI=device:/dev/tpmrm0
+mkdir -p /var/lib/ftpm-functional
+cd /var/lib/ftpm-functional
+tpm2_getcap properties-fixed > properties.txt
+tpm2_getrandom 16 > random.bin
+[[ $(wc -c < random.bin) == 16 ]]
+if [[ $phase == first ]]; then
+    [[ ! -f first.done ]]
+    printf 'NV-persist-00001' > nv.expected
+    [[ $(wc -c < nv.expected) == 16 ]]
+    tpm2_nvdefine -C o -s 16 -a 'ownerread|ownerwrite' 0x01500016
+    tpm2_nvwrite -C o -i nv.expected 0x01500016
+    tpm2_nvread -C o -s 16 0x01500016 > nv.actual
+    cmp nv.expected nv.actual
+    echo 'FTPM_TEST: NV write/read PASS'
+
+    tpm2_createprimary -C o -G rsa -g sha256 -c primary.ctx
+    tpm2_evictcontrol -C o -c primary.ctx 0x81010011
+    tpm2_create -C 0x81010011 -G rsa -g sha256 \
+      -a 'sign|fixedtpm|fixedparent|sensitivedataorigin|userwithauth' \
+      -u sign.pub -r sign.priv
+    tpm2_load -C 0x81010011 -u sign.pub -r sign.priv -c sign.ctx
+    tpm2_evictcontrol -C o -c sign.ctx 0x81010010
+    tpm2_readpublic -c 0x81010010 -f pem -o sign.pem
+    printf 'sealed-data-for-qemu-ftpm' > sealed.expected
+    tpm2_create -C 0x81010011 -i sealed.expected -u sealed.pub -r sealed.priv
+
+    event=$(printf 'qemu-jetson-pcr-event' | sha256sum | cut -d' ' -f1)
+    expected=$({ dd if=/dev/zero bs=32 count=1 status=none; printf 'qemu-jetson-pcr-event' | openssl dgst -sha256 -binary; } | sha256sum | cut -d' ' -f1)
+    tpm2_pcrextend "16:sha256=$event"
+    tpm2_pcrread sha256:16 | grep -qi "$expected"
+    echo 'FTPM_TEST: PCR extend PASS'
+else
+    [[ -f first.done ]]
+    tpm2_nvread -C o -s 16 0x01500016 > nv.actual
+    cmp nv.expected nv.actual
+    tpm2_readpublic -c 0x81010010 -f pem -o sign-after.pem
+    cmp sign.pem sign-after.pem
+    tpm2_pcrread sha256:16 | grep -q '0x0000000000000000000000000000000000000000000000000000000000000000'
+    echo 'FTPM_TEST: reboot NV/key persistence and PCR reset PASS'
+fi
+openssl rand -out challenge.bin 32
+tpm2_sign -c 0x81010010 -g sha256 -f plain -o signature.bin challenge.bin
+openssl dgst -sha256 -verify sign.pem -signature signature.bin challenge.bin
+echo 'FTPM_TEST: RSA sign/verify PASS'
+tpm2_load -C 0x81010011 -u sealed.pub -r sealed.priv -c sealed.ctx
+tpm2_unseal -c sealed.ctx > sealed.actual
+cmp sealed.expected sealed.actual
+echo 'FTPM_TEST: seal/unseal PASS'
+touch "$phase.done"
+sync
+echo "FTPM_TEST: PASS phase=$phase"
+poweroff -f

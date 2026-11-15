@@ -36,3 +36,5 @@ Preserve original upstream documentation and licenses inside bundled source tree
 
 Present material design/compatibility alternatives to the user, then record the selected decision in both languages and push it.
 [Selected fTPM execution path](docs/en/decisions/0001-ftpm-execution-path.md).
+
+See the [functional profile](docs/en/ftpm-virt.md) for option-B build, boot, and persistence tests.

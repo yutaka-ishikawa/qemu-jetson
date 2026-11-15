@@ -1,0 +1,11 @@
+Selected actual boot log lines (not a full log; fTPM success is NOT claimed):
+[    0.000000] Linux version 5.15.199-tegra (buildbrain@2028b486-7cd5-47d1-a7b1-8c0183b08dcf-1nn8-hxql4) (aarch64-buildroot-linux-gnu-gcc.br_real (Buildroot 2022.08) 11.3.0, GNU ld (GNU Binutils) 2.38) #1 SMP PREEMPT Thu Jul 16 11:27:38 PDT 2026 ()
+[    1.038995] optee: initialized driver
+Welcome to Ubuntu 22.04.5 LTS!
+[  OK  ] Started OP-TEE supplicant …e udev probes the fTPM driver.
+[  OK  ] Reached target Multi-User System.
+Ubuntu 22.04.5 LTS localhost console
+E/LD:  init_elf:493 sys_open_ta_bin(6c879517-2dfc-4663-863d-4896e8ccbe3a)
+E/TC:? 0 ldelf_init_with_ldelf:152 ldelf failed with res: 0xffff0008
+E/LD:  init_elf:493 sys_open_ta_bin(6c879517-2dfc-4663-863d-4896e8ccbe3a)
+E/TC:? 0 ldelf_init_with_ldelf:152 ldelf failed with res: 0xffff0008
