@@ -1,0 +1,5 @@
+cffi==2.1.1
+cryptography==50.0.2
+pycparser==3.12
+pycryptodome==4.5.0
+pyelftools==0.33
