@@ -33,3 +33,6 @@ The Python dependency file is shared by both languages.
 Push changes directly to `main` without creating pull requests.
 
 Preserve original upstream documentation and licenses inside bundled source trees.
+
+Present material design/compatibility alternatives to the user, then record the selected decision in both languages and push it.
+[Selected fTPM execution path](docs/en/decisions/0001-ftpm-execution-path.md).
