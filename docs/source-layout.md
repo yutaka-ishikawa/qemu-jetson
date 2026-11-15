@@ -51,8 +51,8 @@ ninja -j2 qemu-system-aarch64
 ./qemu-system-aarch64 --version
 ```
 
-これはAArch64 system emulationの最小機能ビルド。まだ専用Jetsonマシンを追加していないため、
-このコマンドだけでNVIDIA版OP-TEEを起動できるわけではない。
+これはAArch64 system emulationの最小機能ビルド。まだ専用Jetsonマシンの起動手順は別途必要であり、
+このビルドだけではNVIDIA版OP-TEEの起動に必要なファームウェア等は揃わない。
 
 ## OP-TEEとLinux
 
@@ -88,7 +88,8 @@ Ubuntu 22.04のビルド用コンテナと、上記の最小機能構成を使�
 - プロセスが正常終了する。
 
 これは**QEMU本体の基準試験のみ**。ファームウェア、Linux、OP-TEE、TPMを起動していない。
-専用T234マシン、TCU、EL3起動コードは未実装。
+この基準試験時点では専用T234マシン、TCU、EL3起動コードは未実装だった。
+その後の実装と試験は[段階Aの記録](t234-stage-a.md)を参照。
 ソース取り込み時点のGitパックは手元で約387MiB。ビルド用には追加の空き容量が必要。
 この作業環境は約8GiBの上限があるため、検証済みrootfsの再生成可能なtarとDockerビルドキャッシュを整理した。
 ソース、Git履歴、OP-TEEの圧縮済みビルド基準資料は保持している。

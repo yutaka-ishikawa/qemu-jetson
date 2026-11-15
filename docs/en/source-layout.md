@@ -52,7 +52,7 @@ ninja -j2 qemu-system-aarch64
 ```
 
 This is a minimal-feature AArch64 system emulator build.
-The dedicated Jetson machine has not been added, so these commands alone do not boot NVIDIA's OP-TEE.
+These commands alone do not supply the firmware and inputs needed to boot NVIDIA's OP-TEE on the dedicated machine.
 
 ## OP-TEE and Linux
 
@@ -86,7 +86,8 @@ November 16, 2026 (Japan time): built the bundled QEMU 11.1.3 AArch64 system emu
 - Clean process exit.
 
 This is **only a QEMU baseline test**. No firmware, Linux, OP-TEE, or TPM was booted.
-The dedicated T234 machine, TCU, and EL3 boot code are not implemented yet.
+At the time of that baseline test, the dedicated T234 machine, TCU, and EL3 boot code were not implemented.
+See the subsequent [Stage A implementation and tests](t234-stage-a.md).
 The local Git pack after source import was approximately 387 MiB; builds need additional space.
 This environment has an approximately 8 GiB limit, so the reproducible validated rootfs tar and Docker build caches were cleaned up.
 Sources, Git history, and the compressed OP-TEE build baseline were preserved.

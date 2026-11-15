@@ -3,7 +3,8 @@
 [日本語](../qemu-boot-design.md) | English
 
 Investigation date: November 16, 2026 (Japan time). This is a design proposal based on source inspection.
-QEMU implementation, boot tests, and TPM execution tests have not been performed.
+At design time, QEMU implementation, boot tests, and TPM execution tests had not been performed.
+See the subsequent [Stage A implementation and test results](t234-stage-a.md).
 Mapping an address alone does not establish device behavior.
 
 ## Proposed approach
@@ -121,7 +122,7 @@ Before fTPM testing, verify consistency of EKB, storage keys, and Fuse SN.
 | D: basic fTPM | fTPM driver, tpm2-tools, virtual-device state persistence | Verify GetCapability, PCR operations, NV, keys, seal/unseal, and reuse after reboot |
 | E: device identity | Consistent Fuse/seed/EKB/EK certificates | Stable keys for one virtual device, isolation between devices, and defined clear/clone/snapshot behavior |
 
-**Stage A** is next. Start with one TCG CPU and verify Pointer Authentication support.
+Stage A implementation and tests are recorded in [t234-stage-a.md](t234-stage-a.md); Stage B is next. For the initial configuration, Start with one TCG CPU and verify Pointer Authentication support.
 Do not assume exact Cortex-A78AE or 12-core emulation.
 Stage A log output alone must not be reported as successful OP-TEE initialization or equivalent fTPM behavior.
 

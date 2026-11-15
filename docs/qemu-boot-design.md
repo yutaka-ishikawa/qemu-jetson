@@ -3,7 +3,8 @@
 日本語 | [English](en/qemu-boot-design.md)
 
 調査日：2026-11-16（日本時間）。ソース調査に基づく設計案。
-QEMUの実装、起動試験、TPM実行試験は未実施。アドレスのマッピングだけで
+設計策定時点ではQEMUの実装、起動試験、TPM実行試験は未実施だった。
+その後の段階Aの実装・試験結果は[t234-stage-a.md](t234-stage-a.md)を参照。アドレスのマッピングだけで
 デバイス動作が再現できるとは判断しない。
 
 ## 結論
@@ -127,7 +128,7 @@ fTPM機能試験へ進む際に、EKB・ストレージ鍵・Fuse SNとの整合
 | D：fTPM基本機能 | fTPM driver、tpm2-tools、仮想デバイス状態の保存 | GetCapability、PCR操作、NV、鍵、seal／unseal、再起動後の利用を確認 |
 | E：デバイス同一性 | Fuse／シード／EKB／EK証明書の整合 | 同じ仮想デバイスで鍵が安定し、別デバイスでは分離。クリア・複製・スナップショットの挙動を確認 |
 
-次に着手するのは**段階A**。CPUはまず1コアのTCGを使い、Pointer Authentication対応を確認する。
+段階Aの実装と試験は[t234-stage-a.md](t234-stage-a.md)に記録した。次は段階Bへ進む。初期構成として、CPUはまず1コアのTCGを使い、Pointer Authentication対応を確認する。
 実機のCortex-A78AEや12コア構成の完全再現を前提にしない。
 段階AのログだけをもってOP-TEE正常起動やfTPM同等性の達成とは報告しない。
 

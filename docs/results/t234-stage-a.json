@@ -1,0 +1,62 @@
+{
+  "date_jst": "2026-11-16",
+  "stage": "A",
+  "machine": "jetson-t234-dev",
+  "qemu_base": "11.1.3",
+  "nvidia_source_changes": false,
+  "tests": {
+    "selftest": {
+      "returncode": 0,
+      "timed_out": false,
+      "stop_reason": "process_exit",
+      "passed": true
+    },
+    "isolation": {
+      "returncode": 0,
+      "timed_out": false,
+      "stop_reason": "process_exit",
+      "passed": true
+    },
+    "reject_ram": {
+      "returncode": 1,
+      "timed_out": false,
+      "stop_reason": "process_exit",
+      "passed": true
+    },
+    "reject_smp": {
+      "returncode": 1,
+      "timed_out": false,
+      "stop_reason": "process_exit",
+      "passed": true
+    },
+    "optee_diagnostic": {
+      "returncode": 0,
+      "timed_out": false,
+      "stop_reason": "observed_data_abort",
+      "input_sha256": "96bcd44d8a4ceee39fa8a4ffd97b5bc0e193c6b3d5fc6cdc2208b806aeb9beb9",
+      "first_log_observed": true,
+      "data_abort_observed": true,
+      "panic_observed": false,
+      "monitor_stop_observed": false,
+      "diagnostic_observed": true,
+      "initialization_verified": false,
+      "tpm_verified": false
+    }
+  },
+  "fault": {
+    "esr_el1": "0x96000010",
+    "far_el1_virtual": "0x86210200",
+    "elr_el1": "0x8002e850",
+    "source_function": "fuse_generate_ecid",
+    "source_path": "optee/optee/optee_os/core/drivers/tegra/common/tegra_driver_fuse.c:30",
+    "physical_address_inferred_from_dt_and_driver": "0x03810200",
+    "register": "FUSE_OPT_VENDOR_CODE_0"
+  },
+  "other_observations": [
+    "TPM event-log node missing in the minimal test DT",
+    "stmm_sp_parse_dt initcall failed with the minimal test DT"
+  ],
+  "optee_initialization_verified": false,
+  "linux_boot_verified": false,
+  "tpm_verified": false
+}

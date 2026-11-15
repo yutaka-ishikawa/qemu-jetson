@@ -1,3 +1,8 @@
+config JETSON_T234_DEV
+    bool
+    default y
+    depends on AARCH64 && TCG
+
 config ARM_VIRT
     bool
     default y

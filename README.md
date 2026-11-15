@@ -7,6 +7,7 @@ NVIDIA版OP-TEE／fTPMを、ソース変更を極力抑えてQEMU上で動かす
 
 ## 設計と手順
 
+- [段階A：最初のOP-TEEログ](docs/t234-stage-a.md)
 - [同梱ソースとビルド構成](docs/source-layout.md)
 - [Ubuntu 22.04 ARM64 rootfs構築](docs/ubuntu-rootfs.md)
 - [要件と作業方針](docs/requirements.md)
@@ -18,7 +19,8 @@ NVIDIA版OP-TEE／fTPMを、ソース変更を極力抑えてQEMU上で動かす
 
 QEMUの実装基準は、2026-11-16確認時点の最新安定版 **11.1.3** です。
 NVIDIA版OP-TEE／fTPMのT234向け無変更ビルドは成功しています。
-QEMU側の実装と起動・TPM実行試験は未実施です。
+専用QEMUマシンで無変更OP-TEEの最初のログを確認しました。現在は未実装Fuseの読み取りで停止します。
+OP-TEE初期化完了、Linux起動、TPM機能は未検証です。
 
 ## ドキュメント方針
 

@@ -1,0 +1,29 @@
+// SPDX-License-Identifier: BSD-2-Clause
+/dts-v1/;
+/ {
+    #address-cells = <2>;
+    #size-cells = <2>;
+    compatible = "qemu,jetson-t234-dev";
+    memory@90000000 {
+        device_type = "memory";
+        reg = <0 0x90000000 0 0x08000000>;
+    };
+    efuse@3810000 {
+        compatible = "nvidia,tegra234-efuse";
+        reg = <0 0x03810000 0 0x600>;
+        status = "disabled";
+        secure-status = "okay";
+    };
+    se0@3b50000 {
+        compatible = "nvidia,tegra234-se0";
+        reg = <0 0x03b50000 0 0x30000>;
+        status = "disabled";
+        secure-status = "okay";
+    };
+    rng1@3b70000 {
+        compatible = "nvidia,tegra234-rng1";
+        reg = <0 0x03b70000 0 0x10000>;
+        status = "disabled";
+        secure-status = "okay";
+    };
+};

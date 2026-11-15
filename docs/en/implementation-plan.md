@@ -3,8 +3,8 @@
 [日本語](../implementation-plan.md) | English
 
 Created November 16, 2026 (Japan time). This is a procedure written before implementation.
-Completed work consists of an unmodified NVIDIA OP-TEE / fTPM build and dependency investigation.
-The QEMU machine model, boot firmware, and execution tests remain to be implemented.
+At planning time, completed work consisted of an unmodified NVIDIA OP-TEE / fTPM build and dependency investigation.
+This page records the pre-implementation plan. Stage A was subsequently implemented and tested; see the [results](t234-stage-a.md).
 
 ## 1. Baselines and boundaries
 
