@@ -2,7 +2,7 @@
 
 [日本語](../../decisions/0002-ftpm-helper-pta.md) | English
 
-Status: awaiting the user's decision. This does not reverse approved option B in decision 0001.
+Status: B2 approved by the user. This continues option B approved in decision 0001.
 
 ## Evidence
 
@@ -18,6 +18,7 @@ Keeping the TA unchanged requires a decision about the OP-TEE implementation sco
 | B2 | Port the complete NVIDIA helper PTA and its dependencies | Targets broader helper API compatibility | Depends on Tegra Fuse, key management and provisioning, increasing scope; physical SE key protection still requires separate work |
 
 B1 would report the actual REE state, following NVIDIA's implementation, rather than hardcode a ready response.
-Neither implementation starts before the user chooses.
+The user selected B2, emphasizing the importance of the PTA. Include the complete NVIDIA helper PTA and provide platform-side integration with QEMU virtual Fuse and provisioning data.
+Do not reduce the PTA command set to PING_NS. Record the choice of key/certificate test data separately.
 
 See the [service comparison](../optee-service-comparison.md) for the complete API list, Linux daemon distinctions, and REE-state dependencies.

@@ -36,7 +36,7 @@ flowchart LR
 ## Defined helper PTA APIs and the B1/B2 difference
 
 Every command below has the prefix `FTPM_HELPER_PTA_CMD_`.
-B1 and B2 are [pending alternatives](decisions/0002-ftpm-helper-pta.md), not completed implementations.
+[The user selected B2](decisions/0002-ftpm-helper-pta.md). The table preserves the alternatives and does not claim a completed port.
 For B2, inclusion in the port describes source/API scope, not guaranteed success or physical-device key protection.
 
 | Command (value) | NVIDIA implementation and dependencies | B1: minimal compatible PTA | B2: port the full NVIDIA PTA |

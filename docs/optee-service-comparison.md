@@ -36,7 +36,7 @@ flowchart LR
 ## helper PTAに定義されているAPIとB1・B2の違い
 
 コマンドの接頭辞はすべて`FTPM_HELPER_PTA_CMD_`。
-B1/B2は[判断待ちの候補](decisions/0002-ftpm-helper-pta.md)であり、いずれも実装済みではない。
+[ユーザーはB2を選択した](decisions/0002-ftpm-helper-pta.md)。以下は選択時の候補比較であり、移植完了を意味しない。
 B2の「移植対象」はソース/APIの対応範囲を意味し、全機能の成功や実機相当の鍵保護を保証しない。
 
 | コマンド（値） | NVIDIA実装の役割・依存 | B1：最小互換PTA | B2：NVIDIA PTA全体の移植 |
