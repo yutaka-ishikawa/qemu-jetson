@@ -2,7 +2,7 @@
 
 日本語 | [English](en/ftpm-virt.md)
 
-> 現在の状態：Linux・Ubuntu・TEE supplicantの起動を確認。fTPMコマンド試験は未完了。[B2の全PTA移植を選択済み](decisions/0002-ftpm-helper-pta.md)。[移植状況と追加手順](ftpm-helper-port.md)、[検証用の鍵・証明書の選択](decisions/0003-ftpm-provisioning-data.md)を参照。以下のテスト手順は準備段階であり、成功結果を表していない。
+> 現在の状態：B2のhelper PTA・fTPMコマンド・永続化・実際のEKに対応するテスト証明書の動作を確認済み。[実行結果と最新の再現手順](ftpm-functional-validation.md)を参照。
 
 
 [選択肢と採用理由](decisions/0001-ftpm-execution-path.md)。QEMUの`jetson-ftpm-virt`は既存の`virt`を継承する。

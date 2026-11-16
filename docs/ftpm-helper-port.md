@@ -67,12 +67,9 @@ DT自体に秘密データは埋め込まない。PTAは元のDT処理で内容�
 
 ## 検証状態
 
-NVIDIA helper PTA本体とhelper TA、fTPM TAを組み込むOP-TEEビルドに成功。
-データ形式の境界検査は9項目に合格。これは暗号学的な鍵・証明書の実行試験ではない。
-[鍵・証明書の検証データ](decisions/0003-ftpm-provisioning-data.md)は判断待ちであり、
-署名APIの成功、全PTA API、TPMコマンド、永続化の成功をまだ主張しない。
-`INJECT_EPS`は元のビルドオプションで無効のまま。API定義があることと有効化は別である。
+テストCAの生成をユーザーが承認し、NVIDIAの有効なhelper PTA API、署名の暗号学的検証、TPMコマンド、完全停止後のNV・鍵・sealed dataの保持を確認した。
+実際のfTPMのRSA/EC EK公開鍵に対応する証明書・CSRと、標準NV indexのEK証明書も検証済み。
+[最新の結果・再現手順](ftpm-functional-validation.md)と[機械可読結果](results/ftpm-functional.json)を参照。
+`INJECT_EPS`は元の設定どおり無効。Measured Bootも無効。実機SEの保護やメーカーCAの信頼を提供するものではない。
 
-[機械可読結果](results/ftpm-helper-b2.json)と[実際の起動ログ抜粋](results/ftpm-helper-b2-boot-excerpt.txt)を保存した。
-全PTAを含むOP-TEEがLinuxへ進むことを確認した。データ・root diskなしの診断起動であり、プロビジョニング不足の報告とroot device待ちは想定どおり。
-QEMUのビルドと既存virtの回帰検査にも合格。鍵データを投入した動作やリセット時のデータ再配置は未検証。
+[初期のデータなし起動結果](results/ftpm-helper-b2.json)と[そのログ](results/ftpm-helper-b2-boot-excerpt.txt)は開発履歴として保持する。

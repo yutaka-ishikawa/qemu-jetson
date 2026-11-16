@@ -1,0 +1,26 @@
+#!/usr/bin/env bash
+set -euo pipefail
+mkdir -p /var/lib/ftpm-functional/pta
+cd /var/lib/ftpm-functional/pta
+ftpm-helper-probe
+fixtures=/usr/share/qemu-ftpm-test
+cmp sn.bin "$fixtures/sn.bin"
+cmp ecid.bin "$fixtures/ecid.bin"
+for pair in 'rsa-cert.der fixture_rsa-cert.der' 'ec-cert.der fixture_ec-cert.der' 'sid-cert.der sid-cert.der' 'fw-cert.der firmware_id-cert.der' 'rsa-csr.der fixture_rsa-csr.der' 'ec-csr.der fixture_ec-csr.der'; do
+    read -r actual expected <<< "$pair"
+    cmp "$actual" "$fixtures/$expected"
+done
+for cert in rsa-cert.der ec-cert.der sid-cert.der fw-cert.der; do
+    openssl x509 -inform DER -in "$cert" -out "$cert.pem"
+    openssl verify -attime "$(cat "$fixtures/validation-epoch.txt")" -CAfile "$fixtures/ca-cert.pem" "$cert.pem"
+done
+openssl x509 -in fw-cert.der.pem -pubkey -noout > fw-public.pem
+openssl pkeyutl -verify -pubin -inkey fw-public.pem -pkeyopt digest:sha256 -in signed-digest.bin -sigfile signature.der
+for kind in rsa ec; do
+    if [[ -f "$fixtures/fixture_$kind-csr-tbs.der" ]]; then
+        openssl dgst -sha256 -verify fw-public.pem -signature "$fixtures/fixture_$kind-csr-signature.der" "$fixtures/fixture_$kind-csr-tbs.der"
+    else
+        openssl req -inform DER -in "$kind-csr.der" -verify -noout
+    fi
+done
+echo 'PTA_TEST: certificates/CSR match, CA chains, Firmware ID signature PASS'

@@ -8,7 +8,7 @@ ADD ubuntu-base-22.04.5-base-arm64.tar.gz /target/
 COPY optee/ /target/
 COPY overlay/ /target/
 RUN cp /etc/resolv.conf /target/etc/resolv.conf \
-    && proot -0 -q /usr/bin/qemu-aarch64-static -R /target /bin/sh -ec '\
+    && proot -0 -q /usr/bin/qemu-aarch64-static -R /target -b /target/etc/passwd:/etc/passwd -b /target/etc/group:/etc/group /bin/sh -ec '\
     export DEBIAN_FRONTEND=noninteractive; \
     apt-get -o APT::Sandbox::User=root update; \
     apt-get -o APT::Sandbox::User=root install -y --no-install-recommends \

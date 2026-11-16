@@ -16,7 +16,7 @@ commands = [
     {'execute': 'quit', 'id': 'quit'},
 ]
 result = subprocess.run(
-    [str(args.qemu.resolve()), '-machine', 'virt,secure=on', '-accel', 'tcg',
+    [str(args.qemu.resolve()), '-L', str(Path(__file__).resolve().parents[1] / 'qemu/pc-bios'), '-machine', 'virt,secure=on', '-accel', 'tcg',
      '-cpu', 'max', '-smp', '1', '-m', '128M', '-display', 'none',
      '-serial', 'none', '-monitor', 'none', '-S', '-qmp', 'stdio'],
     input=''.join(json.dumps(c) + '\n' for c in commands),

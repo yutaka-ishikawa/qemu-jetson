@@ -12,11 +12,11 @@ OP-TEE OSのカーネル内に登録されるPseudo Trusted Applicationである
 | 部品 | 実行場所・種別 | 提供するもの | 現在のB案 |
 | --- | --- | --- | --- |
 | `tee-supplicant` | 通常世界のLinuxプロセス。常駐デーモン | OP-TEEからのRPC。外部TAロード、REEファイル操作、共有メモリ割当・解放、RPMBなど | NVIDIA版クライアントを配置し、起動を確認済み |
-| `nvftpm-helper-app` | 通常世界のLinuxコマンドラインツール（CA）。常駐デーモンではない | helper TAを呼び、製造・プロビジョニング関連の問い合わせや操作を行う | 配置済み。呼出先のTA/PTAを含む動作は未確認 |
-| fTPM helper TA | セキュア世界、OP-TEEユーザー空間のTA。UUID `a6a3a74a-77cb-433a-990c-1dfb8a3fbc4c` | LinuxのCAとhelper PTAの仲介、CSR処理など | B2用Early TAへの組み込みビルドに成功。管理操作の実行は未確認 |
-| fTPM helper PTA | セキュア世界、OP-TEEカーネル内のPTA。UUID `6c879517-2dfc-4663-863d-4896e8ccbe3a` | 通常世界の準備状態、SN/ECID、証明書・プロビジョニング関連API | B2で全PTAの組み込み・初期化経路を確認。プロビジョニングデータを用いるAPI試験は未完了 |
-| fTPM TA | セキュア世界、OP-TEEユーザー空間のTA。UUID `bc50d971-d4c9-42c4-82cb-343fb7f37896` | TPM 2.0コマンドの実装 | ソース無変更でビルドしEarly TAに埋め込み。コマンド試験は未完了 |
-| `tpm_ftpm_tee` | 通常世界のLinuxカーネルドライバ | Linux TPMサブシステムとfTPM TAの接続 | NVIDIA配布モジュールを使用。正常動作は未確認 |
+| `nvftpm-helper-app` | 通常世界のLinuxコマンドラインツール（CA）。常駐デーモンではない | helper TAを呼び、製造・プロビジョニング関連の問い合わせや操作を行う | 配置済み。試験では別のrelayクライアントで実PTA APIを検証 |
+| fTPM helper TA | セキュア世界、OP-TEEユーザー空間のTA。UUID `a6a3a74a-77cb-433a-990c-1dfb8a3fbc4c` | LinuxのCAとhelper PTAの仲介、CSR処理など | B2用Early TAとして組み込み済み。API試験はrelay TAで実施 |
+| fTPM helper PTA | セキュア世界、OP-TEEカーネル内のPTA。UUID `6c879517-2dfc-4663-863d-4896e8ccbe3a` | 通常世界の準備状態、SN/ECID、証明書・プロビジョニング関連API | B2で全PTAを組み込み。有効なAPI・署名・証明書をテストデータで検証済み |
+| fTPM TA | セキュア世界、OP-TEEユーザー空間のTA。UUID `bc50d971-d4c9-42c4-82cb-343fb7f37896` | TPM 2.0コマンドの実装 | ソース無変更のEarly TA。コマンド・完全停止後の永続化を検証済み |
+| `tpm_ftpm_tee` | 通常世界のLinuxカーネルドライバ | Linux TPMサブシステムとfTPM TAの接続 | NVIDIA配布モジュールでTPMコマンド試験に成功 |
 
 PTAのopen-session実装は、呼び出し元がユーザーTAであることを検査する。
 Linuxからhelper PTAを直接呼ぶ構成ではなく、管理操作はhelper TAを経由する。
@@ -86,8 +86,8 @@ REE状態の流れは次のとおり。
 | ユニット | 出自と役割 | 現状 |
 | --- | --- | --- |
 | `jetson-tee-supplicant.service` | 本プロジェクトが定義。NVIDIA版`tee-supplicant`を常駐させる | 機能検証プロファイルではudev coldplugより前に起動し、RPC待ちとの循環を避ける |
-| `ftpm-functional-test.service` | 本プロジェクトが定義。TPMコマンド・永続化試験 | テスト用。成功未確認 |
-| `systemd-sysusers.service` / `systemd-resolved.service` | Ubuntuのユーザー作成／名前解決サービス | 起動失敗が残る。helper PTAとは別の問題で、原因は未確定 |
+| `ftpm-functional-test.service` | 本プロジェクトが定義。TPMコマンド・永続化試験 | テスト用。初回・再起動後とも成功 |
+| `systemd-sysusers.service` / `systemd-resolved.service` | Ubuntuのユーザー作成／名前解決サービス | rootfsのPRoot passwd/group bindを修正し、正常起動を確認済み |
 
 `nvftpm-helper-app`やPTAを起動する独立したsystemdデーモンは、この構成では定義していない。
 
@@ -101,3 +101,5 @@ REE状態の流れは次のとおり。
 - [Linuxのsupplicant接続時処理](../kernel/kernel/kernel-jammy-src/drivers/tee/optee/core.c)
 - [supplicant RPCディスパッチ](../optee/optee/optee_client/tee-supplicant/src/tee_supplicant.c)
 - [NVIDIAビルド設定](../optee/optee_src_build.sh)、[現在のQEMU用ビルド](../scripts/build-ftpm-virt-firmware.sh)
+
+[最新の実行結果と検証範囲](ftpm-functional-validation.md)を参照。

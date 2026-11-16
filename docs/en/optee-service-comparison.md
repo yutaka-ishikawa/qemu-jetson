@@ -12,11 +12,11 @@ The earlier description as an auxiliary service did not make this distinction cl
 | Component | Location and type | Services | Current option-B profile |
 | --- | --- | --- | --- |
 | `tee-supplicant` | Normal-world Linux process; resident daemon | OP-TEE RPC handling: external TA loading, REE filesystem operations, shared-memory allocation/free, RPMB and others | NVIDIA client installed; daemon startup verified |
-| `nvftpm-helper-app` | Normal-world Linux command-line client application (CA); not a resident daemon | Invokes the helper TA for manufacturing/provisioning queries and operations | Installed; operation with its target TA/PTA is unverified |
-| fTPM helper TA | Secure-world OP-TEE user-mode TA; UUID `a6a3a74a-77cb-433a-990c-1dfb8a3fbc4c` | Bridges the Linux CA to the helper PTA; includes CSR processing | B2 Early TA integration build succeeded; management operations unverified |
-| fTPM helper PTA | Secure-world OP-TEE kernel PTA; UUID `6c879517-2dfc-4663-863d-4896e8ccbe3a` | Normal-world readiness, SN/ECID, certificate and provisioning APIs | B2 includes the full PTA and its initialization path; provisioned API execution tests incomplete |
-| fTPM TA | Secure-world OP-TEE user-mode TA; UUID `bc50d971-d4c9-42c4-82cb-343fb7f37896` | TPM 2.0 command implementation | Built from unchanged source and embedded as an Early TA; command tests incomplete |
-| `tpm_ftpm_tee` | Normal-world Linux kernel driver | Connects the Linux TPM subsystem to the fTPM TA | Uses NVIDIA's distributed module; successful operation unverified |
+| `nvftpm-helper-app` | Normal-world Linux command-line client application (CA); not a resident daemon | Invokes the helper TA for manufacturing/provisioning queries and operations | Installed; actual PTA APIs tested through a separate relay client |
+| fTPM helper TA | Secure-world OP-TEE user-mode TA; UUID `a6a3a74a-77cb-433a-990c-1dfb8a3fbc4c` | Bridges the Linux CA to the helper PTA; includes CSR processing | Embedded as a B2 Early TA; API tests use a relay TA |
+| fTPM helper PTA | Secure-world OP-TEE kernel PTA; UUID `6c879517-2dfc-4663-863d-4896e8ccbe3a` | Normal-world readiness, SN/ECID, certificate and provisioning APIs | B2 includes the complete PTA; enabled APIs, signing and certificates verified using test data |
+| fTPM TA | Secure-world OP-TEE user-mode TA; UUID `bc50d971-d4c9-42c4-82cb-343fb7f37896` | TPM 2.0 command implementation | Unchanged Early TA; command execution and cold-boot persistence verified |
+| `tpm_ftpm_tee` | Normal-world Linux kernel driver | Connects the Linux TPM subsystem to the fTPM TA | NVIDIA distributed module passed TPM command tests |
 
 The helper PTA's open-session implementation checks that its caller is a user TA.
 Linux management operations use the helper TA rather than calling the PTA directly.
@@ -86,8 +86,8 @@ This records an OP-TEE enumeration stage; it does not check the health of all Li
 | Unit | Origin and purpose | Current state |
 | --- | --- | --- |
 | `jetson-tee-supplicant.service` | Defined by this project to run NVIDIA's tee-supplicant | The functional profile starts it before udev coldplug to avoid a circular RPC wait |
-| `ftpm-functional-test.service` | Defined by this project for TPM command/persistence tests | Test-only; successful completion unverified |
-| `systemd-sysusers.service` / `systemd-resolved.service` | Ubuntu user creation and name resolution services | Failures remain; separate from the helper PTA issue, with causes not yet determined |
+| `ftpm-functional-test.service` | Defined by this project for TPM command/persistence tests | Test-only; initial and reboot phases passed |
+| `systemd-sysusers.service` / `systemd-resolved.service` | Ubuntu user creation and name resolution services | PRoot passwd/group binding fixed in rootfs; successful startup verified |
 
 This configuration defines no separate systemd daemon for nvftpm-helper-app or the PTA.
 
@@ -101,3 +101,5 @@ This configuration defines no separate systemd daemon for nvftpm-helper-app or t
 - [Linux supplicant connection](../../kernel/kernel/kernel-jammy-src/drivers/tee/optee/core.c)
 - [Supplicant RPC dispatch](../../optee/optee/optee_client/tee-supplicant/src/tee_supplicant.c)
 - [NVIDIA build settings](../../optee/optee_src_build.sh), [current QEMU build](../../scripts/build-ftpm-virt-firmware.sh)
+
+See [current results and coverage](ftpm-functional-validation.md).

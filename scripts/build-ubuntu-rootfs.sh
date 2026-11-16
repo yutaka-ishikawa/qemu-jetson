@@ -44,6 +44,10 @@ cp -a "${libs[@]}" "$context/optee/usr/lib/"
 if [[ -n ${KERNEL_MODULES_DIR:-} ]]; then
     cp -a "$KERNEL_MODULES_DIR/lib/modules" "$context/optee/usr/lib/"
 fi
+# Overlay directories must remain searchable by ordinary guest users.
+for tree in "$context/overlay" "$context/optee"; do
+    find "$tree" -type d -exec chmod 0755 {} +
+done
 # fTPM and its helper are embedded Early TAs; no external fTPM TA is required.
 docker build --platform linux/arm64 --tag qemu-jetson-rootfs:jammy "$context"
 container_id=$(docker create --platform linux/arm64 qemu-jetson-rootfs:jammy)

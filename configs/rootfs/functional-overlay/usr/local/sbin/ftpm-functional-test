@@ -2,7 +2,7 @@
 set -euo pipefail
 exec > >(tee /var/log/ftpm-functional-test.log) 2>&1
 trap 'echo "FTPM_TEST: FAIL line=$LINENO"; sync' ERR
-phase=
+phase=${1:-}
 for arg in $(cat /proc/cmdline); do
     case "$arg" in ftpm.test=*) phase=${arg#*=};; esac
 done
@@ -11,6 +11,7 @@ echo "FTPM_TEST: START phase=$phase"
 modprobe tpm_ftpm_tee
 for ((i=0; i<60; i++)); do [[ -c /dev/tpmrm0 ]] && break; sleep 1; done
 [[ -c /dev/tpmrm0 ]]
+/usr/local/sbin/ftpm-pta-test
 export TPM2TOOLS_TCTI=device:/dev/tpmrm0
 mkdir -p /var/lib/ftpm-functional
 cd /var/lib/ftpm-functional
@@ -63,4 +64,4 @@ echo 'FTPM_TEST: seal/unseal PASS'
 touch "$phase.done"
 sync
 echo "FTPM_TEST: PASS phase=$phase"
-poweroff -f
+if [[ ${FTPM_TEST_NO_POWEROFF:-0} != 1 ]]; then poweroff -f; fi

@@ -1,0 +1,46 @@
+{
+  "profile": "jetson-ftpm-virt B2",
+  "status": "PASS",
+  "trust": "QEMU-only test CA; no NVIDIA manufacturing trust",
+  "checks": [
+    "full NVIDIA helper PTA readiness, SN, ECID, provisioning mode 2.0",
+    "RSA/EC EK certificates, SID/Firmware ID certificates, RSA/EC CSRs",
+    "SIGN_EK_CSR verified with Firmware ID public key",
+    "invalid signing parameters and disabled INJECT_EPS rejected",
+    "TPM GetCapability and 16-byte GetRandom",
+    "NV write/read",
+    "PCR extend",
+    "RSA signing verified with OpenSSL",
+    "seal/unseal",
+    "cold-boot NV, persistent signing key, sealed-object persistence and PCR reset",
+    "actual RSA/EC EK public keys stable across independent QEMU processes",
+    "test-CA EK certificates and Firmware-ID-signed CSR public keys match actual EKs",
+    "standard TCG EK certificate NV indices written, read back and retained across cold boot"
+  ],
+  "public_ek_spki_sha256": {
+    "rsa": "dc2236733404a861278e6404f3bd77d9732b214250168de46f1232968f3b145e",
+    "ecc": "4e9261843448a5e04e8219be8ffad9f3622eb4105485e7d0bcb0e0d8397143b0"
+  },
+  "unchanged_nvidia_source_sha256": {
+    "optee/optee/optee_os/core/pta/tegra/jetson_ftpm_helper_pta.c": "6b3ba20ecb2a5b50c37283b5386d19170468ff810ff059f4eaedfa47bcfe2991",
+    "optee/optee/samples/ftpm-helper/ta/ftpm_helper_ta.c": "2f212d4e8f73032962b497781cd61533a0e31a426b1eeb6082cee6a210031411",
+    "optee/optee/samples/ms-tpm-20-ref/Samples/ARM32-FirmwareTPM/optee_ta/fTPM/fTPM.c": "37b3cbf5bd9af6bebad1d0f0d926eab77b4d6d034ea6aed400920c3701bb3f52"
+  },
+  "rootfs_account_fix": "PASS: sysusers/resolved start; fTPM and bound EK checks pass on preserved disk",
+  "log_sha256": {
+    "first": "9028fcd1f66906058846f0ef26d9eb2bde6f306664130a221549354e2a5c56f1",
+    "second": "08a95ab69a61e9b47db265b22b0f38b333a11145e1618c81b674fcf2b94ad279",
+    "export": "dbcbf0081790ddf68b457f7e442a4aa653d82f3a64818069c7db153b99553463",
+    "bound": "07899380a54b8b21b9789d2a51b15b740eec6cf57df3d24a0eb257c2dc583ee0",
+    "bound-reboot": "c8fb2dba072b8daab869e95cbea6f3283e960e4f7d1feca6d3cac8b459f0a2d4",
+    "accounts-fixed": "167c114d48b69ddcd6c4c936ab9c57dc781f808fbf2ebe23b4fa3a9751bce649"
+  },
+  "limitations": [
+    "software emulation; host administrator can read secrets",
+    "no SE hardware protection or REE filesystem rollback protection",
+    "Measured Boot disabled",
+    "INJECT_EPS disabled",
+    "initial API fixtures were not real EKs; bound boot validates actual EK certificates",
+    "test coverage is not exhaustive for every TPM command or OS service"
+  ]
+}

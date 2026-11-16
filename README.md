@@ -22,7 +22,8 @@ QEMUの実装基準は、2026-11-16確認時点の最新安定版 **11.1.3** で
 NVIDIA版OP-TEE／fTPMのT234向け無変更ビルドは成功しています。
 専用QEMUマシンで無変更OP-TEEの最初のログを確認し、読み取り専用Fuseモデルを追加しました。
 現在はFuse初期化を通過し、未実装SE0の設定関数で停止します。
-OP-TEE初期化完了、Linux起動、TPM機能は未検証です。
+T234専用構成のSE0再現は未完了です。別のB2機能検証構成では、NVIDIA helper PTA・fTPM TA、Ubuntu 22.04 ARM64を起動し、TPMコマンド・永続化・実際のEKに対応するテスト証明書を検証済みです。
+[実行結果と再現手順](docs/ftpm-functional-validation.md)を参照してください。
 
 ## ドキュメント方針
 

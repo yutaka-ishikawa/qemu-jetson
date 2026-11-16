@@ -2,7 +2,7 @@
 
 [日本語](../ftpm-virt.md) | English
 
-> Current status: Linux, Ubuntu and tee-supplicant boot verified. fTPM command tests are incomplete. [B2, the complete PTA port, is approved](decisions/0002-ftpm-helper-pta.md). See [port status and extra steps](ftpm-helper-port.md) and the pending [key/certificate data choice](decisions/0003-ftpm-provisioning-data.md). The test procedure below is prepared, not a record of successful tests.
+> Current status: B2 helper PTA APIs, fTPM commands, persistence and test certificates bound to actual EKs verified. See [results and current reproduction steps](ftpm-functional-validation.md).
 
 
 See [alternatives and decision](decisions/0001-ftpm-execution-path.md). The QEMU `jetson-ftpm-virt` machine derives from `virt`.

@@ -1,0 +1,40 @@
+#!/usr/bin/env bash
+set -euo pipefail
+trap 'echo "EK_TEST: FAIL line=$LINENO"; sync' ERR
+export TPM2TOOLS_TCTI=device:/dev/tpmrm0
+journalctl -b -u systemd-sysusers.service -u systemd-resolved.service --no-pager -n 15 || true
+modprobe tpm_ftpm_tee
+mkdir -p /var/lib/ftpm-functional/ek
+cd /var/lib/ftpm-functional/ek
+for kind in rsa ecc; do
+    tpm2_createek -G "$kind" -c "$kind.ctx" -u "$kind.pub"
+    tpm2_readpublic -c "$kind.ctx" -f pem -o "$kind.pem"
+    tpm2_flushcontext -t
+    echo "EK_EXPORT: $kind $(base64 -w0 "$kind.pem")"
+done
+if grep -q 'ftpm.identity_test=bound' /proc/cmdline; then
+    /usr/local/sbin/ftpm-pta-test
+    for pair in 'rsa rsa-cert.der' 'ecc ec-cert.der'; do
+        read -r kind cert <<< "$pair"
+        openssl x509 -inform DER -in "/var/lib/ftpm-functional/pta/$cert" -pubkey -noout > "$kind.cert-public.pem"
+        cmp "$kind.pem" "$kind.cert-public.pem"
+    done
+    echo 'EK_TEST: actual RSA/EC EK keys match PTA certificates PASS'
+    # Match NVIDIA's provisioning script's standard TCG EK certificate NV layout.
+    for pair in '0x01c00002 rsa-cert.der' '0x01c0000a ec-cert.der'; do
+        read -r index cert <<< "$pair"
+        certpath="/var/lib/ftpm-functional/pta/$cert"
+        if ! tpm2_nvreadpublic "$index" >/dev/null 2>&1; then
+            tpm2_nvdefine "$index" -C p -s "$(wc -c < "$certpath")" -a 'ppwrite|writedefine|ppread|ownerread|authread|no_da|platformcreate'
+            tpm2_nvwrite "$index" -C p -i "$certpath"
+        fi
+        tpm2_nvread "$index" -C o > "$cert.nv"
+        cmp "$certpath" "$cert.nv"
+    done
+    echo 'EK_TEST: standard RSA/EC EK certificate NV indices PASS'
+    # Also verify the previously created NV, signing key and sealed object.
+    FTPM_TEST_NO_POWEROFF=1 /usr/local/sbin/ftpm-functional-test second
+fi
+sync
+echo 'EK_TEST: PASS'
+poweroff -f

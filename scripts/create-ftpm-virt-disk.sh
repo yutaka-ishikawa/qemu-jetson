@@ -11,6 +11,14 @@ docker run --rm -v "$repo:/src" ubuntu:22.04 sh -ec '
     root=$(mktemp -d /src/work/ftpm-virt/root.XXXXXX)
     trap '\''rm -rf "$root"'\'' EXIT
     tar --numeric-owner -xpf /src/work/ftpm-virt/rootfs.tar -C "$root"
+    rm -f "$root/.dockerenv"
+    chmod 0755 "$root" "$root/usr/lib" "$root/usr/sbin" "$root/usr/lib/optee_armtz"
+    for overlay in /src/configs/rootfs/overlay /src/configs/rootfs/functional-overlay; do
+        find "$overlay" -type d | while IFS= read -r dir; do
+            relative=${dir#"$overlay"}
+            if [ -d "$root$relative" ]; then chmod 0755 "$root$relative"; fi
+        done
+    done
     truncate -s 768M /src/work/ftpm-virt/rootfs.ext4.part
     mkfs.ext4 -q -F -d "$root" /src/work/ftpm-virt/rootfs.ext4.part
     mv /src/work/ftpm-virt/rootfs.ext4.part /src/work/ftpm-virt/rootfs.ext4

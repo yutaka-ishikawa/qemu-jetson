@@ -67,12 +67,9 @@ It contains no secret bytes. The original PTA's DT handling copies and erases th
 
 ## Validation status
 
-The OP-TEE build including NVIDIA's helper PTA, helper TA, and fTPM TA succeeded.
-Nine handoff-format bounds tests passed; these are not cryptographic key/certificate execution tests.
-The [source of key/certificate test data](decisions/0003-ftpm-provisioning-data.md) awaits the user.
-Successful signing, all PTA APIs, TPM commands, and persistence are not yet claimed.
-`INJECT_EPS` remains disabled by its original build option; an API definition does not imply it is enabled.
+The user approved generated test credentials. NVIDIA's enabled helper PTA APIs, cryptographic signature verification, TPM commands, and NV/key/sealed-data persistence across complete QEMU shutdown were verified.
+Certificates/CSRs match the actual RSA/EC EK public keys, and standard EK certificate NV indices were tested.
+See [current results and reproduction](ftpm-functional-validation.md) and the [machine-readable result](../results/ftpm-functional.json).
+INJECT_EPS remains disabled, as does Measured Boot. This provides neither physical SE protection nor manufacturer CA trust.
 
-The [machine-readable result](../results/ftpm-helper-b2.json) and [actual boot excerpt](../results/ftpm-helper-b2-boot-excerpt.txt) are preserved.
-OP-TEE with the full PTA reaches Linux. This diagnostic boot intentionally has no provisioning data or root disk; missing-provisioning diagnostics and a root-device wait are expected.
-QEMU build and the existing virt regression check passed. Provisioned execution and reset-time data restoration remain unverified.
+The [initial no-provision result](../results/ftpm-helper-b2.json) and [its log](../results/ftpm-helper-b2-boot-excerpt.txt) remain as development history.

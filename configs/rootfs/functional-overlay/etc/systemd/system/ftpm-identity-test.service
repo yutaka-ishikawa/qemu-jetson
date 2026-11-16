@@ -1,0 +1,16 @@
+[Unit]
+Description=QEMU fTPM EK public-key export and certificate binding test
+After=jetson-tee-supplicant.service
+Requires=jetson-tee-supplicant.service
+ConditionKernelCommandLine=|ftpm.identity_test=export
+ConditionKernelCommandLine=|ftpm.identity_test=bound
+
+[Service]
+Type=oneshot
+ExecStart=/usr/local/sbin/ftpm-identity-test
+TimeoutStartSec=300
+StandardOutput=journal+console
+StandardError=journal+console
+
+[Install]
+WantedBy=multi-user.target
