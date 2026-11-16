@@ -42,3 +42,80 @@ original SHA-256: 10bc623f1c6c5ff414e3c506016369f4595d296e8f1752ecb9a5aef839ccdc
 3914738 17:28:09.017583 --- SIGCHLD {si_signo=SIGCHLD, si_code=CLD_STOPPED, si_pid=3914739, si_uid=1001, si_status=SIGTTOU, si_utime=0, si_stime=0} ---
 3914738 17:28:09.017610 --- SIGTTOU {si_signo=SIGTTOU, si_code=SI_KERNEL} ---
 
+
+=== user-bound ===
+original SHA-256: b1c5671af62c3efac70ccd181db8ba1aa580162041cf1426e29b914000bd31f3
+[    0.000000] Kernel command line: console=ttyAMA0,115200 earlycon root=/dev/vda rw rootwait panic=5 lsm=lockdown,yama,integrity,apparmor,bpf systemd.log_target=console ftpm.identity_test=bound
+[   38.165529] ftpm-identity-test[197]: PTA_TEST: PING_NS READY PASS
+[   38.167824] ftpm-identity-test[197]: PTA_TEST: online mode / version 2.0 PASS
+[   38.175288] ftpm-identity-test[197]: PTA_TEST: API sn.bin PASS
+[   38.177309] ftpm-identity-test[197]: PTA_TEST: API ecid.bin PASS
+[   38.178917] ftpm-identity-test[197]: PTA_TEST: API rsa-cert.der PASS
+[   38.184005] ftpm-identity-test[197]: PTA_TEST: API ec-cert.der PASS
+[   38.190406] ftpm-identity-test[197]: PTA_TEST: API sid-cert.der PASS
+[   38.192553] ftpm-identity-test[197]: PTA_TEST: API fw-cert.der PASS
+[   38.197936] ftpm-identity-test[197]: PTA_TEST: API rsa-csr.der PASS
+[   38.199544] ftpm-identity-test[197]: PTA_TEST: API ec-csr.der PASS
+[   38.205608] ftpm-identity-test[197]: PTA_TEST: SIGN_EK_CSR raw signature received PASS
+[   38.207242] ftpm-identity-test[197]: PTA_TEST: invalid parameters and disabled INJECT_EPS rejected PASS
+[   39.735381] ftpm-identity-test[195]: PTA_TEST: certificates/CSR match, CA chains, Firmware ID signature PASS
+[   39.962218] ftpm-identity-test[171]: EK_TEST: actual RSA/EC EK keys match PTA certificates PASS
+[   42.073468] ftpm-identity-test[171]: EK_TEST: standard RSA/EC EK certificate NV indices PASS
+[   42.239879] ftpm-identity-test[243]: FTPM_TEST: START phase=second
+[   42.899151] ftpm-identity-test[243]: PTA_TEST: PING_NS READY PASS
+[   42.901651] ftpm-identity-test[243]: PTA_TEST: online mode / version 2.0 PASS
+[   42.903216] ftpm-identity-test[243]: PTA_TEST: API sn.bin PASS
+[   42.913239] ftpm-identity-test[243]: PTA_TEST: API ecid.bin PASS
+[   42.914761] ftpm-identity-test[243]: PTA_TEST: API rsa-cert.der PASS
+[   42.920728] ftpm-identity-test[243]: PTA_TEST: API ec-cert.der PASS
+[   42.922283] ftpm-identity-test[243]: PTA_TEST: API sid-cert.der PASS
+[   42.923730] ftpm-identity-test[243]: PTA_TEST: API fw-cert.der PASS
+[   42.929906] ftpm-identity-test[243]: PTA_TEST: API rsa-csr.der PASS
+[   42.931406] ftpm-identity-test[243]: PTA_TEST: API ec-csr.der PASS
+[   42.933132] ftpm-identity-test[243]: PTA_TEST: SIGN_EK_CSR raw signature received PASS
+[   42.934610] ftpm-identity-test[243]: PTA_TEST: invalid parameters and disabled INJECT_EPS rejected PASS
+[   44.208726] ftpm-identity-test[243]: PTA_TEST: certificates/CSR match, CA chains, Firmware ID signature PASS
+[   45.332884] ftpm-identity-test[243]: FTPM_TEST: reboot NV/key persistence and PCR reset PASS
+[   45.782415] ftpm-identity-test[243]: FTPM_TEST: RSA sign/verify PASS
+[   46.231749] ftpm-identity-test[243]: FTPM_TEST: seal/unseal PASS
+[   46.333411] ftpm-identity-test[243]: FTPM_TEST: PASS phase=second
+[   46.412861] ftpm-identity-test[171]: EK_TEST: PASS
+
+=== user-bound-reboot ===
+original SHA-256: cb62ed195023f8fc58b35993f113ea2aa2b437fca7babe9c36617232da58bfad
+[    0.000000] Kernel command line: console=ttyAMA0,115200 earlycon root=/dev/vda rw rootwait panic=5 lsm=lockdown,yama,integrity,apparmor,bpf systemd.log_target=console ftpm.identity_test=bound
+[   38.082513] ftpm-identity-test[198]: PTA_TEST: PING_NS READY PASS
+[   38.086931] ftpm-identity-test[198]: PTA_TEST: online mode / version 2.0 PASS
+[   38.094534] ftpm-identity-test[198]: PTA_TEST: API sn.bin PASS
+[   38.098177] ftpm-identity-test[198]: PTA_TEST: API ecid.bin PASS
+[   38.101796] ftpm-identity-test[198]: PTA_TEST: API rsa-cert.der PASS
+[   38.103684] ftpm-identity-test[198]: PTA_TEST: API ec-cert.der PASS
+[   38.109829] ftpm-identity-test[198]: PTA_TEST: API sid-cert.der PASS
+[   38.111654] ftpm-identity-test[198]: PTA_TEST: API fw-cert.der PASS
+[   38.117774] ftpm-identity-test[198]: PTA_TEST: API rsa-csr.der PASS
+[   38.119404] ftpm-identity-test[198]: PTA_TEST: API ec-csr.der PASS
+[   38.125502] ftpm-identity-test[198]: PTA_TEST: SIGN_EK_CSR raw signature received PASS
+[   38.127173] ftpm-identity-test[198]: PTA_TEST: invalid parameters and disabled INJECT_EPS rejected PASS
+[   39.586792] ftpm-identity-test[196]: PTA_TEST: certificates/CSR match, CA chains, Firmware ID signature PASS
+[   39.861430] ftpm-identity-test[171]: EK_TEST: actual RSA/EC EK keys match PTA certificates PASS
+[   40.707814] ftpm-identity-test[171]: EK_TEST: standard RSA/EC EK certificate NV indices PASS
+[   40.885129] ftpm-identity-test[236]: FTPM_TEST: START phase=second
+[   41.538902] ftpm-identity-test[236]: PTA_TEST: PING_NS READY PASS
+[   41.541295] ftpm-identity-test[236]: PTA_TEST: online mode / version 2.0 PASS
+[   41.542865] ftpm-identity-test[236]: PTA_TEST: API sn.bin PASS
+[   41.552800] ftpm-identity-test[236]: PTA_TEST: API ecid.bin PASS
+[   41.554616] ftpm-identity-test[236]: PTA_TEST: API rsa-cert.der PASS
+[   41.560755] ftpm-identity-test[236]: PTA_TEST: API ec-cert.der PASS
+[   41.562417] ftpm-identity-test[236]: PTA_TEST: API sid-cert.der PASS
+[   41.563931] ftpm-identity-test[236]: PTA_TEST: API fw-cert.der PASS
+[   41.570300] ftpm-identity-test[236]: PTA_TEST: API rsa-csr.der PASS
+[   41.571807] ftpm-identity-test[236]: PTA_TEST: API ec-csr.der PASS
+[   41.578073] ftpm-identity-test[236]: PTA_TEST: SIGN_EK_CSR raw signature received PASS
+[   41.579587] ftpm-identity-test[236]: PTA_TEST: invalid parameters and disabled INJECT_EPS rejected PASS
+[   42.843476] ftpm-identity-test[236]: PTA_TEST: certificates/CSR match, CA chains, Firmware ID signature PASS
+[   43.887521] ftpm-identity-test[236]: FTPM_TEST: reboot NV/key persistence and PCR reset PASS
+[   44.419765] ftpm-identity-test[236]: FTPM_TEST: RSA sign/verify PASS
+[   44.870551] ftpm-identity-test[236]: FTPM_TEST: seal/unseal PASS
+[   44.968544] ftpm-identity-test[236]: FTPM_TEST: PASS phase=second
+[   45.046045] ftpm-identity-test[171]: EK_TEST: PASS
+

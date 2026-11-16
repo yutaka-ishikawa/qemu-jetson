@@ -4,7 +4,7 @@
 
 Organized on 2026-11-17 (Japan time) for the user's jetson-ftpm-virt B2 environment.
 The user reported all tests passed. Distinguish independently checked supplied logs from user-reported stages.
-No blanket claim of independent full-workflow log verification is made.
+Update: supplied bound and bound-reboot logs independently pass all required markers and EK stability checks versus export. The original first PASS log remains unavailable.
 
 ## Evidence inventory
 
@@ -13,9 +13,9 @@ No blanket claim of independent full-workflow log verification is made.
 | Repeated first | Supplied log.txt: PTA passes, FAIL line=22 | Failure of the first.done absence guard, consistent with an existing completion marker; not the original first PASS log |
 | second | Supplied log2.txt | PASS: NV/key persistence, PCR reset, RSA signatures, seal/unseal and helper PTA certificate/CSR/signature markers |
 | export | Supplied export.log | PASS: decoded and validated both RSA/ECC public keys; recorded SPKI SHA-256 fingerprints |
-| bind/pack/apply | User's all-PASS report | Final output files/logs not supplied |
-| bound | User's all-PASS report | Final bound.log absent; independent verification of EK/PTA certificate matching and certificate NV remains pending |
-| bound reboot | User's all-PASS report | Final bound-reboot.log absent; persistence and EK stability versus export remain to be independently checked |
+| bind/pack/apply | User's all-PASS report | Application confirmed by subsequent bound logs; issued certificate files not independently checked on the host |
+| bound | Supplied bound.log | PASS: PTA, actual EK/certificate matching, standard NV, second and final EK_TEST |
+| bound reboot | Supplied bound-reboot.log | PASS: same markers and identical RSA/ECC EKs across export/bound/reboot |
 | Table exhaustion | Supplied secure-first-native.log | Historical failure: eight tables exhausted and panic, kept separate from successful results |
 | Silent timeout | Supplied launch-first.strace | Historical SIGTTOU stop; evidence for the launcher foreground fix |
 
@@ -31,19 +31,13 @@ and [SELinux regression](../results/guest-selinux.json) are from the developer e
 They do not replace missing user logs. Pending wording in older files reflects their original validation scope.
 Use this inventory for current received evidence and the user report.
 
-## Remaining evidence
+## Verified scope and remaining evidence limits
 
-Tests have already been reported successful. Supply existing saved logs without rerunning tests or initializing state:
-
-- work/ftpm-virt/bound.log
-- work/ftpm-virt/bound-reboot.log
-- work/ftpm-virt/first.log if retained; do not rerun first just to create it
-
-Check both bound logs for PTA certificate/CSR/signature verification, actual EK/PTA certificate matching,
-standard certificate NV indices, second PASS, and final EK_TEST: PASS.
-Compare RSA/ECC EK_EXPORT values with export.
-Independent host-side certificate signature checks additionally use issued public certificates/CSRs and public CA certificates only.
-Do not supply CA/Firmware ID private keys, provisioning.bin, device-identity.bin or rootfs.ext4.
-The older check-ftpm-functional-results.py requires six logs including first; do not duplicate logs to satisfy missing inputs.
+Both bound logs contain required PTA certificate/CSR/signature, actual EK matching, standard NV, second and final EK_TEST PASS markers, with no test FAIL markers.
+Decoded RSA/ECC EK_EXPORT public keys have identical DER SPKI SHA-256 values across export, bound and bound-reboot.
+Original log hashes and excerpts are recorded. No rerun or disk reset is needed.
+The original first PASS log remains unavailable; do not rerun first just to generate evidence.
+Certificate signature validation relies on guest PASS markers; issued public certificate files have not been independently checked on the host.
+Private keys, seeds, identity files and disks need not be supplied. Do not duplicate logs to satisfy the older six-log checker.
 
 See [test-guide.md](test-guide.md) for execution and [hardware differences](hardware-qemu-differences.md) for scope and limitations.
