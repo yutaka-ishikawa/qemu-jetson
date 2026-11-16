@@ -7,6 +7,8 @@ QEMU for NVIDIA Jetson Orin Nano
 
 NVIDIA版OP-TEE／fTPMを、ソース変更を極力抑えてQEMU上で動かすための開発プロジェクトです。
 
+- [second以降のfTPM・EK証明書テスト手順](docs/ftpm-test-guide.md)
+
 ## 設計と手順
 
 - [Fuseモデルと検証](docs/t234-fuse.md)

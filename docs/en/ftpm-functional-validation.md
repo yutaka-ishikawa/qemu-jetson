@@ -1,5 +1,8 @@
 # NVIDIA fTPM and helper PTA execution validation
 
+To continue from second on an existing disk, use the [test continuation guide](ftpm-test-guide.md).
+
+
 [日本語](../ftpm-functional-validation.md) | English
 
 [Decision 0003](decisions/0003-ftpm-provisioning-data.md) approves a QEMU-only test CA, Firmware ID key and certificates.

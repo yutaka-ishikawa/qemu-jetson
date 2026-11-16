@@ -8,6 +8,8 @@ QEMU for NVIDIA Jetson Orin Nano.
 
 This project aims to run NVIDIA's OP-TEE and fTPM with minimal changes to NVIDIA-provided sources.
 
+- [fTPM and EK certificate tests from second onward](docs/en/ftpm-test-guide.md)
+
 ## Design and procedures
 
 - [Fuse model and validation](docs/en/t234-fuse.md)

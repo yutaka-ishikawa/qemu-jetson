@@ -1,5 +1,8 @@
 # NVIDIA fTPM・helper PTAの実行検証
 
+構築済みのディスクでsecond以降を続ける場合は、[テスト続行ガイド](ftpm-test-guide.md)を参照。
+
+
 日本語 | [English](en/ftpm-functional-validation.md)
 
 [決定0003](decisions/0003-ftpm-provisioning-data.md)に従い、QEMU専用のテストCA・Firmware ID鍵・証明書を生成した。
