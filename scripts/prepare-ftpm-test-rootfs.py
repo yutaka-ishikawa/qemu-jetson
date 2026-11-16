@@ -16,7 +16,7 @@ try:
     validate_rootfs(args.tar)
 except (OSError, tarfile.TarError, ValueError) as error:
     parser.error(f"{error}. Build Ubuntu first with scripts/build-ubuntu-rootfs.sh; "
-                 "see docs/install-layout.md for recovery. No archive was modified.")
+                 "see docs/build-install.md for recovery. No archive was modified.")
 repo = Path(__file__).resolve().parents[1]
 out = repo/'work/ftpm-virt'
 identity = (out/'device-identity.bin').read_bytes()

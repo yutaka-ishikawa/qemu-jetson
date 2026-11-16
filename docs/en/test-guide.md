@@ -1,9 +1,9 @@
-# fTPM and EK certificate tests from second onward
+# fTPM and EK certificate test guide
 
-[日本語](../ftpm-test-guide.md) | English
+[日本語](../test-guide.md) | English
 
-Use the existing B2 disk after first has completed. These tests use a QEMU-only test CA and provide no NVIDIA manufacturing trust.
-The older [functional validation procedure](ftpm-functional-validation.md) covers initial assembly as well; this guide continues from an already built environment.
+Use the B2 environment prepared with the [build and installation guide](build-install.md), starting with first. These tests use a QEMU-only test CA and provide no NVIDIA manufacturing trust.
+The older [functional validation procedure](ftpm-functional-validation.md) covers initial assembly as well; use build-install.md for current assembly and this guide for all test execution.
 
 ## Prerequisites and current progress
 
@@ -21,6 +21,7 @@ On failure or timeout (usually status 124), stop and preserve normal and secure 
 
 | Stage | Purpose | Confirmed in this conversation |
 | --- | --- | --- |
+| first | Initial NV/PCR/signing/seal tests on a new disk | Existing disk has completion marker; do not rerun |
 | second | NV/key/sealed-data persistence and PCR reset | PASS in supplied log |
 | export | Obtain actual RSA/ECC EK public keys | PASS in supplied export.log |
 | bind / pack | Issue actual-EK certificates with the existing CA and pack data | Result not yet confirmed |
@@ -30,7 +31,19 @@ On failure or timeout (usually status 124), stop and preserve normal and secure 
 If second and export have passed, continue at step 3 without rerunning them.
 If the bound output directory or provisioning backup already exists, inspect the completed stage rather than deleting or regenerating it.
 Preserve keys, device-identity.bin, the CA, rootfs.ext4, guest first.done and TPM NV state.
-Do not rerun first or run multiple QEMU processes against the disk.
+Run first once on a new disk and skip it when completed. Never run multiple QEMU processes against the disk.
+
+## 0. first: initial tests on a new disk
+
+Run only on a newly installed disk. If first already completed on the existing disk, continue at step 1.
+
+```bash
+bash scripts/run-ftpm-virt.sh first 2>&1 | tee work/ftpm-virt/first.log
+```
+
+Require `FTPM_TEST: PASS phase=first`. This runs PTA certificate/CSR/signature checks, TPM capabilities/random, NV write/read, PCR extend, RSA signatures and seal/unseal, then powers off automatically.
+The test creates TPM state for later persistence checks. An existing first.done marker causes a repeated first run to be rejected.
+With the current script, FAIL line=22 indicates failure of the completion-marker absence check. Inspect prior progress; do not delete the marker.
 
 ## 1. second: persistence tests
 

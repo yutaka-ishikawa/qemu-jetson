@@ -1,6 +1,6 @@
 # NVIDIA fTPM・helper PTAの実行検証
 
-構築済みのディスクでsecond以降を続ける場合は、[テスト続行ガイド](ftpm-test-guide.md)を参照。
+現在のビルド・導入は[build-install.md](build-install.md)、firstからのテスト実行は[test-guide.md](test-guide.md)を参照。本書は過去の全工程と検証結果の記録。
 
 
 日本語 | [English](en/ftpm-functional-validation.md)

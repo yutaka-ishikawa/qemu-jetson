@@ -28,4 +28,4 @@ if __name__ == "__main__":
         validate_rootfs(sys.argv[1])
     except (OSError, tarfile.TarError, ValueError) as error:
         sys.exit(f"{error}. Build Ubuntu first with scripts/build-ubuntu-rootfs.sh; "
-                 "see docs/install-layout.md for recovery. No archive was modified.")
+                 "see docs/build-install.md for recovery. No archive was modified.")

@@ -1,6 +1,9 @@
-# ビルド成果物のローカルinstall配置
+# ビルド・インストール手順
 
-日本語 | [English](en/install-layout.md)
+環境準備からビルド、成果物の配置、Ubuntuディスク作成、起動用DTB生成までを説明する。
+試験の実行は[test-guide.md](test-guide.md)に集約し、本書では実行しない。
+
+日本語 | [English](en/build-install.md)
 
 [決定0005](decisions/0005-install-prefix.md)に従い、ビルド後の既定配置先をリポジトリ直下の`install/`にする。
 通常ユーザーで配置でき、ホストの`/usr/local`などへのシステムインストールは行わない。
@@ -116,7 +119,7 @@ python3 scripts/install-artifacts.py probe
 python3 scripts/install-artifacts.py client --client-export /path/to/optee/install/t234/usr
 ```
 
-## ビルド後：初回起動とテスト
+## ビルド後：初回のデータ・ディスク・DTB準備
 
 上の5つのビルド・取得コマンドがすべて成功したら、次の順に準備する。
 以下は既定の`install/`と`work/`を使う初回手順。同じvenvを有効にしたリポジトリのトップで実行する。
@@ -172,31 +175,8 @@ DTBの起動引数に`lsm=lockdown,yama,integrity,apparmor,bpf`を設定する�
 
 生成したDTBは`install/share/qemu-jetson/ftpm-virt/runtime-*.dtb`に配置される。
 
-### 5. 初回試験を実行
-
-```bash
-bash scripts/run-ftpm-virt.sh first
-```
-
-これは対話用ログイン起動ではなく、ゲスト内のテストを自動実行する起動。
-`PTA_TEST`の署名・証明書試験と、`FTPM_TEST`のNV・PCR・署名・seal/unseal試験を行う。
-成功時は`FTPM_TEST: PASS phase=first`を表示してpoweroffする。
-失敗・タイムアウトは成功と扱わず、次へ進む前に出力を確認する。
-
-### 6. 同じディスクで再起動後の試験
-
-初回のPASSを確認してから実行する。`first`を再実行しない。
-
-```bash
-bash scripts/run-ftpm-virt.sh second
-```
-
-同じ鍵・ディスクを使用し、NVデータ・署名鍵・sealed dataの保持とPCRリセットを確認する。
-成功時は`FTPM_TEST: PASS phase=second`を表示してpoweroffする。
-通常世界のログは端末へ、セキュア側ログは`work/ftpm-virt/secure-<phase>-native.log`へ出力する。
-
-実際のfTPM EK公開鍵への証明書対応付けと標準NV indexの検証は、その後の`export`→`bind-ftpm-test-ek.py`→`bound`の工程。
-詳しいコマンドは[機能検証の再現手順](ftpm-functional-validation.md#再現手順)を参照。
+ここまでで初期導入は完了。[テスト手順](test-guide.md)へ進み、初回試験から開始する。
+既に試験済みのディスクは、テスト手順に従って完了済みの段階を飛ばす。
 
 ## rootfs.tarに試験用ファイルしかない場合の復旧
 
@@ -226,10 +206,9 @@ python3 scripts/prepare-ftpm-test-rootfs.py \
   work/ftpm-virt/rootfs.tar work/ftpm-test-provisioning
 sudo bash scripts/create-ftpm-virt-disk.sh
 bash scripts/prepare-ftpm-virt-dtb.sh
-bash scripts/run-ftpm-virt.sh first
 ```
 
-既存ディスクを上書きしない。初回PASS後に限り、前節の`second`を実行する。
+既存ディスクを上書きしない。復旧後の試験は[test-guide.md](test-guide.md)を参照。
 
 ## 配置先とビルド先の変更
 
@@ -238,7 +217,6 @@ INSTALL_DIR="$PWD/local-sdk" bash scripts/build-qemu.sh
 INSTALL_DIR="$PWD/local-sdk" bash scripts/build-optee-client.sh
 # 起動・DT生成も同じINSTALL_DIRを使う
 INSTALL_DIR="$PWD/local-sdk" bash scripts/prepare-ftpm-virt-dtb.sh
-INSTALL_DIR="$PWD/local-sdk" bash scripts/run-ftpm-virt.sh second
 ```
 
 `INSTALL_DIR`を省略すると`install/`。相対パスはリポジトリ基準。
@@ -251,15 +229,6 @@ INSTALL_DIR="$PWD/local-sdk" bash scripts/run-ftpm-virt.sh second
 `device-identity.bin`、`provisioning.bin`、CA秘密鍵、seed、`rootfs.ext4`はinstall処理でコピー・再生成・削除しない。
 QEMU起動は`install/`のプログラム・読み取り専用イメージと、`work/ftpm-virt/`の既存状態を組み合わせる。
 
-rootfs作成は既定で`install/`のクライアント・ライブラリ・モジュールを使用する。
-
-```bash
-sudo env FTPM_FUNCTIONAL_PROFILE=1 bash scripts/build-ubuntu-rootfs.sh
-# 公開fixtureと、install済みprobeをtarへ追加
-python3 scripts/prepare-ftpm-test-rootfs.py work/ftpm-virt/rootfs.tar work/ftpm-test-provisioning
-sudo bash scripts/create-ftpm-virt-disk.sh
-```
-
 `build-ubuntu-rootfs.sh OUTPUT_TAR`で出力先のみ指定できる。
 従来の`build-ubuntu-rootfs.sh CLIENT_INSTALL_DIR OUTPUT_TAR`も利用できる。
 既存ディスクやtarは上書きしない。rootfs全体の新しい管理者権限での組み立ては、この実行環境では未検証。
@@ -271,3 +240,9 @@ sudo bash scripts/create-ftpm-virt-disk.sh
 配置済みのQEMU・ファームウェア・kernel Image・DTBを使い、既存NV状態でfTPMを起動する。
 インストール先へ秘密鍵・仮想デバイス状態が入らないことと、別prefix（空白を含む）の配置も検査する。
 [結果](results/install-layout.json)と[起動ログ抜粋](results/install-layout-excerpt.txt)を参照。
+
+## 文書構成の選択
+
+ユーザー指定で旧install-layout.mdをbuild-install.mdへ改名し、ビルド・導入を集約した。
+テスト文書名の候補はtest-guide.md、ftpm-tests.md、testing.md、test-procedures.md。ユーザーはtest-guide.mdを選択した。
+旧ftpm-test-guide.mdを改名し、初回試験も移して全試験をまとめた。日英で同じ分担とする。

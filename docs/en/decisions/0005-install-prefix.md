@@ -13,4 +13,4 @@ Default to the repository's install/, overridable with INSTALL_DIR.
 Place host QEMU in bin, public headers in include, ARM64 libraries in lib/aarch64-linux-gnu,
 guest programs in libexec, and read-only boot payloads in share.
 Private keys and NV disks remain work state and are not modified by installation.
-Keep native host execution and direct main pushes. See the [layout](../install-layout.md).
+Keep native host execution and direct main pushes. See the [layout](../build-install.md).

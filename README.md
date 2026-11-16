@@ -1,13 +1,13 @@
 # qemu-jetson
 
-現在のビルド・起動はDocker不要です。まず[ホスト環境の準備](docs/native-host.md)を参照してください。QEMUは`install/bin/`へ配置します。ビルド中間物は`work/qemu-build/`です。[installマニュアル](docs/install-layout.md)を参照。
+現在のビルド・起動はDocker不要です。まず[ホスト環境の準備](docs/native-host.md)を参照してください。QEMUは`install/bin/`へ配置します。ビルド中間物は`work/qemu-build/`です。[ビルド・インストール手順](docs/build-install.md)を参照。
 
 日本語 | [English](README.en.md)
 QEMU for NVIDIA Jetson Orin Nano
 
 NVIDIA版OP-TEE／fTPMを、ソース変更を極力抑えてQEMU上で動かすための開発プロジェクトです。
 
-- [second以降のfTPM・EK証明書テスト手順](docs/ftpm-test-guide.md)
+- [fTPM・EK証明書テスト手順](docs/test-guide.md)
 
 ## 設計と手順
 
@@ -46,4 +46,4 @@ B案の実装・起動・永続化検証手順は[機能検証構成](docs/ftpm-
 
 B2では[NVIDIA helper PTA全体の移植](docs/ftpm-helper-port.md)を進めています。[SIGN_EK_CSRとEKの違い](docs/ek-csr-signing.md)も記録しています。
 
-**install手順の入口：** [docs/install-layout.md](docs/install-layout.md)。実行ファイル・ヘッダ・ライブラリは既定で`install/`配下にまとめます。
+**install手順の入口：** [docs/build-install.md](docs/build-install.md)。実行ファイル・ヘッダ・ライブラリは既定で`install/`配下にまとめます。

@@ -1,6 +1,9 @@
-# Local install layout for built artifacts
+# Build and installation guide
 
-[日本語](../install-layout.md) | English
+This guide covers host setup, builds, artifact installation, Ubuntu disk creation and boot DTBs.
+All test execution starts in [test-guide.md](test-guide.md).
+
+[日本語](../build-install.md) | English
 
 [Decision 0005](decisions/0005-install-prefix.md) makes the repository's install/ the default artifact prefix.
 Installation runs as the ordinary user and does not install project binaries system-wide into /usr/local.
@@ -116,7 +119,7 @@ python3 scripts/install-artifacts.py probe
 python3 scripts/install-artifacts.py client --client-export /path/to/optee/install/t234/usr
 ```
 
-## After the build: first boot and tests
+## After the build: initial data, disk and DTB preparation
 
 Once all five build/fetch commands above succeed, prepare the remaining inputs in this order.
 These are first-time steps using the default install/ and work/ paths. Run from the repository root with the same venv active.
@@ -172,31 +175,8 @@ DTB bootargs include `lsm=lockdown,yama,integrity,apparmor,bpf`; host SELinux se
 
 DTBs are installed into install/share/qemu-jetson/ftpm-virt/runtime-*.dtb.
 
-### 5. Run the initial test
-
-```bash
-bash scripts/run-ftpm-virt.sh first
-```
-
-This boots automatic guest tests rather than an interactive login session.
-PTA_TEST verifies signing/certificate APIs; FTPM_TEST checks NV, PCR, signing and seal/unseal.
-Success prints FTPM_TEST: PASS phase=first and powers the guest off.
-Check failures/timeouts before proceeding; neither counts as success.
-
-### 6. Run reboot/persistence tests on the same disk
-
-Run only after the first phase passes. Do not repeat first.
-
-```bash
-bash scripts/run-ftpm-virt.sh second
-```
-
-Reuse the same keys/disk and check NV data, signing key and sealed-data persistence plus PCR reset.
-Success prints FTPM_TEST: PASS phase=second and powers off.
-Normal-world logs go to the terminal; secure logs go to work/ftpm-virt/secure-<phase>-native.log.
-
-Actual EK certificate binding and standard certificate NV-index verification follow through export, bind-ftpm-test-ek.py and bound.
-See the [full reproduction commands](ftpm-functional-validation.md#reproduction).
+Initial installation is complete. Continue with [test procedures](test-guide.md), starting with the initial test.
+For an already tested disk, skip completed stages as directed there.
 
 ## Recovering an archive containing only test files
 
@@ -226,10 +206,9 @@ python3 scripts/prepare-ftpm-test-rootfs.py \
   work/ftpm-virt/rootfs.tar work/ftpm-test-provisioning
 sudo bash scripts/create-ftpm-virt-disk.sh
 bash scripts/prepare-ftpm-virt-dtb.sh
-bash scripts/run-ftpm-virt.sh first
 ```
 
-Do not overwrite an existing disk. Run `second` from the preceding section only after the first PASS.
+Do not overwrite an existing disk. Continue testing using [test-guide.md](test-guide.md).
 
 ## Override install/build directories
 
@@ -237,7 +216,6 @@ Do not overwrite an existing disk. Run `second` from the preceding section only 
 INSTALL_DIR="$PWD/local-sdk" bash scripts/build-qemu.sh
 INSTALL_DIR="$PWD/local-sdk" bash scripts/build-optee-client.sh
 INSTALL_DIR="$PWD/local-sdk" bash scripts/prepare-ftpm-virt-dtb.sh
-INSTALL_DIR="$PWD/local-sdk" bash scripts/run-ftpm-virt.sh second
 ```
 
 INSTALL_DIR defaults to install/; relative paths resolve against the repository.
@@ -250,14 +228,6 @@ work/ retains intermediates and mutable per-device state.
 Installation never copies, regenerates or deletes device-identity.bin, provisioning.bin, CA private keys, seeds or rootfs.ext4.
 Launch combines installed binaries/read-only boot payloads with existing work/ftpm-virt/ state.
 
-Rootfs assembly defaults to installed guest clients, libraries and modules.
-
-```bash
-sudo env FTPM_FUNCTIONAL_PROFILE=1 bash scripts/build-ubuntu-rootfs.sh
-python3 scripts/prepare-ftpm-test-rootfs.py work/ftpm-virt/rootfs.tar work/ftpm-test-provisioning
-sudo bash scripts/create-ftpm-virt-disk.sh
-```
-
 build-ubuntu-rootfs.sh OUTPUT_TAR changes the output archive.
 The previous CLIENT_INSTALL_DIR OUTPUT_TAR form remains supported.
 Existing disks/archives are not overwritten. A fresh privileged full rootfs assembly remains unverified in this execution environment.
@@ -269,3 +239,9 @@ Compile clients/probe with installed headers, ARM64 libraries and the installed 
 Boot installed QEMU, firmware, kernel Image and DTB against preserved NV state.
 Check secret/state exclusion and a custom install prefix containing spaces.
 See the [result](../results/install-layout.json) and [boot excerpts](../results/install-layout-excerpt.txt).
+
+## Document organization decision
+
+At the user request, the former install-layout.md became build-install.md for builds and installation.
+Test document candidates were test-guide.md, ftpm-tests.md, testing.md and test-procedures.md; the user selected test-guide.md.
+The former ftpm-test-guide.md was renamed and expanded to include the initial test. Both languages use the same separation.

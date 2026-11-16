@@ -1,6 +1,6 @@
 # NVIDIA fTPM and helper PTA execution validation
 
-To continue from second on an existing disk, use the [test continuation guide](ftpm-test-guide.md).
+For current build/install steps use [build-install.md](build-install.md); for all tests starting with first use [test-guide.md](test-guide.md). This document retains the historical complete workflow and results.
 
 
 [日本語](../ftpm-functional-validation.md) | English

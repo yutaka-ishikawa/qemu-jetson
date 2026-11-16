@@ -13,4 +13,4 @@
 ホストQEMUはbin、公開ヘッダはinclude、ARM64ライブラリはlib/aarch64-linux-gnuへ置く。
 ゲストプログラムはlibexec、読み取り専用boot payloadはshareへ置く。
 秘密鍵とNVディスクはビルド成果物ではないためworkに保持し、install処理では更新しない。
-Docker不使用とmainへの直接pushを継続する。[配置詳細](../install-layout.md)を参照。
+Docker不使用とmainへの直接pushを継続する。[配置詳細](../build-install.md)を参照。

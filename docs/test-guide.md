@@ -1,9 +1,9 @@
-# second以降のfTPM・EK証明書テスト手順
+# fTPM・EK証明書テスト手順
 
-日本語 | [English](en/ftpm-test-guide.md)
+日本語 | [English](en/test-guide.md)
 
-この手順はB2構成でfirstが完了した既存ディスクを使う。QEMU専用テストCAによる機能検証であり、NVIDIA製造証明書の信頼は提供しない。
-従来の[機能検証の再現手順](ftpm-functional-validation.md)は初期構築からの全工程を記載する。本書は構築済み環境での続行用。
+この手順は[ビルド・インストール手順](build-install.md)で準備したB2構成を使い、firstから全試験を実行する。QEMU専用テストCAによる機能検証であり、NVIDIA製造証明書の信頼は提供しない。
+従来の[機能検証の再現手順](ftpm-functional-validation.md)は初期構築からの全工程を記載する。現在のビルド・導入はbuild-install.md、テスト実行は本書を参照する。
 
 ## 開始前と現在の位置
 
@@ -21,6 +21,7 @@ set -o pipefail
 
 | 段階 | 内容 | この対話で確認済みの状態 |
 | --- | --- | --- |
+| first | 新規ディスクでNV・PCR・署名・seal/unsealを初期検証 | 既存ディスクには完了マーカーあり。再実行不要 |
 | second | 再起動後のNV・鍵・sealed dataとPCR | 添付ログでPASS確認済み |
 | export | 実際のRSA/ECC EK公開鍵の取得 | 添付export.logでPASS確認済み |
 | bind / pack | 既存テストCAで実EK用証明書を発行しデータを梱包 | 実行結果は未確認 |
@@ -30,7 +31,19 @@ set -o pipefail
 secondとexportのPASSを既に確認していれば再実行せず、手順3から続ける。
 既にbound用ディレクトリや切り替え前バックアップがある場合は、削除・再生成せず準備済みの段階を確認する。
 鍵、device-identity.bin、CA、rootfs.ext4、ゲストのfirst.done、TPM NV状態を消さない。
-firstは再実行しない。QEMUを多重起動しない。
+firstは新規ディスクに一度だけ実行し、完了済みなら再実行しない。QEMUを多重起動しない。
+
+## 0. first：新規ディスクの初回試験
+
+新規導入したディスクだけで実行する。既存ディスクでfirst完了済みの場合は手順1へ進む。
+
+```bash
+bash scripts/run-ftpm-virt.sh first 2>&1 | tee work/ftpm-virt/first.log
+```
+
+成功条件：`FTPM_TEST: PASS phase=first`。PTAの証明書・CSR・署名検証、TPM能力・乱数、NV書き込み/読み出し、PCR extend、RSA署名、seal/unsealを実行し、自動で電源を切る。
+初回試験では後続の永続化検証に使うTPM状態を作る。first.doneが存在する場合は再実行を拒否する。
+FAIL line=22は現在のスクリプトでは完了マーカーの存在確認での失敗。マーカーを削除せず、実行履歴を確認する。
 
 ## 1. second：再起動後の検証
 

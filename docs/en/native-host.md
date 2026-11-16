@@ -16,7 +16,7 @@ Docker, buildx and Docker-group membership are unnecessary.
 | Host dependencies | apt's /usr/bin, /usr/lib, etc. | Administrator for installation |
 | Ubuntu rootfs assembly and new ext4 creation | Outputs under work/ftpm-virt/ | Administrator to preserve guest UID/GID |
 
-QEMU is installed into the local prefix using Meson install after compilation. See the [install manual](install-layout.md) for the complete bin/include/lib/libexec/share layout.
+QEMU is installed into the local prefix using Meson install after compilation. See the [install manual](build-install.md) for the complete bin/include/lib/libexec/share layout.
 INSTALL_DIR=/absolute/path changes the artifact prefix used by all scripts. QEMU_BUILD_DIR changes only build intermediates.
 The old work/qemu-container-build/ directory is not deleted automatically; keys and disks are preserved.
 
@@ -81,7 +81,7 @@ See the [machine-readable result](../results/native-host.json) and [actual log e
 Rootfs shell syntax and privilege errors are checked; a fresh privileged end-to-end rootfs rebuild is unverified.
 See [functional validation](ftpm-functional-validation.md) for prior fTPM results.
 
-See the [installation manual](install-layout.md) for the current layout and build/install workflow.
+See the [installation manual](build-install.md) for the current layout and build/install workflow.
 
 ## Diagnosing Ubuntu certificate package configuration failures
 

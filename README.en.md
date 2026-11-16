@@ -1,6 +1,6 @@
 # qemu-jetson
 
-Build and run without Docker. Start with [native host setup](docs/en/native-host.md). QEMU is installed into install/bin/; build intermediates remain in work/qemu-build/. See the [install manual](docs/en/install-layout.md).
+Build and run without Docker. Start with [native host setup](docs/en/native-host.md). QEMU is installed into install/bin/; build intermediates remain in work/qemu-build/. See the [build and installation guide](docs/en/build-install.md).
 
 [日本語](README.md) | English
 
@@ -8,7 +8,7 @@ QEMU for NVIDIA Jetson Orin Nano.
 
 This project aims to run NVIDIA's OP-TEE and fTPM with minimal changes to NVIDIA-provided sources.
 
-- [fTPM and EK certificate tests from second onward](docs/en/ftpm-test-guide.md)
+- [fTPM and EK certificate test guide](docs/en/test-guide.md)
 
 ## Design and procedures
 
@@ -46,4 +46,4 @@ See the [functional profile](docs/en/ftpm-virt.md) for option-B build, boot, and
 
 B2 integrates the [complete NVIDIA helper PTA](docs/en/ftpm-helper-port.md). See also [SIGN_EK_CSR versus the EK](docs/en/ek-csr-signing.md).
 
-**Installation manual:** [docs/en/install-layout.md](docs/en/install-layout.md). Binaries, headers and libraries default to the local install/ prefix.
+**Installation manual:** [docs/en/build-install.md](docs/en/build-install.md). Binaries, headers and libraries default to the local install/ prefix.

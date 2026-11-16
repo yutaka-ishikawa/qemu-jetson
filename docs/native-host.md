@@ -16,7 +16,7 @@ Docker、buildx、Dockerグループへの所属は不要。
 | 依存ツール・開発ライブラリ | apt標準の`/usr/bin`、`/usr/lib`など | 導入時のみ管理者 |
 | Ubuntu rootfsの組み立て・新規ext4作成 | 出力は`work/ftpm-virt/` | ゲストのUID/GIDを保存するため管理者 |
 
-ビルド後にMeson installでローカルprefixへ配置する。全体のbin/include/lib/libexec/share構成は[installマニュアル](install-layout.md)を参照。
+ビルド後にMeson installでローカルprefixへ配置する。全体のbin/include/lib/libexec/share構成は[installマニュアル](build-install.md)を参照。
 `INSTALL_DIR=/absolute/path`で全スクリプト共通の配置先を変更できる。`QEMU_BUILD_DIR`はビルド中間物の場所だけを変更する。
 旧`work/qemu-container-build/`は自動削除せず、既存の鍵・ディスクも変更しない。
 
@@ -85,7 +85,7 @@ ext4のUID/GID・モード保存と上書き拒否を検証済み。
 rootfsスクリプトの構文・権限エラーは確認するが、新規rootfsの管理者権限でのend-to-end再構築は未検証である。
 以前のfTPM実行結果は[機能検証](ftpm-functional-validation.md)を参照。
 
-最新版の配置・ビルド・導入手順は[installマニュアル](install-layout.md)を参照。
+最新版の配置・ビルド・導入手順は[installマニュアル](build-install.md)を参照。
 
 ## Ubuntuの証明書パッケージ設定が失敗する場合
 
