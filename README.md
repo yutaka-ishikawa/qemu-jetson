@@ -1,5 +1,7 @@
 # qemu-jetson
 
+現在のビルド・起動はDocker不要です。まず[ホスト環境の準備](docs/native-host.md)を参照してください。QEMUは`work/qemu-build/`に出力し、システムにはinstallしません。
+
 日本語 | [English](README.en.md)
 QEMU for NVIDIA Jetson Orin Nano
 

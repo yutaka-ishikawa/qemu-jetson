@@ -39,7 +39,7 @@ ROMとSecure RAMはQEMUのSecureアドレス空間を通してロードする。
 
 ## 再実行
 
-NVIDIA指定AArch64ツールチェーン、dtc、Dockerを用意する。
+NVIDIA指定AArch64ツールチェーン、dtc、[ホストの開発ツール](native-host.md)を用意する。
 
 ```bash
 export CROSS_COMPILE_AARCH64=/path/to/toolchain/bin/aarch64-buildroot-linux-gnu-
@@ -54,9 +54,8 @@ OP-TEEは既存の無変更ビルドの `tee-raw.bin` を `work/optee-baseline/t
 初回cloneにはその成果物は含まれない。[OP-TEEビルド記録](r36.5.2-build.md)を参照。
 
 ```bash
-docker run --rm -v "$PWD:/src" -w /src qemu-jetson-build:jammy \
   python3 scripts/check-t234-boot.py \
-  work/qemu-container-build/qemu-system-aarch64 \
+  work/qemu-build/qemu-system-aarch64 \
   --optee work/optee-baseline/tee-raw.bin
 ```
 

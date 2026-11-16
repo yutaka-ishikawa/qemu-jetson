@@ -57,8 +57,7 @@ export OPTEE_ELF=work/optee-baseline/tee.elf
 scripts/build-t234-firmware.sh
 scripts/build-qemu.sh
 
-docker run --rm -v "$PWD:/src" -w /src qemu-jetson-build:jammy \
-  python3 scripts/check-t234-fuse.py work/qemu-container-build/qemu-system-aarch64 \
+  python3 scripts/check-t234-fuse.py work/qemu-build/qemu-system-aarch64 \
   --optee work/optee-baseline/tee-raw.bin
 ```
 
@@ -83,8 +82,7 @@ SNの先頭2バイトはODM_INFOからbig-endianで構成され、残りはODMID
 ## OP-TEEの次の停止箇所
 
 ```bash
-docker run --rm -v "$PWD:/src" -w /src qemu-jetson-build:jammy \
-  python3 scripts/check-t234-boot.py work/qemu-container-build/qemu-system-aarch64 \
+  python3 scripts/check-t234-boot.py work/qemu-build/qemu-system-aarch64 \
   --optee work/optee-baseline/tee-raw.bin \
   --fuse-image work/fuse/device-a.bin --output-dir work/t234-fuse-boot-results
 ```

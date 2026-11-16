@@ -1,0 +1,34 @@
+{
+  "status": "PASS",
+  "mode": "native host; no Docker invocation",
+  "qemu_version": "11.1.3",
+  "qemu_output": "work/qemu-build/qemu-system-aarch64",
+  "qemu_sha256": "9b5d0fd69719e760e77c6630a2174aab000312c5ede8f9219a33207d6cd4f932",
+  "checks": [
+    "complete native QEMU configure/compile/link",
+    "stock virt and PAUTH QMP regression",
+    "native DT generation",
+    "native offline disk update and e2fsck",
+    "fakeroot metadata fixture: UID 0, GID 42, mode 0640",
+    "existing disk overwrite rejected",
+    "PTA_TEST: certificates/CSR match, CA chains, Firmware ID signature PASS",
+    "EK_TEST: actual RSA/EC EK keys match PTA certificates PASS",
+    "EK_TEST: standard RSA/EC EK certificate NV indices PASS",
+    "FTPM_TEST: reboot NV/key persistence and PCR reset PASS",
+    "FTPM_TEST: RSA sign/verify PASS",
+    "FTPM_TEST: seal/unseal PASS",
+    "FTPM_TEST: PASS phase=second",
+    "EK_TEST: PASS",
+    "native build preserves the previous actual RSA/EC EK public keys"
+  ],
+  "log_sha256": "8a2342c8ce80321dacb96d21ff01f9a928b48789d69bd28b7ca8fc204c8f2cee",
+  "validation_limits": [
+    "host package installation was not run: environment has no administrator privileges",
+    "fresh privileged native rootfs assembly was not executed; syntax/root checks only",
+    "functional regression used the existing validated Ubuntu ARM64 disk and preserved device credentials"
+  ],
+  "preserved_public_ek_sha256": {
+    "rsa": "dc2236733404a861278e6404f3bd77d9732b214250168de46f1232968f3b145e",
+    "ecc": "4e9261843448a5e04e8219be8ffad9f3622eb4105485e7d0bcb0e0d8397143b0"
+  }
+}

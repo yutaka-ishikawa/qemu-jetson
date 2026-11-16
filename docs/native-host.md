@@ -1,0 +1,85 @@
+# Dockerを使わないホスト環境
+
+日本語 | [English](en/native-host.md)
+
+[決定0004](decisions/0004-native-host.md)に従い、プロジェクトのビルド・起動・DT生成・ディスク更新はホストで直接実行する。
+Docker、buildx、Dockerグループへの所属は不要。
+
+## 配置先と権限
+
+| 対象 | 既定の配置先 | 実行権限 |
+| --- | --- | --- |
+| QEMU | `work/qemu-build/qemu-system-aarch64` | 通常ユーザーでビルド・起動 |
+| OP-TEEとTAのビルド成果物 | `work/optee-virt/` | 通常ユーザー |
+| イメージ・ディスク・デバイス鍵 | `work/ftpm-virt/` | 鍵と既存状態を保持 |
+| 依存ツール・開発ライブラリ | apt標準の`/usr/bin`、`/usr/lib`など | 導入時のみ管理者 |
+| Ubuntu rootfsの組み立て・新規ext4作成 | 出力は`work/ftpm-virt/` | ゲストのUID/GIDを保存するため管理者 |
+
+QEMUの`make install`／`ninja install`は実行しない。`/usr/local`へQEMUをコピーしない。
+`QEMU_BUILD_DIR=/absolute/path`を指定すれば、ビルド・起動・DT生成がそのディレクトリを使用する。
+旧`work/qemu-container-build/`は自動削除せず、既存の鍵・ディスクも変更しない。
+
+## Ubuntu／Debianの依存ツール
+
+Ubuntu 22.04以降またはDebian 12以降を想定する。
+
+```bash
+sudo bash scripts/install-host-deps.sh
+bash scripts/build-qemu.sh
+```
+
+導入スクリプトは明示的に実行した場合だけaptを使う。ビルド時の自動インストールは行わない。
+GCC、Python venv、Ninja、pkg-config、GLib／pixman／zlib／libfdt開発ファイル、dtc、
+PRoot、QEMUユーザーモード、e2fsprogs、kmod、検証用fakerootなどを導入する。
+Pythonのcryptography・pycryptodome・pyelftoolsはOP-TEE用venvに別途導入する。
+NVIDIA指定のAArch64クロスコンパイラは従来どおり必要で、このスクリプトで置き換えない。
+
+```bash
+QEMU_BUILD_DIR="$PWD/work/custom-qemu" JOBS=4 bash scripts/build-qemu.sh
+# 起動側も同じ指定にする
+QEMU_BUILD_DIR="$PWD/work/custom-qemu" bash scripts/run-ftpm-virt.sh second
+```
+
+`first`は未試験の新規ディスク用。初回試験済みのディスクには再実行しない。
+`second`も試験を自動実行し、成功後にゲストをpoweroffする。
+既定ビルド先を使う場合、`QEMU_BUILD_DIR`や旧`FTPM_NATIVE_QEMU`の指定は不要。
+
+## ARM64 Ubuntu rootfs
+
+```bash
+sudo env FTPM_FUNCTIONAL_PROFILE=1 \
+  KERNEL_MODULES_DIR="$PWD/work/ftpm-virt/modules" \
+  bash scripts/build-ubuntu-rootfs.sh /path/to/optee/install/t234 \
+  "$PWD/work/ftpm-virt/rootfs.tar"
+# 公開fixture／試験プログラムを追加する場合
+python3 scripts/prepare-ftpm-test-rootfs.py work/ftpm-virt/rootfs.tar work/ftpm-test-provisioning
+sudo bash scripts/create-ftpm-virt-disk.sh
+```
+
+PRootでARM64のaptを実行する。ホストがAArch64の場合はユーザーモードのエミュレータを省略する。
+ホストのpasswd/groupやホームはゲストへbindしない。ホストへのbinfmt登録やコンテナデーモンは不要。
+ゲストサービスの起動は一時的なpolicy-rc.dで抑止する。
+ゲストaptが権限を下げてもファイルを参照できるよう、組み立て用一時rootfsだけは`/tmp`の公開親ディレクトリ下に置き、終了時に削除する。
+カーネルモジュールの依存情報はホストのdepmodで作成する。
+rootfs tarとext4の出力ファイルはsudo実行元ユーザーへ所有者を戻す。
+
+## 既存ディスクの更新
+
+```bash
+# 必ずQEMUを停止してから実行する
+bash scripts/update-ftpm-test-disk.sh work/ftpm-bound-provisioning
+```
+
+ホストのdebugfs/e2fsckで処理する。イメージへの書き込み権限が必要。
+公開fixture・試験コードだけを更新し、ゲスト内のUID/GIDはrootへ明示設定する。
+既存ディスクを開いているQEMUを検出した場合は中止する。
+秘密鍵・seed・NV状態を再生成しない。
+
+## 検証範囲
+
+今回の環境では管理者権限を使ったホストパッケージ導入・rootfs全体の再構築は実行できない。
+検証用依存ツールは`work/`へ展開して使用し、ネイティブQEMUビルド、既存ディスクでのfTPM再試験、
+ext4のUID/GID・モード保存と上書き拒否を検証済み。
+[機械可読結果](results/native-host.json)と[実際のログ抜粋](results/native-host-excerpt.txt)を保存した。
+rootfsスクリプトの構文・権限エラーは確認するが、新規rootfsの管理者権限でのend-to-end再構築は未検証である。
+以前のfTPM実行結果は[機能検証](ftpm-functional-validation.md)を参照。

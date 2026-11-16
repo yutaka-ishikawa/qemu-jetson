@@ -40,7 +40,7 @@ CSRの署名鍵はEKではなくFirmware IDである（[説明](ek-csr-signing.m
 
 ## 再現手順
 
-前提：QEMU／NVIDIAコンポーネントのビルド環境、dtc、cryptography付きPython、Docker。
+前提：QEMU／NVIDIAコンポーネントのビルド環境、dtc、cryptography付きPython、[ホスト依存ツール](native-host.md)。
 NVIDIA配布のkernel Imageと対応fTPMモジュールを用意し、NVIDIAクライアントをビルドする。
 既存の[ビルド・起動手順](ftpm-virt.md)と[移植手順](ftpm-helper-port.md)も参照する。
 
@@ -54,10 +54,10 @@ python3 scripts/generate-ftpm-test-provisioning.py work/ftpm-test-provisioning
 python3 scripts/pack-ftpm-provisioning.py \
   work/ftpm-test-provisioning/manifest.json work/ftpm-virt/device-identity.bin \
   work/ftpm-virt/provisioning.bin
-FTPM_FUNCTIONAL_PROFILE=1 KERNEL_MODULES_DIR="$PWD/work/ftpm-virt/modules" \
+sudo env FTPM_FUNCTIONAL_PROFILE=1 KERNEL_MODULES_DIR="$PWD/work/ftpm-virt/modules" \
   scripts/build-ubuntu-rootfs.sh /path/to/optee/install/t234 work/ftpm-virt/rootfs.tar
 python3 scripts/prepare-ftpm-test-rootfs.py work/ftpm-virt/rootfs.tar work/ftpm-test-provisioning
-scripts/create-ftpm-virt-disk.sh
+sudo bash scripts/create-ftpm-virt-disk.sh
 scripts/prepare-ftpm-virt-dtb.sh
 # ログに成功マーカーがあり、各プロセスが正常終了することを確認
 scripts/run-ftpm-virt.sh first > work/ftpm-virt/first.log 2>&1
@@ -94,9 +94,8 @@ CA秘密鍵・Firmware ID秘密鍵・seed・デバイス固有ファイル・pro
   これによりguestのpasswd/groupとshadow/gshadowの不整合を防ぐ。
 - 試験ディスクのオフライン更新はfsckでjournalを再生してから行い、変更後にも整合性を検査する。
 
-DockerのVFSストレージを使う小容量環境では、ビルドキャッシュの整理が必要になる。
-ホストにlibfdtと他の実行時ライブラリがあれば、`FTPM_NATIVE_QEMU=1`で同じQEMUバイナリをホストから直接起動できる。
-`work/native-libs`は任意のローカルライブラリ置き場。通常の再現手順はDocker実行を既定とする。
+現在のスクリプトはホスト直接実行が既定。Dockerと`FTPM_NATIVE_QEMU`の指定は不要。
+QEMUの出力先は`work/qemu-build/`。必要ツールと権限は[ホスト環境](native-host.md)を参照。
 
 ## 検証の限界
 

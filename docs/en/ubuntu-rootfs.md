@@ -18,18 +18,18 @@ QEMU, OP-TEE, and Linux sources were subsequently bundled. See the [source layou
 
 ## Build
 
-The host needs Docker, Bash, curl, sha256sum, readelf, and tar.
+The host needs Bash, curl, sha256sum, readelf, tar, PRoot, QEMU user mode, e2fsprogs and kmod. See [host setup](native-host.md).
 PRoot and QEMU user-mode run inside the build container, without host binfmt registration or privileged containers.
 
 ```bash
 scripts/fetch-ubuntu-base.sh
-scripts/build-ubuntu-rootfs.sh \
+sudo bash scripts/build-ubuntu-rootfs.sh \
   /workspace/work/nvidia-r36.5.2/optee/optee/install/t234 \
   work/ubuntu-jammy-arm64-rootfs.tar
 ```
 
 Replace the OP-TEE install path with your build location.
-Existing output archives are not overwritten. The build produces Docker image `qemu-jetson-rootfs:jammy` and a rootfs tar.
+Existing archives are not overwritten. Native host assembly produces a rootfs tar; use sudo to preserve guest file ownership.
 The final image excludes the build-only PRoot and QEMU tools.
 Downloads are checked against the [pinned SHA-256](../../manifests/ubuntu-base-22.04.5-arm64.sha256).
 Official checksums: https://cdimage.ubuntu.com/ubuntu-base/releases/22.04/release/SHA256SUMS .
@@ -71,7 +71,7 @@ These checks do not establish NV persistence, seal/unseal, Fuse-derived identity
 Record download, build, and execution results below. Distinguish userland execution inside the rootfs
 from OP-TEE/TPM testing under QEMU system emulation.
 
-November 16, 2026 (Japan time): construction using Docker/PRoot/QEMU user-mode completed with exit code 0.
+Historical validation of the former setup (not a validation of the new privileged native assembly): November 16, 2026 (Japan time), Docker/PRoot/QEMU-user construction completed with exit code 0.
 Verified Ubuntu 22.04.5 LTS ARM64, NVIDIA's `tee-supplicant --help`, and `tpm2_getcap --version` (5.2).
 Inspected the exported tar for ARM64 ELF files, libteec, the guest check script, service enablement link,
 0700 permissions on `/data/tee`, and absence of the build-only QEMU executable.

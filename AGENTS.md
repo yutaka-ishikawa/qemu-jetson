@@ -8,3 +8,5 @@
 - Continue the approved option-B path with B2: integrate the complete NVIDIA helper PTA, not a PING_NS-only replacement. Keep the existing T234 hardware profile available.
 - Decision 0003 approves generating a QEMU-only test CA and virtual-device keys/certificates. Label them as test-only; never claim NVIDIA manufacturing trust.
 - Keep generated device secrets, disk images, and build outputs out of Git.
+
+- Decision 0004 requires native host builds and launches. Do not add Docker/buildx dependencies. QEMU outputs default to work/qemu-build; system installation is not performed.

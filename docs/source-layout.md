@@ -69,9 +69,9 @@ Linuxのrootfs連携設定は [optee-ftpm.config](../configs/kernel/optee-ftpm.c
 上記件数は別条件で除外したファイルを含まない。ファイル名はすべてASCII。
 復元対象7件は追跡されていないことを確認した。
 
-Dockerを使う場合は `scripts/build-qemu.sh` が専用ビルドイメージを作り、同梱ソースをビルドする。出力先は `work/qemu-container-build/`。
+`scripts/build-qemu.sh`はホスト上で同梱ソースを直接ビルドする。出力先は`work/qemu-build/`。[ホスト環境の準備](native-host.md)を参照。
 
-ビルド用Dockerイメージを再生成する場合は `QEMU_REBUILD_BUILDER=1 scripts/build-qemu.sh` を使う。
+`QEMU_BUILD_DIR=/absolute/path`でビルド先を変更できる。システムへのQEMUのinstallは行わない。
 既存の同名イメージは通常再利用する。基準試験スクリプトは `scripts/check-qemu-baseline.py`。
 
 ## QEMU基準試験結果

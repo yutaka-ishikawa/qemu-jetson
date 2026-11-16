@@ -18,18 +18,18 @@ QEMU／OP-TEE／Linuxのソースはその後同梱した。[ソース配置](so
 
 ## ビルド
 
-ホストにDocker、Bash、curl、sha256sum、readelf、tarが必要。
+ホストにBash、curl、sha256sum、readelf、tar、PRoot、QEMUユーザーモード、e2fsprogs、kmodが必要。[導入手順](native-host.md)を参照。
 PRootとQEMUユーザーモードをビルドコンテナ内で使うため、ホストへのbinfmt登録や特権コンテナは不要。
 
 ```bash
 scripts/fetch-ubuntu-base.sh
-scripts/build-ubuntu-rootfs.sh \
+sudo bash scripts/build-ubuntu-rootfs.sh \
   /workspace/work/nvidia-r36.5.2/optee/optee/install/t234 \
   work/ubuntu-jammy-arm64-rootfs.tar
 ```
 
 OP-TEEのinstallパスは自分のビルド先に置き換える。
-既存の出力tarは上書きしない。Dockerイメージ `qemu-jetson-rootfs:jammy` とrootfs tarを生成する。
+既存の出力tarは上書きしない。ホスト上でrootfs tarを生成する。ゲストの所有者情報を保持するためrootfsの組み立てはsudoで実行する。
 最終イメージにはビルド用のPRoot／QEMUを含めない。
 取得時は [固定SHA-256](../manifests/ubuntu-base-22.04.5-arm64.sha256) を検証する。
 公式チェックサムは https://cdimage.ubuntu.com/ubuntu-base/releases/22.04/release/SHA256SUMS 。
@@ -71,7 +71,7 @@ Ubuntu／CPU、`/dev/teepriv0`、supplicantサービス、`/dev/tpmrm0`を確認
 取得・構築・実行の結果は本書末尾に記録する。rootfs内のユーザーランド実行試験と、
 QEMU system emulationでのOP-TEE／TPM試験は区別する。
 
-2026-11-16（日本時間）：Docker／PRoot／QEMUユーザーモードによる構築が終了コード0で成功。
+旧構成の検証履歴（新しい管理者権限でのホスト組み立ての検証結果ではない）：2026-11-16（日本時間）、Docker／PRoot／QEMUユーザーモードによる構築が終了コード0で成功。
 Ubuntu 22.04.5 LTS ARM64、NVIDIA版 `tee-supplicant --help` と `tpm2_getcap --version`（5.2）を確認。
 出力tar内のARM64 ELF、libteec、ゲスト確認スクリプト、サービスの有効化リンク、
 `/data/tee`の0700権限、ビルド用QEMUが含まれないことを検証した。

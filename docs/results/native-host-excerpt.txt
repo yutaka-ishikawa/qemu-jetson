@@ -1,0 +1,39 @@
+Actual native-host regression markers; existing disk and credentials preserved.
+         Starting Create System Users...
+[  OK  ] Finished Create System Users.
+         Starting Network Name Resolution...
+[  OK  ] Started Network Name Resolution.
+[   41.985342] ftpm-identity-test[203]: PTA_TEST: PING_NS READY PASS
+[   41.987922] ftpm-identity-test[203]: PTA_TEST: online mode / version 2.0 PASS
+[   41.996474] ftpm-identity-test[203]: PTA_TEST: API sn.bin PASS
+[   41.998284] ftpm-identity-test[203]: PTA_TEST: API ecid.bin PASS
+[   41.999910] ftpm-identity-test[203]: PTA_TEST: API rsa-cert.der PASS
+[   42.001876] ftpm-identity-test[203]: PTA_TEST: API ec-cert.der PASS
+[   42.003800] ftpm-identity-test[203]: PTA_TEST: API sid-cert.der PASS
+[   42.013165] ftpm-identity-test[203]: PTA_TEST: API fw-cert.der PASS
+[   42.014746] ftpm-identity-test[203]: PTA_TEST: API rsa-csr.der PASS
+[   42.020901] ftpm-identity-test[203]: PTA_TEST: API ec-csr.der PASS
+[   42.022582] ftpm-identity-test[203]: PTA_TEST: SIGN_EK_CSR raw signature received PASS
+[   42.024477] ftpm-identity-test[203]: PTA_TEST: invalid parameters and disabled INJECT_EPS rejected PASS
+[   43.749088] ftpm-identity-test[201]: PTA_TEST: certificates/CSR match, CA chains, Firmware ID signature PASS
+[   44.002492] ftpm-identity-test[172]: EK_TEST: actual RSA/EC EK keys match PTA certificates PASS
+[   44.920476] ftpm-identity-test[172]: EK_TEST: standard RSA/EC EK certificate NV indices PASS
+[   45.094808] ftpm-identity-test[241]: FTPM_TEST: START phase=second
+[   45.823766] ftpm-identity-test[241]: PTA_TEST: PING_NS READY PASS
+[   45.826658] ftpm-identity-test[241]: PTA_TEST: online mode / version 2.0 PASS
+[   45.836692] ftpm-identity-test[241]: PTA_TEST: API sn.bin PASS
+[   45.838267] ftpm-identity-test[241]: PTA_TEST: API ecid.bin PASS
+[   45.839834] ftpm-identity-test[241]: PTA_TEST: API rsa-cert.der PASS
+[   45.847774] ftpm-identity-test[241]: PTA_TEST: API ec-cert.der PASS
+[   45.850775] ftpm-identity-test[241]: PTA_TEST: API sid-cert.der PASS
+[   45.852668] ftpm-identity-test[241]: PTA_TEST: API fw-cert.der PASS
+[   45.854331] ftpm-identity-test[241]: PTA_TEST: API rsa-csr.der PASS
+[   45.860585] ftpm-identity-test[241]: PTA_TEST: API ec-csr.der PASS
+[   45.862383] ftpm-identity-test[241]: PTA_TEST: SIGN_EK_CSR raw signature received PASS
+[   45.863899] ftpm-identity-test[241]: PTA_TEST: invalid parameters and disabled INJECT_EPS rejected PASS
+[   47.205317] ftpm-identity-test[241]: PTA_TEST: certificates/CSR match, CA chains, Firmware ID signature PASS
+[   48.406315] ftpm-identity-test[241]: FTPM_TEST: reboot NV/key persistence and PCR reset PASS
+[   48.881471] ftpm-identity-test[241]: FTPM_TEST: RSA sign/verify PASS
+[   49.369870] ftpm-identity-test[241]: FTPM_TEST: seal/unseal PASS
+[   49.469880] ftpm-identity-test[241]: FTPM_TEST: PASS phase=second
+[   49.548674] ftpm-identity-test[172]: EK_TEST: PASS

@@ -69,9 +69,9 @@ November 16, 2026 (Japan time): verified that Git tracks all expected distributi
 These counts exclude separately licensed files listed above. All filenames are ASCII.
 Verified that the seven locally restored files are not tracked.
 
-With Docker, `scripts/build-qemu.sh` creates a dedicated builder image and compiles the bundled sources into `work/qemu-container-build/`.
+`scripts/build-qemu.sh` builds bundled sources directly on the host into `work/qemu-build/`. See [host setup](native-host.md).
 
-Use `QEMU_REBUILD_BUILDER=1 scripts/build-qemu.sh` to rebuild the builder image; otherwise the existing named image is reused. The baseline check is `scripts/check-qemu-baseline.py`.
+Use `QEMU_BUILD_DIR=/absolute/path` to change the build directory. No system QEMU installation is performed. The baseline check is `scripts/check-qemu-baseline.py`.
 
 ## QEMU baseline test results
 

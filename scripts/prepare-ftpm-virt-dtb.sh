@@ -1,15 +1,13 @@
 #!/usr/bin/env bash
 set -euo pipefail
-repo=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")/.." && pwd)
+source "$(dirname -- "${BASH_SOURCE[0]}")/host-common.sh"
 cd "$repo"
 out=work/ftpm-virt
 test -f "$out/provisioning.bin" || { echo 'Provisioning data is required for B2 tests' >&2; exit 1; }
-runner=(docker run --rm -v "$repo:/src" -w /src qemu-jetson-build:jammy)
-if [[ ${FTPM_NATIVE_QEMU:-0} == 1 ]]; then
-    runner=(env "LD_LIBRARY_PATH=$repo/work/native-libs${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}")
-fi
-"${runner[@]}" \
-    work/qemu-container-build/qemu-system-aarch64 -L qemu/pc-bios \
+require_commands python3 dtc
+[[ -x "$qemu_build_dir/qemu-system-aarch64" ]] || { echo 'Run scripts/build-qemu.sh first' >&2; exit 1; }
+rm -f -- "$out/virt.dtb"
+"$qemu_build_dir/qemu-system-aarch64" -L qemu/pc-bios \
     -machine jetson-ftpm-virt,secure=on,gic-version=2,identity-file="$out/device-identity.bin",provisioning-file="$out/provisioning.bin",dumpdtb="$out/virt.dtb" \
     -cpu cortex-a57 -smp 1 -m 1024M -display none -monitor none -bios "$out/flash.bin"
 dtc -I dtb -O dts -o "$out/virt.dts" "$out/virt.dtb"

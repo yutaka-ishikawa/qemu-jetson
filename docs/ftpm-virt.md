@@ -33,7 +33,7 @@ B試作段階のHUK由来EPS実装は、B2ではNVIDIA helper PTAの元のEPS導
 
 ## 再現手順
 
-Docker、Python3、NVIDIA提供AArch64 GCC、dtc、Pythonのcryptography・pycryptodome・pyelftoolsが必要。
+ホストの開発ツール、Python3、NVIDIA提供AArch64 GCC、dtc、Pythonのcryptography・pycryptodome・pyelftoolsが必要。
 既存のNVIDIAコンポーネント復元・クライアントビルドは[実装手順](implementation-plan.md)を参照する。
 
 ```bash
@@ -42,9 +42,9 @@ scripts/build-qemu.sh
 export CROSS_COMPILE=/path/to/aarch64-buildroot-linux-gnu-
 scripts/build-ftpm-virt-firmware.sh
 scripts/fetch-ftpm-virt-kernel.py
-FTPM_FUNCTIONAL_PROFILE=1 KERNEL_MODULES_DIR="$PWD/work/ftpm-virt/modules" \
+sudo env FTPM_FUNCTIONAL_PROFILE=1 KERNEL_MODULES_DIR="$PWD/work/ftpm-virt/modules" \
   scripts/build-ubuntu-rootfs.sh /path/to/optee/install/t234 work/ftpm-virt/rootfs.tar
-scripts/create-ftpm-virt-disk.sh
+sudo bash scripts/create-ftpm-virt-disk.sh
 # B2では鍵・証明書の選択後、ftpm-helper-port.mdに従いprovisioning.binを作成する
 scripts/prepare-ftpm-virt-dtb.sh
 scripts/run-ftpm-virt.sh first 2>&1 | tee work/ftpm-virt/first.log

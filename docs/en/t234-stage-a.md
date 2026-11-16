@@ -39,7 +39,7 @@ ROM and Secure RAM are loaded through QEMU's secure address space.
 
 ## Reproduce
 
-Provide NVIDIA's specified AArch64 toolchain, dtc, and Docker.
+Provide NVIDIA's specified AArch64 toolchain, dtc, and [native host tools](native-host.md).
 
 ```bash
 export CROSS_COMPILE_AARCH64=/path/to/toolchain/bin/aarch64-buildroot-linux-gnu-
@@ -54,9 +54,8 @@ Place the existing unmodified `tee-raw.bin` at `work/optee-baseline/tee-raw.bin`
 A fresh clone does not include that artifact; see the [OP-TEE build record](r36.5.2-build.md).
 
 ```bash
-docker run --rm -v "$PWD:/src" -w /src qemu-jetson-build:jammy \
   python3 scripts/check-t234-boot.py \
-  work/qemu-container-build/qemu-system-aarch64 \
+  work/qemu-build/qemu-system-aarch64 \
   --optee work/optee-baseline/tee-raw.bin
 ```
 

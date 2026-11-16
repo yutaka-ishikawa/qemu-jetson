@@ -1,5 +1,7 @@
 # qemu-jetson
 
+Build and run without Docker. Start with [native host setup](docs/en/native-host.md). QEMU outputs go to work/qemu-build/; no system QEMU installation is performed.
+
 [日本語](README.md) | English
 
 QEMU for NVIDIA Jetson Orin Nano.

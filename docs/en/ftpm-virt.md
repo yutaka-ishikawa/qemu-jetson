@@ -33,7 +33,7 @@ This profile does not protect secrets from the host administrator, resist physic
 
 ## Reproduction
 
-Requirements: Docker, Python3, NVIDIA's AArch64 GCC, dtc, and the cryptography, pycryptodome and pyelftools Python packages.
+Requirements: native host tools, Python3, NVIDIA's AArch64 GCC, dtc, and the cryptography, pycryptodome and pyelftools Python packages.
 See the [implementation plan](implementation-plan.md) for restoring NVIDIA components and building its OP-TEE client.
 
 ```bash
@@ -42,9 +42,9 @@ scripts/build-qemu.sh
 export CROSS_COMPILE=/path/to/aarch64-buildroot-linux-gnu-
 scripts/build-ftpm-virt-firmware.sh
 scripts/fetch-ftpm-virt-kernel.py
-FTPM_FUNCTIONAL_PROFILE=1 KERNEL_MODULES_DIR="$PWD/work/ftpm-virt/modules" \
+sudo env FTPM_FUNCTIONAL_PROFILE=1 KERNEL_MODULES_DIR="$PWD/work/ftpm-virt/modules" \
   scripts/build-ubuntu-rootfs.sh /path/to/optee/install/t234 work/ftpm-virt/rootfs.tar
-scripts/create-ftpm-virt-disk.sh
+sudo bash scripts/create-ftpm-virt-disk.sh
 # For B2, select key/certificate data and pack provisioning.bin as documented in ftpm-helper-port.md.
 scripts/prepare-ftpm-virt-dtb.sh
 scripts/run-ftpm-virt.sh first 2>&1 | tee work/ftpm-virt/first.log

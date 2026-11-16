@@ -39,7 +39,7 @@ The generated certificates have no NVIDIA or manufacturer manufacturing trust.
 
 ## Reproduction
 
-Requirements: QEMU/NVIDIA build environment, dtc, Python with cryptography, and Docker.
+Requirements: QEMU/NVIDIA build environment, dtc, Python with cryptography, and [native host dependencies](native-host.md).
 Prepare NVIDIA's kernel Image/matching fTPM module and build its OP-TEE client.
 See the [boot instructions](ftpm-virt.md) and [port instructions](ftpm-helper-port.md).
 
@@ -53,10 +53,10 @@ python3 scripts/generate-ftpm-test-provisioning.py work/ftpm-test-provisioning
 python3 scripts/pack-ftpm-provisioning.py \
   work/ftpm-test-provisioning/manifest.json work/ftpm-virt/device-identity.bin \
   work/ftpm-virt/provisioning.bin
-FTPM_FUNCTIONAL_PROFILE=1 KERNEL_MODULES_DIR="$PWD/work/ftpm-virt/modules" \
+sudo env FTPM_FUNCTIONAL_PROFILE=1 KERNEL_MODULES_DIR="$PWD/work/ftpm-virt/modules" \
   scripts/build-ubuntu-rootfs.sh /path/to/optee/install/t234 work/ftpm-virt/rootfs.tar
 python3 scripts/prepare-ftpm-test-rootfs.py work/ftpm-virt/rootfs.tar work/ftpm-test-provisioning
-scripts/create-ftpm-virt-disk.sh
+sudo bash scripts/create-ftpm-virt-disk.sh
 scripts/prepare-ftpm-virt-dtb.sh
 # Check success markers and successful process exits.
 scripts/run-ftpm-virt.sh first > work/ftpm-virt/first.log 2>&1
@@ -92,9 +92,8 @@ The relay TA is a test instrument calling the real PTA from user mode, not a rep
 - Override PRoot -R's host passwd/group bindings with explicit guest-file bindings, avoiding inconsistent guest passwd/group and shadow/gshadow databases.
 - Replay the journal with fsck before offline test-disk edits and verify filesystem consistency afterward.
 
-Small Docker VFS environments may require build-cache cleanup.
-With libfdt and other runtime libraries on the host, FTPM_NATIVE_QEMU=1 launches the same QEMU binary directly.
-work/native-libs is an optional local library directory; Docker remains the default reproduction path.
+Scripts now run directly on the host by default; Docker and FTPM_NATIVE_QEMU are unnecessary.
+QEMU output is work/qemu-build/. See [host setup](native-host.md) for dependencies and privileges.
 
 ## Limits
 
