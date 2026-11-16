@@ -270,7 +270,7 @@ Local validation passed PTA and second on an existing persistent disk.
 On 2026-11-17 (Japan time), the user additionally reported all test-guide.md tests passed.
 This final confirmation is user-reported, not independent reinspection of every corresponding log.
 See the [local results](../results/optee-xlat-tables.json) and [excerpt](../results/optee-xlat-tables-excerpt.txt).
-The detailed mapping count exceeding eight and worst-case headroom at 32 have not been measured.
+Update: the analysis linked below measures a path exceeding eight; worst-case demand remains unproven.
 QEMU and physical T234 memory layouts differ; this result alone establishes neither failure nor immunity on hardware.
 
 ## Document organization decision
@@ -282,3 +282,5 @@ The former ftpm-test-guide.md was renamed and expanded to include the initial te
 ## Related evidence and hardware differences
 
 See [hardware differences](hardware-qemu-differences.md) and [final evidence](final-test-evidence.md).
+
+See the [usage analysis](page-table-analysis.md): controlled ASLR seed probes reached 9/32 tables, leaving 23, and bound passed in that layout. This is not a worst-case guarantee.

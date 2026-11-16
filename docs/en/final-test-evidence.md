@@ -41,3 +41,5 @@ Certificate signature validation relies on guest PASS markers; issued public cer
 Private keys, seeds, identity files and disks need not be supplied. Do not duplicate logs to satisfy the older six-log checker.
 
 See [test-guide.md](test-guide.md) for execution and [hardware differences](hardware-qemu-differences.md) for scope and limitations.
+
+Additional [table measurements](page-table-analysis.md) are developer diagnostic tests, recorded separately from supplied user logs.

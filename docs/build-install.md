@@ -277,7 +277,7 @@ bash scripts/prepare-ftpm-virt-dtb.sh
 最後の全PASSはユーザー報告であり、この報告に対応する全ログをこちらで再検証したという意味ではない。
 [手元の検証結果](results/optee-xlat-tables.json)と[ログ抜粋](results/optee-xlat-tables-excerpt.txt)も参照。
 
-8個を超えた詳細なマッピング内訳と32個の最大負荷時の余裕は未計測。
+追記：8個を超える経路を下記の解析で計測した。全負荷での上限は未確定。
 QEMUとT234実機はプラットフォーム・メモリ配置が異なるため、この結果だけで実機での発生や非発生を断定しない。
 
 ## 文書構成の選択
@@ -289,3 +289,5 @@ QEMUとT234実機はプラットフォーム・メモリ配置が異なるため
 ## 実機との差分と検証証拠
 
 [実機とQEMUの違い](hardware-qemu-differences.md)と[最終テストの証拠整理](final-test-evidence.md)を参照。
+
+ページテーブル使用量は[解析結果](page-table-analysis.md)を参照。ASLR seedを変えた計測で最大9/32個、残り23個を確認し、9個の配置でもboundがPASSした。全負荷での上限保証ではない。

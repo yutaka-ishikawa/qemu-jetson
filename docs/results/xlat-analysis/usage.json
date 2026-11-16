@@ -1,0 +1,138 @@
+[
+  {
+    "log": "secure-second.log",
+    "sha256": "0d9db1ba2d769227db2088987c59aa0c09415055d2cc3f3caac22f69973dbf1f",
+    "max_tables": 32,
+    "peak_tables_used": 5,
+    "unused_tables_at_observed_peak": 27,
+    "table_size_bytes": 4096,
+    "peak_table_bytes": 20480,
+    "allocation_records": 5,
+    "peak_before_normal_world": 4,
+    "events": {
+      "SPLIT_level_1": 1,
+      "SPLIT_level_2": 4
+    },
+    "map_calls": 174,
+    "panic": false
+  },
+  {
+    "log": "secure-bound.log",
+    "sha256": "7cc1cf14b61f3c3d5545fdde2ea8b2f90f4adf0a8d04eb58fdcfeb33c4abb733",
+    "max_tables": 32,
+    "peak_tables_used": 5,
+    "unused_tables_at_observed_peak": 27,
+    "table_size_bytes": 4096,
+    "peak_table_bytes": 20480,
+    "allocation_records": 5,
+    "peak_before_normal_world": 4,
+    "events": {
+      "SPLIT_level_1": 1,
+      "SPLIT_level_2": 4
+    },
+    "map_calls": 409,
+    "panic": false
+  },
+  {
+    "log": "seed-00000001.secure.log",
+    "sha256": "7b673dc38db794773ecfc4d26656d33203c083c94cb238406c1a2d5d28a9fe83",
+    "max_tables": 32,
+    "peak_tables_used": 7,
+    "unused_tables_at_observed_peak": 25,
+    "table_size_bytes": 4096,
+    "peak_table_bytes": 28672,
+    "allocation_records": 7,
+    "peak_before_normal_world": 6,
+    "events": {
+      "SPLIT_level_1": 2,
+      "SPLIT_level_2": 5
+    },
+    "map_calls": 8,
+    "panic": false
+  },
+  {
+    "log": "seed-20001000.secure.log",
+    "sha256": "14fc22e929c72bd479d9d4eebc7c0b89710e397f2cb6b843f71b28bd7dac1de9",
+    "max_tables": 32,
+    "peak_tables_used": 6,
+    "unused_tables_at_observed_peak": 26,
+    "table_size_bytes": 4096,
+    "peak_table_bytes": 24576,
+    "allocation_records": 6,
+    "peak_before_normal_world": 5,
+    "events": {
+      "SPLIT_level_1": 1,
+      "SPLIT_level_2": 5
+    },
+    "map_calls": 8,
+    "panic": false
+  },
+  {
+    "log": "seed-60001000.secure.log",
+    "sha256": "e9b4f0a3b4f607c284cb0a3ff182ffe06e1e00149f19a30f3ede381c4fe74a9a",
+    "max_tables": 32,
+    "peak_tables_used": 7,
+    "unused_tables_at_observed_peak": 25,
+    "table_size_bytes": 4096,
+    "peak_table_bytes": 28672,
+    "allocation_records": 7,
+    "peak_before_normal_world": 6,
+    "events": {
+      "SPLIT_level_1": 2,
+      "SPLIT_level_2": 5
+    },
+    "map_calls": 8,
+    "panic": false
+  },
+  {
+    "log": "seed-b3b0b000.secure.log",
+    "sha256": "8f190d172a68bc343bd9d603b4d9ae7adb1c1ca3647ea7473f6b607a905f611b",
+    "max_tables": 32,
+    "peak_tables_used": 9,
+    "unused_tables_at_observed_peak": 23,
+    "table_size_bytes": 4096,
+    "peak_table_bytes": 36864,
+    "allocation_records": 9,
+    "peak_before_normal_world": 8,
+    "events": {
+      "SPLIT_level_1": 3,
+      "SPLIT_level_2": 6
+    },
+    "map_calls": 8,
+    "panic": false
+  },
+  {
+    "log": "seed-fdf01000.secure.log",
+    "sha256": "82668deb56dd9454afb729cef21978c874113e63066bccc84bd8e7184d766115",
+    "max_tables": 32,
+    "peak_tables_used": 8,
+    "unused_tables_at_observed_peak": 24,
+    "table_size_bytes": 4096,
+    "peak_table_bytes": 32768,
+    "allocation_records": 8,
+    "peak_before_normal_world": 7,
+    "events": {
+      "SPLIT_level_1": 2,
+      "SPLIT_level_2": 6
+    },
+    "map_calls": 8,
+    "panic": false
+  },
+  {
+    "log": "secure-bound-seed-b3b0b000.log",
+    "sha256": "3daf76eba01129c7110175a689d117a72b9fa158878de03e37a36354c547f1e9",
+    "max_tables": 32,
+    "peak_tables_used": 9,
+    "unused_tables_at_observed_peak": 23,
+    "table_size_bytes": 4096,
+    "peak_table_bytes": 36864,
+    "allocation_records": 9,
+    "peak_before_normal_world": 8,
+    "events": {
+      "SPLIT_level_1": 3,
+      "SPLIT_level_2": 6
+    },
+    "map_calls": 411,
+    "panic": false
+  }
+]

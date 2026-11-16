@@ -14,6 +14,7 @@ This project aims to run NVIDIA's OP-TEE and fTPM with minimal changes to NVIDIA
 
 - [Physical hardware versus QEMU](docs/en/hardware-qemu-differences.md)
 - [Final test evidence](docs/en/final-test-evidence.md)
+- [OP-TEE page-table usage analysis](docs/en/page-table-analysis.md)
 
 
 - [Fuse model and validation](docs/en/t234-fuse.md)

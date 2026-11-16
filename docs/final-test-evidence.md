@@ -42,3 +42,5 @@ RSA/ECC EK_EXPORTを復号し、DER SPKIのSHA-256がexport/bound/bound-reboot�
 従来の6ログ用checkerの不足をログ複製で回避しない。
 
 実行方法は[test-guide.md](test-guide.md)、検証範囲と限界は[実機との差分](hardware-qemu-differences.md)を参照。
+
+追加の[ページテーブル計測](page-table-analysis.md)は開発側の診断試験。ユーザーログの証拠とは分離して記録した。

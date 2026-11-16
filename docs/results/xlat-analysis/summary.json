@@ -1,0 +1,22 @@
+{
+  "measurement_scope": "developer QEMU B2, 1 CPU, 32 core xlat tables, diagnostic patch only",
+  "status": "PASS: second and bound; seeded bound also PASS",
+  "original_user_failure": "8 tables exhausted followed by core_mmu_map_pages panic; original user DTB not supplied",
+  "peak_observed_tables": 9,
+  "configured_tables": 32,
+  "unused_at_peak": 23,
+  "short_seed_probes": "6-second snapshot boots; timeout 124 expected, not full test PASS",
+  "full_seed_probe": "secure-chosen kaslr-seed=0x00000000b3b0b000; bound PASS with snapshot writes discarded",
+  "pool_table_bytes": 4096,
+  "ninth_table_type": "MEM_AREA_NSEC_SHM, one-page mapping at VA 0xbea00000",
+  "limitations": [
+    "not a worst-case guarantee",
+    "does not reproduce original user binary/DTB bit-for-bit",
+    "not all page-table memory: base tables and per-TA/user tables are separate"
+  ],
+  "sources": [
+    "core/arch/arm/mm/core_mmu_lpae.c",
+    "core/mm/core_mmu.c",
+    "core/arch/arm/kernel/boot.c"
+  ]
+}

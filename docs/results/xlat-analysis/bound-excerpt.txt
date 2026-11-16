@@ -1,0 +1,36 @@
+Original SHA-256: 3d4fa1dc1caddedb3233b824e6a59d429f3b189a9ce46f0307e69bbe39164e8e
+[    0.000000] Kernel command line: console=ttyAMA0,115200 earlycon root=/dev/vda rw rootwait panic=5 lsm=lockdown,yama,integrity,apparmor,bpf systemd.log_target=console ftpm.identity_test=bound
+[   43.379546] ftpm-identity-test[203]: PTA_TEST: PING_NS READY PASS
+[   43.390430] ftpm-identity-test[203]: PTA_TEST: online mode / version 2.0 PASS
+[   43.397649] ftpm-identity-test[203]: PTA_TEST: API sn.bin PASS
+[   43.399419] ftpm-identity-test[203]: PTA_TEST: API ecid.bin PASS
+[   43.401307] ftpm-identity-test[203]: PTA_TEST: API rsa-cert.der PASS
+[   43.402822] ftpm-identity-test[203]: PTA_TEST: API ec-cert.der PASS
+[   43.411037] ftpm-identity-test[203]: PTA_TEST: API sid-cert.der PASS
+[   43.413281] ftpm-identity-test[203]: PTA_TEST: API fw-cert.der PASS
+[   43.414806] ftpm-identity-test[203]: PTA_TEST: API rsa-csr.der PASS
+[   43.420607] ftpm-identity-test[203]: PTA_TEST: API ec-csr.der PASS
+[   43.422196] ftpm-identity-test[203]: PTA_TEST: SIGN_EK_CSR raw signature received PASS
+[   43.423719] ftpm-identity-test[203]: PTA_TEST: invalid parameters and disabled INJECT_EPS rejected PASS
+[   45.047460] ftpm-identity-test[201]: PTA_TEST: certificates/CSR match, CA chains, Firmware ID signature PASS
+[   45.299209] ftpm-identity-test[170]: EK_TEST: actual RSA/EC EK keys match PTA certificates PASS
+[   46.184712] ftpm-identity-test[170]: EK_TEST: standard RSA/EC EK certificate NV indices PASS
+[   46.362426] ftpm-identity-test[241]: FTPM_TEST: START phase=second
+[   47.182630] ftpm-identity-test[241]: PTA_TEST: PING_NS READY PASS
+[   47.184811] ftpm-identity-test[241]: PTA_TEST: online mode / version 2.0 PASS
+[   47.186304] ftpm-identity-test[241]: PTA_TEST: API sn.bin PASS
+[   47.196833] ftpm-identity-test[241]: PTA_TEST: API ecid.bin PASS
+[   47.198369] ftpm-identity-test[241]: PTA_TEST: API rsa-cert.der PASS
+[   47.199775] ftpm-identity-test[241]: PTA_TEST: API ec-cert.der PASS
+[   47.206136] ftpm-identity-test[241]: PTA_TEST: API sid-cert.der PASS
+[   47.207777] ftpm-identity-test[241]: PTA_TEST: API fw-cert.der PASS
+[   47.213643] ftpm-identity-test[241]: PTA_TEST: API rsa-csr.der PASS
+[   47.215258] ftpm-identity-test[241]: PTA_TEST: API ec-csr.der PASS
+[   47.216915] ftpm-identity-test[241]: PTA_TEST: SIGN_EK_CSR raw signature received PASS
+[   47.218521] ftpm-identity-test[241]: PTA_TEST: invalid parameters and disabled INJECT_EPS rejected PASS
+[   48.617510] ftpm-identity-test[241]: PTA_TEST: certificates/CSR match, CA chains, Firmware ID signature PASS
+[   49.797172] ftpm-identity-test[241]: FTPM_TEST: reboot NV/key persistence and PCR reset PASS
+[   50.295681] ftpm-identity-test[241]: FTPM_TEST: RSA sign/verify PASS
+[   50.799722] ftpm-identity-test[241]: FTPM_TEST: seal/unseal PASS
+[   50.897200] ftpm-identity-test[241]: FTPM_TEST: PASS phase=second
+[   50.971228] ftpm-identity-test[170]: EK_TEST: PASS

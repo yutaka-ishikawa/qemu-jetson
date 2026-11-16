@@ -62,3 +62,5 @@ B2のfTPM PASSをもって、このT234構成が完成したとは扱わない�
 [CSR署名](ek-csr-signing.md)、[従来の検証結果](ftpm-functional-validation.md)を参照。
 本構成は、NVIDIA版fTPM/helperのソフトウェア機能、API連携、状態の保持、証明書処理を開発・試験するための環境。
 製品の信頼基盤・保護強度や実機での最終検証を代替しない。
+
+[ページテーブル計測](page-table-analysis.md)でQEMUの観測ピーク9/32個を確認。実機の使用数を示すものではない。

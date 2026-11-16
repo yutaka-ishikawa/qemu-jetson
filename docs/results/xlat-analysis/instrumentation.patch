@@ -1,0 +1,40 @@
+diff --git a/optee/optee/optee_os/core/arch/arm/mm/core_mmu_lpae.c b/optee/optee/optee_os/core/arch/arm/mm/core_mmu_lpae.c
+index dffbda8d0..8eb15884c 100644
+--- a/optee/optee/optee_os/core/arch/arm/mm/core_mmu_lpae.c
++++ b/optee/optee/optee_os/core/arch/arm/mm/core_mmu_lpae.c
+@@ -523,6 +523,7 @@ static uint64_t *core_mmu_xlat_table_alloc(struct mmu_partition *prtn)
+ 	}
+ 
+ 	new_table = prtn->xlat_tables[prtn->xlat_tables_used++];
++	IMSG("XLAT_ALLOC used=%u max=%u", prtn->xlat_tables_used, MAX_XLAT_TABLES);
+ 
+ 	DMSG("xlat tables used %u / %u",
+ 	     prtn->xlat_tables_used, MAX_XLAT_TABLES);
+@@ -590,6 +591,7 @@ static bool core_mmu_entry_copy(struct core_mmu_table_info *tbl_info,
+ 	    tbl_info->level >= XLAT_TABLE_LEVEL_MAX)
+ 		return true;
+ 
++	IMSG("XLAT_COPY level=%u va=%" PRIxVA " idx=%u", tbl_info->level, tbl_info->va_base, idx);
+ 	new_table = core_mmu_xlat_table_alloc(prtn);
+ 	if (!new_table)
+ 		return false;
+@@ -1105,6 +1107,7 @@ bool core_mmu_entry_to_finer_grained(struct core_mmu_table_info *tbl_info,
+ 	if ((*entry & DESC_ENTRY_TYPE_MASK) == TABLE_DESC)
+ 		return true;
+ 
++	IMSG("XLAT_SPLIT level=%u va=%" PRIxVA " idx=%u", tbl_info->level, tbl_info->va_base, idx);
+ 	new_table = core_mmu_xlat_table_alloc(prtn);
+ 	if (!new_table)
+ 		return false;
+diff --git a/optee/optee/optee_os/core/mm/core_mmu.c b/optee/optee/optee_os/core/mm/core_mmu.c
+index 0735f5cda..aee0edb8a 100644
+--- a/optee/optee/optee_os/core/mm/core_mmu.c
++++ b/optee/optee/optee_os/core/mm/core_mmu.c
+@@ -1885,6 +1885,7 @@ TEE_Result core_mmu_map_pages(vaddr_t vstart, paddr_t *pages, size_t num_pages,
+ 	size_t i;
+ 	bool secure;
+ 
++	IMSG("XLAT_MAP va=%" PRIxVA " pages=%zu type=%u", vstart, num_pages, memtype);
+ 	assert(!(core_mmu_type_to_attr(memtype) & TEE_MATTR_PX));
+ 
+ 	secure = core_mmu_type_to_attr(memtype) & TEE_MATTR_SECURE;

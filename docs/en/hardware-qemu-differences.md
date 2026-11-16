@@ -62,3 +62,5 @@ See [build/install](build-install.md), [tests](test-guide.md), [helper PTA port]
 [CSR signing](ek-csr-signing.md), and [earlier functional results](ftpm-functional-validation.md).
 Use this environment to develop and test NVIDIA fTPM/helper software functions, API integration, persistence and certificate processing.
 It does not replace product trust/protection or final verification on physical hardware.
+
+[Table measurements](page-table-analysis.md) reached 9/32 on QEMU; this is not a physical-device usage measurement.
