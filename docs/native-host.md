@@ -86,3 +86,17 @@ rootfsスクリプトの構文・権限エラーは確認するが、新規rootf
 以前のfTPM実行結果は[機能検証](ftpm-functional-validation.md)を参照。
 
 最新版の配置・ビルド・導入手順は[installマニュアル](install-layout.md)を参照。
+
+## Ubuntuの証明書パッケージ設定が失敗する場合
+
+`ca-certificates`のpostinstが終了コード127で失敗しても、APTの要約だけでは原因コマンドを断定できない。
+rootfs生成時はAPT失敗後に`ROOTFS_DIAG`を出力し、OpenSSLの実行・ライブラリ依存と証明書更新のシェルトレース末尾100行を表示する。
+診断用の証明書再生成は破棄される一時rootfsだけで実行し、APTの元の失敗コードで停止する。正常なrootfsとして出力しない。
+
+```bash
+git pull --ff-only
+set -o pipefail
+sudo env FTPM_FUNCTIONAL_PROFILE=1 bash scripts/build-ubuntu-rootfs.sh 2>&1 | tee work/build-rootfs.log
+```
+
+失敗時は`ROOTFS_DIAG`を含むログを確認する。rootfsへの試験データ追記・ディスク生成には進まない。

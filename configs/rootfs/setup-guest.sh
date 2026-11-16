@@ -3,9 +3,34 @@ set -eu
 export DEBIAN_FRONTEND=noninteractive
 [ "$(id -u)" = 0 ] || { echo 'Guest setup must run as root' >&2; exit 1; }
 apt-get -o APT::Sandbox::User=root update
-apt-get -o APT::Sandbox::User=root install -y --no-install-recommends \
+if apt-get -o APT::Sandbox::User=root install -y --no-install-recommends \
     systemd systemd-sysv udev kmod iproute2 ca-certificates \
-    openssl tpm2-tools libtss2-tcti-device0
+    openssl tpm2-tools libtss2-tcti-device0; then
+    :
+else
+    apt_status=$?
+    echo "ROOTFS_DIAG: package installation failed (status=$apt_status)" >&2
+    printf 'ROOTFS_DIAG: PATH=%s\n' "$PATH" >&2
+    dpkg --audit >&2 || true
+    if [ -e /var/lib/dpkg/info/ca-certificates.postinst ]; then
+        for command_name in openssl sed find run-parts; do
+            command -v "$command_name" >&2 || true
+        done
+        openssl version -a >&2 || true
+        ldd /usr/bin/openssl >&2 || true
+        echo 'ROOTFS_DIAG: tracing update-ca-certificates (last 100 lines)' >&2
+        trace=$(mktemp /tmp/qemu-jetson-ca-trace.XXXXXX)
+        if /bin/sh -x /usr/sbin/update-ca-certificates --fresh --verbose >"$trace" 2>&1; then
+            trace_status=0
+        else
+            trace_status=$?
+        fi
+        tail -n 100 "$trace" >&2 || true
+        rm -f "$trace"
+        echo "ROOTFS_DIAG: certificate trace status=$trace_status" >&2
+    fi
+    exit "$apt_status"
+fi
 ldconfig
 install -d -m 0700 /data/tee
 mkdir -p /etc/systemd/system/multi-user.target.wants /usr/share/qemu-jetson

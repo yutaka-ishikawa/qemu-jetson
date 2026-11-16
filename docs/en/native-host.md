@@ -82,3 +82,17 @@ Rootfs shell syntax and privilege errors are checked; a fresh privileged end-to-
 See [functional validation](ftpm-functional-validation.md) for prior fTPM results.
 
 See the [installation manual](install-layout.md) for the current layout and build/install workflow.
+
+## Diagnosing Ubuntu certificate package configuration failures
+
+A ca-certificates postinst exit status of 127 does not identify the failing command from the APT summary alone.
+On APT failure, rootfs assembly emits `ROOTFS_DIAG`, OpenSSL runtime/library checks, and the last 100 lines of a certificate update shell trace.
+Diagnostic certificate regeneration affects only the disposable temporary rootfs. The build exits with the original APT failure status and does not export a successful rootfs.
+
+```bash
+git pull --ff-only
+set -o pipefail
+sudo env FTPM_FUNCTIONAL_PROFILE=1 bash scripts/build-ubuntu-rootfs.sh 2>&1 | tee work/build-rootfs.log
+```
+
+On failure, inspect the log including `ROOTFS_DIAG`. Do not append test data or create a disk.
