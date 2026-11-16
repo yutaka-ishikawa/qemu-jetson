@@ -101,3 +101,12 @@ The trace uses `/bin/sh -ex`, preserving the original `#!/bin/sh -e` stop-on-err
 Earlier diagnostics omitted `-e` and could report status=0 after an intermediate failure.
 When restorecon exists, a `-n -v` dry run (without relabeling) exposes errors normally suppressed by certificate updates.
 This corrects diagnostics; it does not establish that the APT failure is resolved.
+
+### Handling restorecon exit status 127
+
+The user's log identifies `/sbin/restorecon` as the certificate update command failing with status 127;
+a direct invocation also reports `not found`. The executable test passes, but the symlink target cannot be read.
+The origin of the broken link has not been established. Ubuntu guest `policycoreutils`, which supplies restorecon,
+is now an explicit APT dependency. Success requires package configuration to finish and the build to print
+`Created .../rootfs.tar`. Certificate updates remain enabled and package configuration failures remain fatal.
+Syntax and regression checks passed; the build still needs confirmation on the affected user host.

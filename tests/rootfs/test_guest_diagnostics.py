@@ -9,6 +9,11 @@ REPO = Path(__file__).resolve().parents[2]
 
 
 class GuestDiagnosticsTest(unittest.TestCase):
+    def test_restorecon_provider_is_requested(self):
+        source = (REPO/'configs/rootfs/setup-guest.sh').read_text()
+        packages = source.split('install -y --no-install-recommends', 1)[1].split('; then', 1)[0]
+        self.assertIn('policycoreutils', packages.split())
+
     def test_apt_failure_is_preserved_and_traced(self):
         source = (REPO/'configs/rootfs/setup-guest.sh').read_text().split('\nldconfig\n')[0]
         with tempfile.TemporaryDirectory() as tmp:

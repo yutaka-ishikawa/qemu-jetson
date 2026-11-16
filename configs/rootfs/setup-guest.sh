@@ -4,7 +4,7 @@ export DEBIAN_FRONTEND=noninteractive
 [ "$(id -u)" = 0 ] || { echo 'Guest setup must run as root' >&2; exit 1; }
 apt-get -o APT::Sandbox::User=root update
 if apt-get -o APT::Sandbox::User=root install -y --no-install-recommends \
-    systemd systemd-sysv udev kmod iproute2 ca-certificates \
+    systemd systemd-sysv udev kmod iproute2 policycoreutils ca-certificates \
     openssl tpm2-tools libtss2-tcti-device0; then
     :
 else
