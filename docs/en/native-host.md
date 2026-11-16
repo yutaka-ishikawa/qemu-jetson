@@ -144,3 +144,7 @@ PTA tests and `FTPM_TEST: PASS phase=second` followed by poweroff passed with th
 Update: on 2026-11-17 (Japan time), the user reported all test-guide.md tests passed (user-reported; not all logs independently rechecked).
 See the [build guide](build-install.md#op-tee-translation-table-change-and-the-original-failure) for original errors and scope.
 See [results](../results/optee-xlat-tables.json) and [log excerpt](../results/optee-xlat-tables-excerpt.txt).
+
+## ttyAMA0 and udev boot waits
+
+See [decision 0007](decisions/0007-boot-device-wait.md) for causes and optimization alternatives. These waits concern device-unit registration and coldplug processing; the displayed 90 seconds is not a fixed delay.

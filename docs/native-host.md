@@ -149,3 +149,7 @@ bash scripts/prepare-ftpm-virt-dtb.sh
 更新：2026-11-17（日本時間）、ユーザーからtest-guide.mdの全テストPASSの報告を受けた（ユーザー報告、全ログの再検証は未実施）。
 変更前のエラー原文・適用範囲は[ビルド・導入手順](build-install.md#op-teeのページテーブル数変更と変更前のエラー)を参照。
 [結果](results/optee-xlat-tables.json)と[ログ抜粋](results/optee-xlat-tables-excerpt.txt)を参照。
+
+## 起動時のttyAMA0・udev待ち
+
+原因と高速化候補は[決定0007](decisions/0007-boot-device-wait.md)を参照。device unit登録とcoldplug処理の待ちであり、表示の90秒が固定遅延を意味するわけではない。
