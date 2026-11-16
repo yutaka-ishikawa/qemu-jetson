@@ -2,7 +2,7 @@
 
 日本語 | [English](../en/decisions/0006-guest-selinux.md)
 
-状態：ユーザー承認済み。Aを選択。QEMU専用の全4フェーズのDTBに`selinux=0`を追加する。
+状態：ユーザー承認済み。Aを選択。QEMU専用の全4フェーズのDTBに`lsm=lockdown,yama,integrity,apparmor,bpf`を追加する。
 
 ## 観測結果
 
@@ -13,7 +13,7 @@ fTPM試験のPASSは未確認。以前追加したpolicycoreutilsでrestorecon�
 
 | 候補 | 実装 | 利点 | 制約 |
 | --- | --- | --- | --- |
-| A（推奨） | QEMU専用DTBのLinux bootargsにselinux=0を追加 | カーネル・NVIDIA OP-TEE/TAを変更せず、既存rootfsとディスクを保持して試せる | ゲストのSELinuxによるアクセス制御は無効。ホストのSELinuxには影響しない |
+| A（推奨） | QEMU専用DTBのLinux bootargsにlsm=lockdown,yama,integrity,apparmor,bpfを追加 | カーネル・NVIDIA OP-TEE/TAを変更せず、既存rootfsとディスクを保持して試せる | ゲストのSELinuxによるアクセス制御は無効。ホストのSELinuxには影響しない |
 | B | UbuntuゲストにSELinuxポリシーを導入し、ファイルラベルと各サービスのアクセス規則を整備 | ゲストでもSELinuxを運用できる | rootfs変更とラベルの永続化、OP-TEE/fTPM用規則の設計・検証が必要 |
 
 AでもSELinuxの無効化はゲストのセキュリティ構成の変更として明記する。
@@ -33,7 +33,7 @@ bash scripts/run-ftpm-virt.sh first
 
 既に初回試験がPASS済みの場合は`first`を再実行せず`second`を実行する。
 DTBはinstall/へ自動配置される。QEMU・カーネル・OP-TEE・rootfsの再ビルドは不要。
-Linuxログの`Kernel command line`に`selinux=0`が入ることを確認する。
+Linuxログの`Kernel command line`に`lsm=lockdown,yama,integrity,apparmor,bpf`が入ることを確認する。
 初回PASS後に同じディスクで`second`を実行し、永続性を検証する。
 
 ## 検証
@@ -42,3 +42,14 @@ Linuxログの`Kernel command line`に`selinux=0`が入ることを確認する�
 手元の既存永続ディスクでsecondを実行し、journald/udevの起動、PTA試験、`FTPM_TEST: PASS phase=second`とpoweroffを確認した。
 SELinuxラベルによるソケット作成エラーはなかった。ユーザーの新規rootfsでのfirstは別途確認が必要。
 [ログ抜粋](../results/guest-selinux-excerpt.txt)と[結果](../results/guest-selinux.json)を保存した。
+
+## ユーザーログに基づく起動引数の修正
+
+最初の実装はselinux=0を指定したが、ユーザーのNVIDIAカーネルはこれを未認識と報告し、SELinuxを初期化していた。
+ソースのselinux=登録はCONFIG_SECURITY_SELINUX_BOOTPARAMに依存する。
+承認済みAの実装をlsm=lockdown,yama,integrity,apparmor,bpfに修正した。
+これは有効にするLSMのリストからSELinuxを外す指定。各LSMはカーネルに組み込まれている場合だけ有効になり、AppArmorポリシーの導入や保護を保証するものではない。
+前節の最初のsecond検証は旧指定による手元の既存ディスクでの結果であり、ユーザーログで実効性が否定された。
+新指定で再試験し、ユーザーのrootfsでfirst/secondの実行結果も確認する必要がある。
+
+修正後のlsm=指定でも全4DTBを確認し、既存ディスクで`FTPM_TEST: PASS phase=second`とpoweroffを再確認した。結果ファイルとログ抜粋は新指定の実行結果に更新した。

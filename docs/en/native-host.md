@@ -118,3 +118,7 @@ Ordinary timeout places the child in a separate process group, which can cause Q
 `run-ftpm-virt.sh` uses `timeout --foreground` to retain the terminal foreground process group.
 The default `FTPM_TIMEOUT` of 300 seconds and timeout exit status 124 remain unchanged.
 Guest `FTPM_TEST: PASS` must still be confirmed after this change. Keys, provisioning and disks do not need recreation.
+
+The user's NVIDIA kernel did not recognize the initial selinux=0 argument. Current DTB generation uses
+`lsm=lockdown,yama,integrity,apparmor,bpf` to exclude SELinux from the LSM list.
+See the correction in [decision 0006](decisions/0006-guest-selinux.md). Regenerate DTBs; no disk recreation is required.

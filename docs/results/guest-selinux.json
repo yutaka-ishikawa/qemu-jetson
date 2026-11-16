@@ -1,6 +1,6 @@
 {
   "option": "A",
-  "guest_bootarg": "selinux=0",
+  "guest_bootarg": "lsm=lockdown,yama,integrity,apparmor,bpf",
   "dtb_phases_verified": [
     "first",
     "second",
@@ -10,5 +10,6 @@
   "test": "existing persistent disk, second phase",
   "result": "PASS",
   "new_user_rootfs_test": "requires user confirmation",
-  "selinux_label_socket_errors": false
+  "selinux_label_socket_errors": false,
+  "selinux_initializing_message": false
 }

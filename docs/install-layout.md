@@ -167,7 +167,7 @@ bash scripts/prepare-ftpm-virt-dtb.sh
 ```
 
 QEMUゲストは[決定0006](decisions/0006-guest-selinux.md)のAに従い、SELinuxを無効にする。
-DTBの起動引数に`selinux=0`を設定する。ホストのSELinux設定は変更しない。
+DTBの起動引数に`lsm=lockdown,yama,integrity,apparmor,bpf`を設定する。ホストのSELinux設定は変更しない。
 
 
 生成したDTBは`install/share/qemu-jetson/ftpm-virt/runtime-*.dtb`に配置される。

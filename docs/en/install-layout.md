@@ -167,7 +167,7 @@ bash scripts/prepare-ftpm-virt-dtb.sh
 ```
 
 The QEMU guest disables SELinux under option A of [decision 0006](decisions/0006-guest-selinux.md).
-DTB bootargs include `selinux=0`; host SELinux settings are unaffected.
+DTB bootargs include `lsm=lockdown,yama,integrity,apparmor,bpf`; host SELinux settings are unaffected.
 
 
 DTBs are installed into install/share/qemu-jetson/ftpm-virt/runtime-*.dtb.

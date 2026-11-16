@@ -123,3 +123,7 @@ sudo env FTPM_FUNCTIONAL_PROFILE=1 bash scripts/build-ubuntu-rootfs.sh 2>&1 | te
 `FTPM_TIMEOUT`の既定値300秒とタイムアウト終了コード124は変わらない。
 この変更後も、ゲストの`FTPM_TEST: PASS`を実際に確認する必要がある。
 鍵・provisioning・ディスクの再作成は不要。
+
+ユーザーのNVIDIAカーネルでは最初のselinux=0指定が未認識となったため、現在のDTB生成は
+`lsm=lockdown,yama,integrity,apparmor,bpf`でSELinuxをLSMリストから除外する。
+[決定0006](decisions/0006-guest-selinux.md)の修正経緯を参照。DTBを再生成すればよく、ディスクの再作成は不要。
