@@ -278,3 +278,7 @@ QEMU and physical T234 memory layouts differ; this result alone establishes neit
 At the user request, the former install-layout.md became build-install.md for builds and installation.
 Test document candidates were test-guide.md, ftpm-tests.md, testing.md and test-procedures.md; the user selected test-guide.md.
 The former ftpm-test-guide.md was renamed and expanded to include the initial test. Both languages use the same separation.
+
+## Related evidence and hardware differences
+
+See [hardware differences](hardware-qemu-differences.md) and [final evidence](final-test-evidence.md).

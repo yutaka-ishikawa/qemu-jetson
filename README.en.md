@@ -12,6 +12,10 @@ This project aims to run NVIDIA's OP-TEE and fTPM with minimal changes to NVIDIA
 
 ## Design and procedures
 
+- [Physical hardware versus QEMU](docs/en/hardware-qemu-differences.md)
+- [Final test evidence](docs/en/final-test-evidence.md)
+
+
 - [Fuse model and validation](docs/en/t234-fuse.md)
 - [Stage A: first OP-TEE log](docs/en/t234-stage-a.md)
 - [Bundled sources and build layout](docs/en/source-layout.md)

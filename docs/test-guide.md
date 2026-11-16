@@ -173,3 +173,7 @@ PASS後の`ERROR: QEMU System Power off: with GPIO.`はこのファームウェ�
 
 2026-11-17（日本時間）、ユーザーから本書の全テストPASSの報告を受けた。進捗表は手順作成時点の履歴。
 OP-TEEのテーブル数8→32の変更理由と変更前のpanicは[ビルド・導入手順](build-install.md#op-teeのページテーブル数変更と変更前のエラー)を参照。
+
+## 実機との差分と検証証拠
+
+[実機とQEMUの違い](hardware-qemu-differences.md)と[最終テストの証拠整理](final-test-evidence.md)を参照。

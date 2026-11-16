@@ -1,0 +1,106 @@
+{
+  "profile": "jetson-ftpm-virt B2",
+  "scope": "user environment evidence, separate from developer local regression",
+  "organized_date_jst": "2026-11-17",
+  "overall_status": "USER_REPORTED_PASS_WITH_PARTIAL_INDEPENDENT_LOG_VERIFICATION",
+  "user_report": {
+    "all_test_guide_stages": "PASS",
+    "basis": "user statement; final bound logs not received"
+  },
+  "artifacts": {
+    "user-first-marker-rejection": {
+      "uploaded_filename": "log.txt",
+      "sha256": "609a5700360371d9c2675839968d4a5ba65c774fd23141f2c3aca092112b5936",
+      "size_bytes": 9374,
+      "markers": [
+        "[    0.000000] Kernel command line: console=ttyAMA0,115200 earlycon root=/dev/vda rw rootwait panic=5 lsm=lockdown,yama,integrity,apparmor,bpf systemd.log_target=console ftpm.test=first"
+      ],
+      "role": "historical failure/diagnostic; not a final success log"
+    },
+    "user-second": {
+      "uploaded_filename": "log2.txt",
+      "sha256": "0afacdbfe58adfce8fc4d4ad3f9b4a4501d0f1a22c4433dfd68b14b2015c5462",
+      "size_bytes": 30096,
+      "markers": [
+        "[    0.000000] Kernel command line: console=ttyAMA0,115200 earlycon root=/dev/vda rw rootwait panic=5 lsm=lockdown,yama,integrity,apparmor,bpf systemd.log_target=console ftpm.test=second",
+        "[   26.385529] ftpm-functional-test[176]: FTPM_TEST: START phase=second",
+        "[   32.986136] ftpm-functional-test[176]: PTA_TEST: PING_NS READY PASS",
+        "[   32.991018] ftpm-functional-test[176]: PTA_TEST: online mode / version 2.0 PASS",
+        "[   32.994482] ftpm-functional-test[176]: PTA_TEST: API sn.bin PASS",
+        "[   33.000403] ftpm-functional-test[176]: PTA_TEST: API ecid.bin PASS",
+        "[   33.002247] ftpm-functional-test[176]: PTA_TEST: API rsa-cert.der PASS",
+        "[   33.003907] ftpm-functional-test[176]: PTA_TEST: API ec-cert.der PASS",
+        "[   33.010136] ftpm-functional-test[176]: PTA_TEST: API sid-cert.der PASS",
+        "[   33.011974] ftpm-functional-test[176]: PTA_TEST: API fw-cert.der PASS",
+        "[   33.018189] ftpm-functional-test[176]: PTA_TEST: API rsa-csr.der PASS",
+        "[   33.019842] ftpm-functional-test[176]: PTA_TEST: API ec-csr.der PASS",
+        "[   33.026041] ftpm-functional-test[176]: PTA_TEST: SIGN_EK_CSR raw signature received PASS",
+        "[   33.027725] ftpm-functional-test[176]: PTA_TEST: invalid parameters and disabled INJECT_EPS rejected PASS",
+        "[   35.455579] ftpm-functional-test[176]: PTA_TEST: certificates/CSR match, CA chains, Firmware ID signature PASS",
+        "[   36.869796] ftpm-functional-test[176]: FTPM_TEST: reboot NV/key persistence and PCR reset PASS",
+        "[   37.332702] ftpm-functional-test[176]: FTPM_TEST: RSA sign/verify PASS",
+        "[   37.786758] ftpm-functional-test[176]: FTPM_TEST: seal/unseal PASS",
+        "[   37.885314] ftpm-functional-test[176]: FTPM_TEST: PASS phase=second"
+      ]
+    },
+    "user-export": {
+      "uploaded_filename": "export.log",
+      "sha256": "dc2506dbd5fa4f6156de93c7ec1bb0b012130c1c96a377d0885cb9ac25a68416",
+      "size_bytes": 35774,
+      "markers": [
+        "[    0.000000] Kernel command line: console=ttyAMA0,115200 earlycon root=/dev/vda rw rootwait panic=5 lsm=lockdown,yama,integrity,apparmor,bpf systemd.log_target=console ftpm.identity_test=export",
+        "[   37.728523] ftpm-identity-test[171]: EK_TEST: PASS"
+      ]
+    },
+    "user-table-exhaustion": {
+      "uploaded_filename": "secure-first-native.log",
+      "sha256": "8b792fca3ea240fc279c19abe632a1501bd7a4e1f5ce1c4a7171a7dfb38e7828",
+      "size_bytes": 1003,
+      "markers": [
+        "E/TC:0 0 core_mmu_xlat_table_alloc:520 8 xlat tables exhausted",
+        "E/TC:0 0 Panic 'Failed to spread pgdir on small tables' at core/mm/core_mmu.c:1922 <core_mmu_map_pages>"
+      ],
+      "role": "historical failure/diagnostic; not a final success log"
+    },
+    "user-terminal-stop": {
+      "uploaded_filename": "launch-first.strace",
+      "sha256": "10bc623f1c6c5ff414e3c506016369f4595d296e8f1752ecb9a5aef839ccdccc",
+      "size_bytes": 92643,
+      "markers": [
+        "3914739 17:28:09.017464 --- SIGTTOU {si_signo=SIGTTOU, si_code=SI_KERNEL} ---",
+        "3914739 17:28:09.017475 --- stopped by SIGTTOU ---",
+        "3914740 17:28:09.017503 --- stopped by SIGTTOU ---",
+        "3914738 17:28:09.017583 --- SIGCHLD {si_signo=SIGCHLD, si_code=CLD_STOPPED, si_pid=3914739, si_uid=1001, si_status=SIGTTOU, si_utime=0, si_stime=0} ---",
+        "3914738 17:28:09.017610 --- SIGTTOU {si_signo=SIGTTOU, si_code=SI_KERNEL} ---"
+      ],
+      "role": "historical failure/diagnostic; not a final success log"
+    }
+  },
+  "missing_evidence": [
+    "original first PASS log (first.done observed indirectly; do not rerun first)",
+    "user bound.log",
+    "user bound-reboot.log",
+    "user-issued public EK certificate files for independent certificate/key comparison"
+  ],
+  "local_regressions": [
+    "docs/results/ftpm-functional.json",
+    "docs/results/optee-xlat-tables.json",
+    "docs/results/guest-selinux.json"
+  ],
+  "limitations": [
+    "no controlled hardware comparison",
+    "no NVIDIA manufacturing trust",
+    "no independent verification of final bound stages without their logs"
+  ],
+  "verified": {
+    "second": "PASS",
+    "helper_pta_and_cert_csr_signature_checks": "PASS in second log",
+    "export": "PASS",
+    "actual_ek_public_spki_sha256": {
+      "rsa": "444d69fbff8e26503a8181dc59683282cc6a8932041e2c9fe6ce475c16dabb61",
+      "ecc": "3643ff6430214840669ae0ab1c92028bd21bf905cc47c94652e6eff9d7938197"
+    },
+    "first_rerun": "FAIL line=22; matches guard against existing first.done, not a fresh first PASS log",
+    "final_bound_and_bound_reboot": "not independently verified; user-reported PASS"
+  }
+}

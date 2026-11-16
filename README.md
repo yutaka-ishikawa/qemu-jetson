@@ -11,6 +11,10 @@ NVIDIA版OP-TEE／fTPMを、ソース変更を極力抑えてQEMU上で動かす
 
 ## 設計と手順
 
+- [実機とQEMU環境の違い](docs/hardware-qemu-differences.md)
+- [最終テストの証拠整理](docs/final-test-evidence.md)
+
+
 - [Fuseモデルと検証](docs/t234-fuse.md)
 - [段階A：最初のOP-TEEログ](docs/t234-stage-a.md)
 - [同梱ソースとビルド構成](docs/source-layout.md)

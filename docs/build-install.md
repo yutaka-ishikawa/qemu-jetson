@@ -285,3 +285,7 @@ QEMUとT234実機はプラットフォーム・メモリ配置が異なるため
 ユーザー指定で旧install-layout.mdをbuild-install.mdへ改名し、ビルド・導入を集約した。
 テスト文書名の候補はtest-guide.md、ftpm-tests.md、testing.md、test-procedures.md。ユーザーはtest-guide.mdを選択した。
 旧ftpm-test-guide.mdを改名し、初回試験も移して全試験をまとめた。日英で同じ分担とする。
+
+## 実機との差分と検証証拠
+
+[実機とQEMUの違い](hardware-qemu-differences.md)と[最終テストの証拠整理](final-test-evidence.md)を参照。

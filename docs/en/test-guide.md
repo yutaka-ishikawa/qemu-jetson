@@ -165,3 +165,7 @@ These tests do not cover every TPM command, physical eFuse tamper resistance or 
 
 On 2026-11-17 (Japan time), the user reported all tests in this guide passed. The progress table records the state when the guide was created.
 See the [build guide](build-install.md#op-tee-translation-table-change-and-the-original-failure) for the 8-to-32 table change and original panic.
+
+## Related evidence and hardware differences
+
+See [hardware differences](hardware-qemu-differences.md) and [final evidence](final-test-evidence.md).
