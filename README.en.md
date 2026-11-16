@@ -1,6 +1,6 @@
 # qemu-jetson
 
-Build and run without Docker. Start with [native host setup](docs/en/native-host.md). QEMU outputs go to work/qemu-build/; no system QEMU installation is performed.
+Build and run without Docker. Start with [native host setup](docs/en/native-host.md). QEMU is installed into install/bin/; build intermediates remain in work/qemu-build/. See the [install manual](docs/en/install-layout.md).
 
 [日本語](README.md) | English
 
@@ -43,3 +43,5 @@ Present material design/compatibility alternatives to the user, then record the 
 See the [functional profile](docs/en/ftpm-virt.md) for option-B build, boot, and persistence tests.
 
 B2 integrates the [complete NVIDIA helper PTA](docs/en/ftpm-helper-port.md). See also [SIGN_EK_CSR versus the EK](docs/en/ek-csr-signing.md).
+
+**Installation manual:** [docs/en/install-layout.md](docs/en/install-layout.md). Binaries, headers and libraries default to the local install/ prefix.

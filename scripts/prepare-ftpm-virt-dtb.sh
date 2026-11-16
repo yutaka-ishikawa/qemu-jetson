@@ -5,11 +5,11 @@ cd "$repo"
 out=work/ftpm-virt
 test -f "$out/provisioning.bin" || { echo 'Provisioning data is required for B2 tests' >&2; exit 1; }
 require_commands python3 dtc
-[[ -x "$qemu_build_dir/qemu-system-aarch64" ]] || { echo 'Run scripts/build-qemu.sh first' >&2; exit 1; }
+[[ -x "$qemu_bin" ]] || { echo 'Run scripts/build-qemu.sh first' >&2; exit 1; }
 rm -f -- "$out/virt.dtb"
-"$qemu_build_dir/qemu-system-aarch64" -L qemu/pc-bios \
+"$qemu_bin" -L "$qemu_data_dir" \
     -machine jetson-ftpm-virt,secure=on,gic-version=2,identity-file="$out/device-identity.bin",provisioning-file="$out/provisioning.bin",dumpdtb="$out/virt.dtb" \
-    -cpu cortex-a57 -smp 1 -m 1024M -display none -monitor none -bios "$out/flash.bin"
+    -cpu cortex-a57 -smp 1 -m 1024M -display none -monitor none -bios "$ftpm_boot_dir/flash.bin"
 dtc -I dtb -O dts -o "$out/virt.dts" "$out/virt.dtb"
 PYTHONPATH="$repo/scripts${PYTHONPATH:+:$PYTHONPATH}" python3 - "$out" <<'PY'
 import pathlib, sys
@@ -32,3 +32,5 @@ PY
 for phase in first second export bound; do
     dtc -I dts -O dtb -p 16384 -o "$out/runtime-$phase.dtb" "$out/runtime-$phase.dts"
 done
+
+python3 "$repo/scripts/install-artifacts.py" dtb

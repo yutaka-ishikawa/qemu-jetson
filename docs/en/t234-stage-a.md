@@ -49,13 +49,13 @@ scripts/build-t234-firmware.sh
 scripts/build-qemu.sh
 ```
 
-This generates boot, selftest, and isolation ELF/raw images and a DTB under `work/t234-firmware/`.
+This generates boot, selftest, and isolation ELF/raw images and a DTB under `install/share/qemu-jetson/t234/`.
 Place the existing unmodified `tee-raw.bin` at `work/optee-baseline/tee-raw.bin`.
 A fresh clone does not include that artifact; see the [OP-TEE build record](r36.5.2-build.md).
 
 ```bash
   python3 scripts/check-t234-boot.py \
-  work/qemu-build/qemu-system-aarch64 \
+  install/bin/qemu-system-aarch64 \
   --optee work/optee-baseline/tee-raw.bin
 ```
 

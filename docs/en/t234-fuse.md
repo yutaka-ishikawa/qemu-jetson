@@ -57,7 +57,7 @@ export OPTEE_ELF=work/optee-baseline/tee.elf
 scripts/build-t234-firmware.sh
 scripts/build-qemu.sh
 
-  python3 scripts/check-t234-fuse.py work/qemu-build/qemu-system-aarch64 \
+  python3 scripts/check-t234-fuse.py install/bin/qemu-system-aarch64 \
   --optee work/optee-baseline/tee-raw.bin
 ```
 
@@ -82,7 +82,7 @@ Reset testing also led to wiring the minimal machine's CPU into system_reset.
 ## Next OP-TEE stop
 
 ```bash
-  python3 scripts/check-t234-boot.py work/qemu-build/qemu-system-aarch64 \
+  python3 scripts/check-t234-boot.py install/bin/qemu-system-aarch64 \
   --optee work/optee-baseline/tee-raw.bin \
   --fuse-image work/fuse/device-a.bin --output-dir work/t234-fuse-boot-results
 ```

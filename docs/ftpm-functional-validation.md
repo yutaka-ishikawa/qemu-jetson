@@ -95,7 +95,7 @@ CA秘密鍵・Firmware ID秘密鍵・seed・デバイス固有ファイル・pro
 - 試験ディスクのオフライン更新はfsckでjournalを再生してから行い、変更後にも整合性を検査する。
 
 現在のスクリプトはホスト直接実行が既定。Dockerと`FTPM_NATIVE_QEMU`の指定は不要。
-QEMUの出力先は`work/qemu-build/`。必要ツールと権限は[ホスト環境](native-host.md)を参照。
+QEMUの実行ファイルは`install/bin/`に配置する。必要ツールと権限は[ホスト環境](native-host.md)を参照。
 
 ## 検証の限界
 

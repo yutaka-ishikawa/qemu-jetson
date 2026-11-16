@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Build the full NVIDIA helper PTA and unchanged TAs (decisions 0001/0002).
 set -euo pipefail
-repo=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")/.." && pwd)
+source "$(dirname -- "${BASH_SOURCE[0]}")/host-common.sh"
 cd "$repo"
 : "${CROSS_COMPILE:?Set CROSS_COMPILE to the NVIDIA AArch64 compiler prefix}"
 command -v "${CROSS_COMPILE}gcc" >/dev/null
@@ -56,3 +56,5 @@ with (repo/'work/ftpm-virt/flash.bin').open('wb') as f:
     f.seek(0x40000)
     f.write((repo/'work/tf-a/qemu/release/fip.bin').read_bytes())
 PY
+
+python3 "$repo/scripts/install-artifacts.py" firmware

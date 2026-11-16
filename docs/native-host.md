@@ -9,14 +9,15 @@ Docker、buildx、Dockerグループへの所属は不要。
 
 | 対象 | 既定の配置先 | 実行権限 |
 | --- | --- | --- |
-| QEMU | `work/qemu-build/qemu-system-aarch64` | 通常ユーザーでビルド・起動 |
-| OP-TEEとTAのビルド成果物 | `work/optee-virt/` | 通常ユーザー |
-| イメージ・ディスク・デバイス鍵 | `work/ftpm-virt/` | 鍵と既存状態を保持 |
+| QEMU | `install/bin/qemu-system-aarch64` | 通常ユーザーでビルド・配置・起動 |
+| OP-TEE・TA・ARM64クライアント | `install/lib/`、`install/libexec/`、`install/share/` | 通常ユーザー |
+| 不変の起動イメージ | `install/share/qemu-jetson/` | 通常ユーザー |
+| ディスク・デバイス鍵 | `work/ftpm-virt/` | 鍵と既存状態を保持 |
 | 依存ツール・開発ライブラリ | apt標準の`/usr/bin`、`/usr/lib`など | 導入時のみ管理者 |
 | Ubuntu rootfsの組み立て・新規ext4作成 | 出力は`work/ftpm-virt/` | ゲストのUID/GIDを保存するため管理者 |
 
-QEMUの`make install`／`ninja install`は実行しない。`/usr/local`へQEMUをコピーしない。
-`QEMU_BUILD_DIR=/absolute/path`を指定すれば、ビルド・起動・DT生成がそのディレクトリを使用する。
+ビルド後にMeson installでローカルprefixへ配置する。全体のbin/include/lib/libexec/share構成は[installマニュアル](install-layout.md)を参照。
+`INSTALL_DIR=/absolute/path`で全スクリプト共通の配置先を変更できる。`QEMU_BUILD_DIR`はビルド中間物の場所だけを変更する。
 旧`work/qemu-container-build/`は自動削除せず、既存の鍵・ディスクも変更しない。
 
 ## Ubuntu／Debianの依存ツール
@@ -35,14 +36,14 @@ Pythonのcryptography・pycryptodome・pyelftoolsはOP-TEE用venvに別途導入
 NVIDIA指定のAArch64クロスコンパイラは従来どおり必要で、このスクリプトで置き換えない。
 
 ```bash
-QEMU_BUILD_DIR="$PWD/work/custom-qemu" JOBS=4 bash scripts/build-qemu.sh
+INSTALL_DIR="$PWD/custom-install" JOBS=4 bash scripts/build-qemu.sh
 # 起動側も同じ指定にする
-QEMU_BUILD_DIR="$PWD/work/custom-qemu" bash scripts/run-ftpm-virt.sh second
+INSTALL_DIR="$PWD/custom-install" bash scripts/run-ftpm-virt.sh second
 ```
 
 `first`は未試験の新規ディスク用。初回試験済みのディスクには再実行しない。
 `second`も試験を自動実行し、成功後にゲストをpoweroffする。
-既定ビルド先を使う場合、`QEMU_BUILD_DIR`や旧`FTPM_NATIVE_QEMU`の指定は不要。
+既定の配置先を使う場合、`INSTALL_DIR`や旧`FTPM_NATIVE_QEMU`の指定は不要。
 
 ## ARM64 Ubuntu rootfs
 
@@ -83,3 +84,5 @@ ext4のUID/GID・モード保存と上書き拒否を検証済み。
 [機械可読結果](results/native-host.json)と[実際のログ抜粋](results/native-host-excerpt.txt)を保存した。
 rootfsスクリプトの構文・権限エラーは確認するが、新規rootfsの管理者権限でのend-to-end再構築は未検証である。
 以前のfTPM実行結果は[機能検証](ftpm-functional-validation.md)を参照。
+
+最新版の配置・ビルド・導入手順は[installマニュアル](install-layout.md)を参照。

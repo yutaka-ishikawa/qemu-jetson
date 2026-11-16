@@ -7,7 +7,10 @@ import subprocess
 
 parser = argparse.ArgumentParser(description=__doc__)
 parser.add_argument('qemu', type=Path)
+parser.add_argument('--data-dir', type=Path)
 args = parser.parse_args()
+installed_data=args.qemu.resolve().parent.parent/'share/qemu'
+data_dir=args.data_dir or (installed_data if installed_data.is_dir() else Path(__file__).resolve().parents[1]/'qemu/pc-bios')
 commands = [
     {'execute': 'qmp_capabilities', 'id': 'capabilities'},
     {'execute': 'query-status', 'id': 'status'},
@@ -16,7 +19,7 @@ commands = [
     {'execute': 'quit', 'id': 'quit'},
 ]
 result = subprocess.run(
-    [str(args.qemu.resolve()), '-L', str(Path(__file__).resolve().parents[1] / 'qemu/pc-bios'), '-machine', 'virt,secure=on', '-accel', 'tcg',
+    [str(args.qemu.resolve()), '-L', str(data_dir.resolve()), '-machine', 'virt,secure=on', '-accel', 'tcg',
      '-cpu', 'max', '-smp', '1', '-m', '128M', '-display', 'none',
      '-serial', 'none', '-monitor', 'none', '-S', '-qmp', 'stdio'],
     input=''.join(json.dumps(c) + '\n' for c in commands),

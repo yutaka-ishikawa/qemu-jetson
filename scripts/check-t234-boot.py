@@ -6,10 +6,11 @@ import json
 from pathlib import Path
 import subprocess
 import time
+from install_paths import install_dir
 
 parser = argparse.ArgumentParser(description=__doc__)
 parser.add_argument('qemu', type=Path)
-parser.add_argument('--firmware-dir', type=Path, default=Path('work/t234-firmware'))
+parser.add_argument('--firmware-dir', type=Path, default=install_dir()/'share/qemu-jetson/t234')
 parser.add_argument('--optee', type=Path)
 parser.add_argument('--fuse-image', type=Path)
 parser.add_argument('--optee-sha256',

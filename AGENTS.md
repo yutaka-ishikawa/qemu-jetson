@@ -9,4 +9,5 @@
 - Decision 0003 approves generating a QEMU-only test CA and virtual-device keys/certificates. Label them as test-only; never claim NVIDIA manufacturing trust.
 - Keep generated device secrets, disk images, and build outputs out of Git.
 
-- Decision 0004 requires native host builds and launches. Do not add Docker/buildx dependencies. QEMU outputs default to work/qemu-build; system installation is not performed.
+- Decision 0005 installs deployable artifacts into the local install/ prefix (bin/include/lib/libexec/share), overridable with INSTALL_DIR. Mutable keys and disks remain under work/.
+- Decision 0004 requires native host builds and launches. Do not add Docker/buildx dependencies. QEMU intermediates default to work/qemu-build; system installation is not performed.

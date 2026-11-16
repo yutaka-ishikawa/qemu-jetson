@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """Stream and verify NVIDIA BSP; extract its unmodified kernel and fTPM module."""
-import urllib.request,hashlib,tarfile,pathlib,shutil
+import urllib.request,hashlib,tarfile,pathlib,shutil,subprocess,sys
 url='https://developer.nvidia.com/downloads/embedded/l4t/r36_release_v5.2/releases/Jetson_Linux_r36.5.2_aarch64.tbz2'
 out=pathlib.Path(__file__).resolve().parents[1]/'work/ftpm-virt'
 out.mkdir(parents=True,exist_ok=True)
@@ -31,3 +31,5 @@ with tarfile.open(out/'kernel_supplements.tbz2', 'r:bz2') as archive:
    target.parent.mkdir(parents=True,exist_ok=True)
    with target.open('wb') as f:
     shutil.copyfileobj(archive.extractfile(m), f)
+
+subprocess.run([sys.executable, str(pathlib.Path(__file__).with_name("install-artifacts.py")), "kernel"],check=True)

@@ -6,9 +6,10 @@ cd "$repo"
 [[ $# == 1 ]] || { echo 'Usage: update-ftpm-test-disk.sh PUBLIC_FIXTURE_DIRECTORY' >&2; exit 2; }
 fixtures=$(cd "$1" && pwd)
 case "$fixtures/" in "$repo/work/"*) ;; *) echo 'Fixtures must be inside the repository work directory' >&2; exit 1;; esac
-python3 - "$repo" "$fixtures" <<'PY'
+PYTHONPATH="$repo/scripts${PYTHONPATH:+:$PYTHONPATH}" python3 - "$repo" "$fixtures" <<'PY'
 from pathlib import Path
 import sys, os, tarfile
+from install_paths import guest_bin_dir, guest_lib_dir
 repo, fixtures = map(Path, sys.argv[1:])
 def quote_path(path):
     text = str(path)
@@ -51,6 +52,26 @@ for name in public:
         target='/usr/share/qemu-ftpm-test/'+name
         lines += ['rm '+target, 'write '+quote_path(fixtures/name)+' '+target,
                   'set_inode_field '+target+' mode 0100644', 'set_inode_field '+target+' uid 0', 'set_inode_field '+target+' gid 0']
+# Deploy the newly built, installed guest client and test probe while offline.
+for name in ['tee-supplicant','nvftpm-helper-app','ftpm-helper-probe']:
+    source=guest_bin_dir()/name
+    if not source.is_file(): raise SystemExit('Missing installed guest program: '+str(source))
+    target=('/usr/local/sbin/' if name=='ftpm-helper-probe' else '/usr/sbin/')+name
+    lines += ['rm '+target, 'write '+quote_path(source)+' '+target,
+              'set_inode_field '+target+' mode 0100755', 'set_inode_field '+target+' uid 0', 'set_inode_field '+target+' gid 0']
+for source in sorted(guest_lib_dir().glob('*.so*')):
+    target='/usr/lib/'+source.name
+    lines += ['rm '+target]
+    if source.is_symlink():
+        lines += ['symlink '+target+' '+str(source.readlink())]
+    else:
+        lines += ['write '+quote_path(source)+' '+target, 'set_inode_field '+target+' mode 0100644']
+    lines += ['set_inode_field '+target+' uid 0', 'set_inode_field '+target+' gid 0']
+source=guest_lib_dir()/'optee_armtz/7fc1d460-5a6c-4a5f-9b9e-6c298d3032a0.ta'
+if not source.is_file(): raise SystemExit('Build and install the helper probe TA first')
+target='/usr/lib/optee_armtz/'+source.name
+lines += ['rm '+target,'write '+quote_path(source)+' '+target,'set_inode_field '+target+' mode 0100644',
+          'set_inode_field '+target+' uid 0','set_inode_field '+target+' gid 0']
 if os.environ.get('FTPM_UPDATE_ACCOUNTS') == '1':
     accounts = repo/'work/ftpm-virt/accounts'
     accounts.mkdir(mode=0o700,exist_ok=True)

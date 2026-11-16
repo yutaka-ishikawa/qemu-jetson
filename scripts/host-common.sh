@@ -4,6 +4,15 @@ repo=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")/.." && pwd)
 export PATH="$PATH:/usr/sbin:/sbin"
 qemu_build_dir=${QEMU_BUILD_DIR:-$repo/work/qemu-build}
 [[ $qemu_build_dir == /* ]] || qemu_build_dir="$repo/$qemu_build_dir"
+install_dir=${INSTALL_DIR:-$repo/install}
+[[ $install_dir == /* ]] || install_dir="$repo/$install_dir"
+install_dir=$(realpath -m -- "$install_dir")
+export INSTALL_DIR="$install_dir"
+qemu_bin="$install_dir/bin/qemu-system-aarch64"
+qemu_data_dir="$install_dir/share/qemu"
+ftpm_boot_dir="$install_dir/share/qemu-jetson/ftpm-virt"
+guest_lib_dir="$install_dir/lib/aarch64-linux-gnu"
+guest_bin_dir="$install_dir/libexec/aarch64-linux-gnu"
 if [[ -d "$repo/work/native-libs" ]]; then
     export LD_LIBRARY_PATH="$repo/work/native-libs${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}"
 fi

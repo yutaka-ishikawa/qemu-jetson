@@ -2,12 +2,25 @@
 # Assemble ARM64 Ubuntu directly on the host; no daemon or binfmt registration.
 set -euo pipefail
 source "$(dirname -- "${BASH_SOURCE[0]}")/host-common.sh"
-[[ $# == 2 ]] || { echo "Usage: $0 OPTEE_INSTALL_DIR OUTPUT_TAR" >&2; exit 2; }
+case $# in
+    0) client_source="$install_dir"; output_arg="$repo/work/ftpm-virt/rootfs.tar";;
+    1) client_source="$install_dir"; output_arg="$1";;
+    2) client_source="$1"; output_arg="$2";;
+    *) echo "Usage: $0 [CLIENT_INSTALL_DIR] [OUTPUT_TAR]" >&2; exit 2;;
+esac
 [[ $EUID == 0 ]] || { echo 'Rootfs assembly preserves guest ownership: run with sudo. See docs/native-host.md.' >&2; exit 1; }
 require_commands proot tar readelf depmod curl sha256sum
-optee_install=$(cd -- "$1" && pwd)
-mkdir -p -- "$(dirname -- "$2")"
-output=$(cd -- "$(dirname -- "$2")" && pwd)/$(basename -- "$2")
+optee_install=$(cd -- "$client_source" && pwd)
+if [[ -d "$optee_install/libexec/aarch64-linux-gnu" ]]; then
+    client_bin="$optee_install/libexec/aarch64-linux-gnu"
+    client_lib="$optee_install/lib/aarch64-linux-gnu"
+else
+    [[ ! -d "$optee_install/usr" ]] || optee_install="$optee_install/usr"
+    client_bin="$optee_install/sbin"
+    client_lib="$optee_install/lib"
+fi
+mkdir -p -- "$(dirname -- "$output_arg")"
+output=$(cd -- "$(dirname -- "$output_arg")" && pwd)/$(basename -- "$output_arg")
 [[ ! -e "$output" && ! -e "$output.part" ]] || { echo "Output already exists: $output" >&2; exit 1; }
 qemu_args=()
 if [[ $(uname -m) != aarch64 ]]; then
@@ -16,7 +29,7 @@ if [[ $(uname -m) != aarch64 ]]; then
     qemu_args=(-q "$qemu_user")
 fi
 for name in tee-supplicant nvftpm-helper-app; do
-    readelf -h "$optee_install/usr/sbin/$name" | grep -q 'Machine:.*AArch64'
+    readelf -h "$client_bin/$name" | grep -q 'Machine:.*AArch64'
 done
 "$repo/scripts/fetch-ubuntu-base.sh"
 # A public parent is needed when guest apt drops privileges to _apt.
@@ -36,15 +49,17 @@ cp -a --no-preserve=ownership "$overlay/." "$root/"
 install -d -m 0755 "$root/usr/local/sbin" "$root/usr/sbin" "$root/usr/lib/optee_armtz"
 install -m 0755 "$repo/scripts/check-ftpm-guest.sh" "$root/usr/local/sbin/"
 for name in tee-supplicant nvftpm-helper-app; do
-    install -m 0755 "$optee_install/usr/sbin/$name" "$root/usr/sbin/"
+    install -m 0755 "$client_bin/$name" "$root/usr/sbin/"
 done
 shopt -s nullglob
-libs=("$optee_install"/usr/lib/libteec.so*)
+libs=("$client_lib"/libteec.so*)
 ((${#libs[@]})) || { echo 'libteec.so missing' >&2; exit 1; }
 cp -a --no-preserve=ownership "${libs[@]}" "$root/usr/lib/"
 chmod 0644 "$root"/usr/lib/libteec.so*
-if [[ -n ${KERNEL_MODULES_DIR:-} ]]; then
-    cp -a --no-preserve=ownership "$KERNEL_MODULES_DIR/lib/modules" "$root/usr/lib/"
+module_source=${KERNEL_MODULES_DIR:+$KERNEL_MODULES_DIR/lib/modules}
+if [[ -z $module_source && -d "$install_dir/lib/modules" ]]; then module_source="$install_dir/lib/modules"; fi
+if [[ -n $module_source ]]; then
+    cp -a --no-preserve=ownership "$module_source" "$root/usr/lib/"
     find "$root/usr/lib/modules" -type d -exec chmod 0755 {} +
     find "$root/usr/lib/modules" -type f -exec chmod 0644 {} +
 fi

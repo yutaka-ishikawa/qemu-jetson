@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 set -euo pipefail
-repo=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")/.." && pwd)
+source "$(dirname -- "${BASH_SOURCE[0]}")/host-common.sh"
 : "${CROSS_COMPILE_AARCH64:?Set CROSS_COMPILE_AARCH64 to the NVIDIA AArch64 compiler prefix}"
 out="$repo/work/t234-firmware"
 mkdir -p "$out"
@@ -29,3 +29,5 @@ for variant in "${variants[@]}"; do
 done
 "${DTC:-dtc}" -I dts -O dtb -p 4096 "$repo/configs/t234-boot.dts" -o "$out/optee.dtb"
 sha256sum "$out"/*.bin "$out/optee.dtb"
+
+python3 "$repo/scripts/install-artifacts.py" t234

@@ -8,12 +8,13 @@ import re
 import socket
 import subprocess
 import time
+from install_paths import install_dir
 
 parser = argparse.ArgumentParser(description=__doc__)
 parser.add_argument('qemu', type=Path)
 parser.add_argument('--optee', type=Path, required=True)
 parser.add_argument('--optee-sha256', default='96bcd44d8a4ceee39fa8a4ffd97b5bc0e193c6b3d5fc6cdc2208b806aeb9beb9')
-parser.add_argument('--firmware-dir', type=Path, default=Path('work/t234-firmware'))
+parser.add_argument('--firmware-dir', type=Path, default=install_dir()/'share/qemu-jetson/t234')
 parser.add_argument('--image-dir', type=Path, default=Path('work/fuse'))
 parser.add_argument('--output-dir', type=Path, default=Path('work/t234-fuse-results'))
 args = parser.parse_args()

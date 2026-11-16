@@ -93,7 +93,7 @@ The relay TA is a test instrument calling the real PTA from user mode, not a rep
 - Replay the journal with fsck before offline test-disk edits and verify filesystem consistency afterward.
 
 Scripts now run directly on the host by default; Docker and FTPM_NATIVE_QEMU are unnecessary.
-QEMU output is work/qemu-build/. See [host setup](native-host.md) for dependencies and privileges.
+QEMU is installed under install/bin/. See [host setup](native-host.md) for dependencies and privileges.
 
 ## Limits
 

@@ -1,0 +1,37 @@
+{
+  "status": "PASS",
+  "default_prefix": "install/",
+  "intermediates": "work/",
+  "checks": [
+    "native QEMU build and Meson local installation",
+    "installed QEMU uses installed firmware data",
+    "NVIDIA client and probe compiled and installed",
+    "probe compiled against installed headers/libraries/TA SDK",
+    "default prefix and alternate prefix containing spaces",
+    "no device credentials/disks installed",
+    "PTA_TEST: certificates/CSR match, CA chains, Firmware ID signature PASS",
+    "EK_TEST: actual RSA/EC EK keys match PTA certificates PASS",
+    "EK_TEST: standard RSA/EC EK certificate NV indices PASS",
+    "FTPM_TEST: reboot NV/key persistence and PCR reset PASS",
+    "FTPM_TEST: RSA sign/verify PASS",
+    "FTPM_TEST: seal/unseal PASS",
+    "FTPM_TEST: PASS phase=second",
+    "EK_TEST: PASS"
+  ],
+  "preserved_public_ek_sha256": {
+    "rsa": "dc2236733404a861278e6404f3bd77d9732b214250168de46f1232968f3b145e",
+    "ecc": "4e9261843448a5e04e8219be8ffad9f3622eb4105485e7d0bcb0e0d8397143b0"
+  },
+  "artifact_sha256": {
+    "install/bin/qemu-system-aarch64": "19a3339d68f38bfcda20740c7d12bff332654c7f14fde6573b27f9550cede56a",
+    "install/lib/aarch64-linux-gnu/libteec.so": "1dce86ea87a2377d576967172bb072eb93edf50f690616156bcc835bb586d4b4",
+    "install/libexec/aarch64-linux-gnu/ftpm-helper-probe": "b25dd87d37305e265049b499c6c97ae59901fe39bf8f8346ca8f58089b5f0c78",
+    "install/share/qemu-jetson/ftpm-virt/flash.bin": "aa573b0043b30bfc6e03be7a3fe2e42986f675d7b08324330f1f178c478d0d33",
+    "install/share/qemu-jetson/ftpm-virt/Image": "ac24d392d257d2ed358c167d37871c3d1702d45d57c65c598d1b6d62a6b0a1ec"
+  },
+  "log_sha256": "373653ee1d80d03f9017836f310fec0b913dc81d54946e55b2f14cdaf278f917",
+  "limits": [
+    "firmware/kernel installation verified using existing compiled artifacts",
+    "fresh privileged native rootfs assembly remains unverified in this environment"
+  ]
+}

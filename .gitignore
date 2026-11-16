@@ -36,6 +36,7 @@ google-services.json
 
 # Local downloads, build trees, and runtime state
 /work/
+/install/
 /output/
 *.img
 *.qcow2
@@ -48,3 +49,6 @@ google-services.json
 /optee/optee/samples/ftpm-helper/README.md
 /optee/optee/samples/ftpm-helper/host/tool/README_keylime_TPM_for_unfused_Jetson.md
 /kernel/nvcommon_build.sh
+
+# Python helper bytecode
+__pycache__/

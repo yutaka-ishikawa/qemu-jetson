@@ -5,6 +5,7 @@ import hashlib
 import io
 from pathlib import Path
 import tarfile
+from install_paths import guest_bin_dir, guest_lib_dir
 
 parser = argparse.ArgumentParser(description=__doc__)
 parser.add_argument('tar', type=Path)
@@ -36,8 +37,8 @@ with tarfile.open(args.tar, 'a') as tar:
         info = tarfile.TarInfo('usr/share/qemu-ftpm-test/'+name)
         info.uid = info.gid = 0; info.mode = 0o644; info.size = len(data)
         tar.addfile(info, io.BytesIO(data))
-    add_file(repo/'work/helper-probe/ftpm-helper-probe', 'usr/local/sbin/ftpm-helper-probe', 0o755)
-    add_file(repo/'work/helper-probe/ta/7fc1d460-5a6c-4a5f-9b9e-6c298d3032a0.ta',
+    add_file(guest_bin_dir()/'ftpm-helper-probe', 'usr/local/sbin/ftpm-helper-probe', 0o755)
+    add_file(guest_lib_dir()/'optee_armtz/7fc1d460-5a6c-4a5f-9b9e-6c298d3032a0.ta',
              'usr/lib/optee_armtz/7fc1d460-5a6c-4a5f-9b9e-6c298d3032a0.ta', 0o644)
 args.tar.with_suffix(args.tar.suffix+'.sha256').write_text(
     hashlib.file_digest(args.tar.open('rb'), 'sha256').hexdigest()+'  '+args.tar.name+'\n')

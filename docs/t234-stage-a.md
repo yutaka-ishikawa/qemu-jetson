@@ -49,13 +49,13 @@ scripts/build-t234-firmware.sh
 scripts/build-qemu.sh
 ```
 
-`work/t234-firmware/` にboot、selftest、isolationのELF／rawイメージとDTBを生成する。
+`install/share/qemu-jetson/t234/` にboot、selftest、isolationのELF／rawイメージとDTBを生成する。
 OP-TEEは既存の無変更ビルドの `tee-raw.bin` を `work/optee-baseline/tee-raw.bin` に置く。
 初回cloneにはその成果物は含まれない。[OP-TEEビルド記録](r36.5.2-build.md)を参照。
 
 ```bash
   python3 scripts/check-t234-boot.py \
-  work/qemu-build/qemu-system-aarch64 \
+  install/bin/qemu-system-aarch64 \
   --optee work/optee-baseline/tee-raw.bin
 ```
 

@@ -9,14 +9,15 @@ Docker, buildx and Docker-group membership are unnecessary.
 
 | Item | Default location | Privileges |
 | --- | --- | --- |
-| QEMU | work/qemu-build/qemu-system-aarch64 | Build and run as ordinary user |
-| OP-TEE/TA outputs | work/optee-virt/ | Ordinary user |
-| Images, disk and device keys | work/ftpm-virt/ | Preserve existing keys/state |
+| QEMU | install/bin/qemu-system-aarch64 | Build/install/run as ordinary user |
+| OP-TEE/TA/client outputs | install/lib/, install/libexec/, install/share/ | Ordinary user |
+| Read-only boot images | install/share/qemu-jetson/ | Ordinary user |
+| Disk and device keys | work/ftpm-virt/ | Preserve existing keys/state |
 | Host dependencies | apt's /usr/bin, /usr/lib, etc. | Administrator for installation |
 | Ubuntu rootfs assembly and new ext4 creation | Outputs under work/ftpm-virt/ | Administrator to preserve guest UID/GID |
 
-Neither make install nor ninja install is run. QEMU is not copied into /usr/local.
-QEMU_BUILD_DIR=/absolute/path changes the directory used by build, launch and DT scripts.
+QEMU is installed into the local prefix using Meson install after compilation. See the [install manual](install-layout.md) for the complete bin/include/lib/libexec/share layout.
+INSTALL_DIR=/absolute/path changes the artifact prefix used by all scripts. QEMU_BUILD_DIR changes only build intermediates.
 The old work/qemu-container-build/ directory is not deleted automatically; keys and disks are preserved.
 
 ## Ubuntu/Debian dependencies
@@ -35,13 +36,13 @@ Install cryptography, pycryptodome and pyelftools in the OP-TEE Python venv sepa
 NVIDIA's required AArch64 cross compiler remains necessary and is not replaced by this installer.
 
 ```bash
-QEMU_BUILD_DIR="$PWD/work/custom-qemu" JOBS=4 bash scripts/build-qemu.sh
-QEMU_BUILD_DIR="$PWD/work/custom-qemu" bash scripts/run-ftpm-virt.sh second
+INSTALL_DIR="$PWD/custom-install" JOBS=4 bash scripts/build-qemu.sh
+INSTALL_DIR="$PWD/custom-install" bash scripts/run-ftpm-virt.sh second
 ```
 
 Use first only on a fresh, untested disk. Do not repeat it on initialized test state.
 The second phase also runs tests automatically and powers the guest off on success.
-With the default build directory, neither QEMU_BUILD_DIR nor the former FTPM_NATIVE_QEMU flag is needed.
+With the default prefix, INSTALL_DIR and the former FTPM_NATIVE_QEMU flag are unnecessary.
 
 ## ARM64 Ubuntu rootfs
 
@@ -79,3 +80,5 @@ and ext4 UID/GID/mode preservation and overwrite refusal passed.
 See the [machine-readable result](../results/native-host.json) and [actual log excerpt](../results/native-host-excerpt.txt).
 Rootfs shell syntax and privilege errors are checked; a fresh privileged end-to-end rootfs rebuild is unverified.
 See [functional validation](ftpm-functional-validation.md) for prior fTPM results.
+
+See the [installation manual](install-layout.md) for the current layout and build/install workflow.
