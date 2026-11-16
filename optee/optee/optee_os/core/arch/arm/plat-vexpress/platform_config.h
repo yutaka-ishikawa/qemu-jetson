@@ -67,6 +67,11 @@
 
 #elif defined(PLATFORM_FLAVOR_qemu_armv8a)
 
+#ifdef CFG_QEMU_JETSON_FTPM
+/* Allow dynamic mappings across NVIDIA Linux's fragmented shared memory. */
+#define MAX_XLAT_TABLES 32
+#endif
+
 #define GIC_BASE		0x08000000
 #define UART0_BASE		0x09000000
 #define UART1_BASE		0x09040000

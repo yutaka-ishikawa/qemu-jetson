@@ -1,0 +1,18 @@
+[   27.856435] ftpm-functional-test[176]: FTPM_TEST: START phase=second
+[   33.800903] ftpm-functional-test[176]: PTA_TEST: PING_NS READY PASS
+[   33.803089] ftpm-functional-test[176]: PTA_TEST: online mode / version 2.0 PASS
+[   33.810098] ftpm-functional-test[176]: PTA_TEST: API sn.bin PASS
+[   33.811657] ftpm-functional-test[176]: PTA_TEST: API ecid.bin PASS
+[   33.814602] ftpm-functional-test[176]: PTA_TEST: API rsa-cert.der PASS
+[   33.816007] ftpm-functional-test[176]: PTA_TEST: API ec-cert.der PASS
+[   33.821483] ftpm-functional-test[176]: PTA_TEST: API sid-cert.der PASS
+[   33.823109] ftpm-functional-test[176]: PTA_TEST: API fw-cert.der PASS
+[   33.828857] ftpm-functional-test[176]: PTA_TEST: API rsa-csr.der PASS
+[   33.830403] ftpm-functional-test[176]: PTA_TEST: API ec-csr.der PASS
+[   33.831929] ftpm-functional-test[176]: PTA_TEST: SIGN_EK_CSR raw signature received PASS
+[   33.837679] ftpm-functional-test[176]: PTA_TEST: invalid parameters and disabled INJECT_EPS rejected PASS
+[   36.343121] ftpm-functional-test[176]: PTA_TEST: certificates/CSR match, CA chains, Firmware ID signature PASS
+[   37.769439] ftpm-functional-test[176]: FTPM_TEST: reboot NV/key persistence and PCR reset PASS
+[   38.255063] ftpm-functional-test[176]: FTPM_TEST: RSA sign/verify PASS
+[   38.745572] ftpm-functional-test[176]: FTPM_TEST: seal/unseal PASS
+[   38.835395] ftpm-functional-test[176]: FTPM_TEST: PASS phase=second

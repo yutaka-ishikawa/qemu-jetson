@@ -1,0 +1,9 @@
+{
+  "profile": "QEMU ARMv8 CFG_QEMU_JETSON_FTPM",
+  "max_xlat_tables": 32,
+  "compiled_table_array_bytes": 131072,
+  "firmware_build": "PASS",
+  "regression": "existing persistent disk second phase",
+  "result": "PASS",
+  "user_first_confirmation": "pending"
+}

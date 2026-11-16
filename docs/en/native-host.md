@@ -122,3 +122,25 @@ Guest `FTPM_TEST: PASS` must still be confirmed after this change. Keys, provisi
 The user's NVIDIA kernel did not recognize the initial selinux=0 argument. Current DTB generation uses
 `lsm=lockdown,yama,integrity,apparmor,bpf` to exclude SELinux from the LSM list.
 See the correction in [decision 0006](decisions/0006-guest-selinux.md). Regenerate DTBs; no disk recreation is required.
+
+## OP-TEE xlat tables exhausted
+
+The user's secure log shows `8 xlat tables exhausted` followed by a `Failed to spread pgdir on small tables` panic.
+Linux output stops near console handover and the launcher times out.
+Increase MAX_XLAT_TABLES to 32 only for QEMU ARMv8 with CFG_QEMU_JETSON_FTPM.
+The extra 24 4KiB tables consume 96KiB of static storage. TA bodies and the T234 profile are unchanged.
+Stop QEMU first, then run the following in a shell with NVIDIA CROSS_COMPILE, dtc and the Python venv configured.
+Retain the existing disk, keys and provisioning.
+
+```bash
+bash scripts/build-ftpm-virt-firmware.sh
+bash scripts/prepare-ftpm-virt-dtb.sh
+bash scripts/run-ftpm-virt.sh first
+```
+
+The firmware rebuild also updates installed flash.bin. No Linux or rootfs rebuild is required.
+
+Rebuilt the complete firmware and verified the table array is 131072 bytes (32 tables).
+PTA tests and `FTPM_TEST: PASS phase=second` followed by poweroff passed with the existing persistent disk.
+First on the user newly built disk still needs confirmation.
+See [results](../results/optee-xlat-tables.json) and [log excerpt](../results/optee-xlat-tables-excerpt.txt).

@@ -127,3 +127,25 @@ sudo env FTPM_FUNCTIONAL_PROFILE=1 bash scripts/build-ubuntu-rootfs.sh 2>&1 | te
 ユーザーのNVIDIAカーネルでは最初のselinux=0指定が未認識となったため、現在のDTB生成は
 `lsm=lockdown,yama,integrity,apparmor,bpf`でSELinuxをLSMリストから除外する。
 [決定0006](decisions/0006-guest-selinux.md)の修正経緯を参照。DTBを再生成すればよく、ディスクの再作成は不要。
+
+## OP-TEEのxlat tables exhausted
+
+ユーザーのsecureログで`8 xlat tables exhausted`に続く`Failed to spread pgdir on small tables`のpanicを確認した。
+Linux側ではコンソール切り替え付近で停止し、タイムアウトしていた。
+QEMU ARMv8のCFG_QEMU_JETSON_FTPM構成だけでMAX_XLAT_TABLESを32へ増やす。
+8から32への増加は4KiBテーブル24個分（96KiB）の静的領域増加。TA本体とT234構成は変更しない。
+次を、NVIDIA CROSS_COMPILE・dtc・Python venvを設定したシェルで実行する。
+QEMUを停止してから実行し、既存ディスク・鍵・provisioningを保持する。
+
+```bash
+bash scripts/build-ftpm-virt-firmware.sh
+bash scripts/prepare-ftpm-virt-dtb.sh
+bash scripts/run-ftpm-virt.sh first
+```
+
+ファームウェアの再ビルドによりinstall内のflash.binも更新される。Linuxやrootfsの再作成は不要。
+
+修正後のファームウェア全体を再ビルドし、テーブル配列が131072バイト（32個）であることを確認した。
+既存永続ディスクでPTA試験と`FTPM_TEST: PASS phase=second`、poweroffを確認した。
+ユーザーの新規ディスクでfirstの確認は必要。
+[結果](results/optee-xlat-tables.json)と[ログ抜粋](results/optee-xlat-tables-excerpt.txt)を参照。
