@@ -28,11 +28,75 @@ Keep host QEMU separate from guest ARM64 programs; guest binaries run inside the
 The NVIDIA kernel fetch script also installs its Image and modules after retrieval.
 Host dependency libraries such as GLib remain host packages, not redistributed here.
 
+## Explicit build environment setup (x86_64 Ubuntu)
+
+These commands target an **x86_64 Ubuntu 22.04+ host**. Run them from the cloned repository root.
+Check that `uname -m` prints `x86_64`. This NVIDIA-distributed toolchain runs on x86_64 and generates ARM64 guest code.
+
+### 1. Host tools including dtc
+
+```bash
+sudo bash scripts/install-host-deps.sh
+command -v dtc
+dtc --version
+```
+
+`dtc` is the Device Tree Compiler. The installer includes the host `device-tree-compiler` package.
+
+### 2. NVIDIA-specified cross compiler
+
+The validated toolchain is Bootlin Buildroot 2022.08, GCC 11.3.0.
+Download NVIDIA's archive and extract it under work/toolchains/.
+
+```bash
+mkdir -p work/downloads work/toolchains
+curl -fL --retry 3 \
+  https://developer.nvidia.com/downloads/embedded/l4t/r36_release_v3.0/toolchain/aarch64--glibc--stable-2022.08-1.tar.bz2 \
+  -o work/downloads/aarch64--glibc--stable-2022.08-1.tar.bz2
+printf '%s  %s\n' \
+  8af54f268c462b2d0737df8789b5e35db03a2d1ecbec90e20948f66f9244fcdd \
+  work/downloads/aarch64--glibc--stable-2022.08-1.tar.bz2 | sha256sum -c -
+# Extract once; skip this tar command if already extracted.
+tar -xjf work/downloads/aarch64--glibc--stable-2022.08-1.tar.bz2 -C work/toolchains
+export CROSS_COMPILE="$PWD/work/toolchains/aarch64--glibc--stable-2022.08-1/bin/aarch64-buildroot-linux-gnu-"
+"${CROSS_COMPILE}gcc" --version
+"${CROSS_COMPILE}gcc" -dumpmachine
+```
+
+CROSS_COMPILE is the compiler path/prefix **including the trailing hyphen**, not the gcc executable itself.
+Build scripts append gcc, ar, objcopy, etc.
+Expected outputs are GCC 11.3.0 and target aarch64-buildroot-linux-gnu.
+If the toolchain is already installed elsewhere, change the directory in the export line.
+
+### 3. Python venv
+
+```bash
+python3 -m venv work/venv
+source work/venv/bin/activate
+python3 -m pip install -r docs/build-python-requirements.txt
+python3 -c 'import sys, cryptography, Crypto, elftools; print(sys.executable); print("OP-TEE Python dependencies: OK")'
+```
+
+The venv isolates build Python/packages from system Python.
+The interpreter should be work/venv/bin/python3 inside this repository, and the imports must succeed.
+pycryptodome provides the Crypto import; pyelftools provides elftools.
+
+In a new terminal, run these two lines again from the same repository root:
+
+```bash
+source work/venv/bin/activate
+export CROSS_COMPILE="$PWD/work/toolchains/aarch64--glibc--stable-2022.08-1/bin/aarch64-buildroot-linux-gnu-"
+```
+
+Do not repeat downloads, extraction or package installation for every build.
+Run the build commands below as an ordinary user in that configured shell.
+See the [baseline build record](r36.5.2-build.md) for archive provenance, checksum and validated environment details.
+
 ## Build and install
 
 ```bash
 bash scripts/build-qemu.sh
-# Configure NVIDIA CROSS_COMPILE, dtc and the Python venv first.
+# Run in the shell configured above.
 bash scripts/build-ftpm-virt-firmware.sh
 bash scripts/build-optee-client.sh
 bash scripts/build-ftpm-helper-probe.sh

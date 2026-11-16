@@ -28,11 +28,75 @@ install/
 NVIDIA提供カーネルの取得スクリプトも、取得後にImageとモジュールを`install/`へ配置する。
 QEMUが使用するホストのGLib等はホスト依存パッケージであり、このディレクトリへ再配布しない。
 
+## ビルド環境の具体的な設定（x86_64 Ubuntu）
+
+以下は**x86_64版Ubuntu 22.04以降**のホスト用。すべてclone済みリポジトリのトップで実行する。
+`uname -m`が`x86_64`であることを確認する。この配布ツールチェーンはARM64ゲスト用コードを生成するx86_64ホスト用である。
+
+### 1. dtcなどのホストツール
+
+```bash
+sudo bash scripts/install-host-deps.sh
+command -v dtc
+dtc --version
+```
+
+`dtc`はDevice Tree Compiler。上記スクリプトがホスト用の`device-tree-compiler`パッケージを導入する。
+
+### 2. NVIDIA指定のクロスコンパイラ
+
+検証済みツールチェーンはBootlin Buildroot 2022.08、GCC 11.3.0。
+NVIDIA配布アーカイブを`work/toolchains/`へ展開する。
+
+```bash
+mkdir -p work/downloads work/toolchains
+curl -fL --retry 3 \
+  https://developer.nvidia.com/downloads/embedded/l4t/r36_release_v3.0/toolchain/aarch64--glibc--stable-2022.08-1.tar.bz2 \
+  -o work/downloads/aarch64--glibc--stable-2022.08-1.tar.bz2
+printf '%s  %s\n' \
+  8af54f268c462b2d0737df8789b5e35db03a2d1ecbec90e20948f66f9244fcdd \
+  work/downloads/aarch64--glibc--stable-2022.08-1.tar.bz2 | sha256sum -c -
+# 初回だけ展開する。既に展開済みならこのtarコマンドは不要。
+tar -xjf work/downloads/aarch64--glibc--stable-2022.08-1.tar.bz2 -C work/toolchains
+export CROSS_COMPILE="$PWD/work/toolchains/aarch64--glibc--stable-2022.08-1/bin/aarch64-buildroot-linux-gnu-"
+"${CROSS_COMPILE}gcc" --version
+"${CROSS_COMPILE}gcc" -dumpmachine
+```
+
+`CROSS_COMPILE`はgccそのものではなく、**コンパイラのパスと接頭辞（末尾の`-`を含む）**。
+スクリプトが後ろに`gcc`、`ar`、`objcopy`等を付ける。
+確認結果はGCC `11.3.0`、ターゲット`aarch64-buildroot-linux-gnu`となる。
+既に別の場所へ展開してある場合は、export行のディレクトリをその場所へ置き換える。
+
+### 3. Python venv
+
+```bash
+python3 -m venv work/venv
+source work/venv/bin/activate
+python3 -m pip install -r docs/build-python-requirements.txt
+python3 -c 'import sys, cryptography, Crypto, elftools; print(sys.executable); print("OP-TEE Python dependencies: OK")'
+```
+
+venvはビルド用PythonとライブラリをホストのシステムPythonから分ける。
+`sys.executable`がリポジトリ内の`work/venv/bin/python3`を指し、importが成功すればよい。
+パッケージ名`pycryptodome`のimport名は`Crypto`、`pyelftools`のimport名は`elftools`。
+
+新しい端末を開いた場合は、同じリポジトリのトップで次の2行を再実行する。
+
+```bash
+source work/venv/bin/activate
+export CROSS_COMPILE="$PWD/work/toolchains/aarch64--glibc--stable-2022.08-1/bin/aarch64-buildroot-linux-gnu-"
+```
+
+venv作成とpip install、コンパイラのダウンロード・展開は毎回行う必要はない。
+以下のビルドは、この環境を設定した同じシェルで通常ユーザーとして実行する。
+コンパイラの取得元・SHA-256と検証時の詳細は[無変更ビルド記録](r36.5.2-build.md)を参照。
+
 ## ビルドと配置
 
 ```bash
 bash scripts/build-qemu.sh
-# NVIDIAのCROSS_COMPILE、dtc、Python venvを設定した上で実行
+# 上記の環境を設定済みの同じシェルで実行
 bash scripts/build-ftpm-virt-firmware.sh
 bash scripts/build-optee-client.sh
 bash scripts/build-ftpm-helper-probe.sh
