@@ -110,3 +110,11 @@ The origin of the broken link has not been established. Ubuntu guest `policycore
 is now an explicit APT dependency. Success requires package configuration to finish and the build to print
 `Created .../rootfs.tar`. Certificate updates remain enabled and package configuration failures remain fatal.
 Syntax and regression checks passed; the build still needs confirmation on the affected user host.
+
+## QEMU times out without any output
+
+The user's strace shows QEMU stopping on `SIGTTOU` before creating its serial log and remaining stopped until timeout.
+Ordinary timeout places the child in a separate process group, which can cause QEMU stdio terminal setup to be treated as a background terminal operation.
+`run-ftpm-virt.sh` uses `timeout --foreground` to retain the terminal foreground process group.
+The default `FTPM_TIMEOUT` of 300 seconds and timeout exit status 124 remain unchanged.
+Guest `FTPM_TEST: PASS` must still be confirmed after this change. Keys, provisioning and disks do not need recreation.

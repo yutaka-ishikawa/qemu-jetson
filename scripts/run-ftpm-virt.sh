@@ -17,7 +17,8 @@ require_commands timeout
 [[ -w "$out/rootfs.ext4" ]] || { echo "Disk is not writable: $out/rootfs.ext4" >&2; exit 1; }
 require_commands python3
 [[ -x "$qemu_bin" ]] || { echo 'Run scripts/build-qemu.sh first' >&2; exit 1; }
-timeout "${FTPM_TIMEOUT:-300}" "$qemu_bin" -L "$qemu_data_dir" \
+# Keep QEMU in the terminal foreground process group: stdio configures termios.
+timeout --foreground "${FTPM_TIMEOUT:-300}" "$qemu_bin" -L "$qemu_data_dir" \
     -machine jetson-ftpm-virt,secure=on,gic-version=2,identity-file="$out/device-identity.bin",provisioning-file="$out/provisioning.bin" \
     -cpu cortex-a57 -smp 1 -m 1024M -display none -monitor none -nic none \
     -serial stdio -serial "file:$secure_log" \

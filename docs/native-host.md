@@ -114,3 +114,12 @@ sudo env FTPM_FUNCTIONAL_PROFILE=1 bash scripts/build-ubuntu-rootfs.sh 2>&1 | te
 パッケージが正常に設定され、rootfs作成の`Created .../rootfs.tar`が出ることを成功条件とする。
 証明書更新を無効にしたり、パッケージ設定エラーを成功として扱ったりしない。
 この変更は構文・回帰試験を実施したが、問題が起きたユーザーホストでの再構築は再確認が必要。
+
+## QEMUが無出力のままタイムアウトする場合
+
+ユーザーのstraceで、QEMUがシリアルログ生成前に`SIGTTOU`で停止し、タイムアウトで終了することを確認した。
+通常の`timeout`は子を別プロセスグループに置くため、QEMUのstdio端末設定がバックグラウンドの端末操作と判定される場合がある。
+`run-ftpm-virt.sh`は`timeout --foreground`を使い、端末のフォアグラウンドグループを維持する。
+`FTPM_TIMEOUT`の既定値300秒とタイムアウト終了コード124は変わらない。
+この変更後も、ゲストの`FTPM_TEST: PASS`を実際に確認する必要がある。
+鍵・provisioning・ディスクの再作成は不要。
