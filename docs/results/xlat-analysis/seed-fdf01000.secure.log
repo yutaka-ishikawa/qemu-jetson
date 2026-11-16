@@ -1,0 +1,36 @@
+I/TC: XLAT_SPLIT level=1 va=0 idx=0
+I/TC: XLAT_ALLOC used=1 max=32
+I/TC: XLAT_SPLIT level=2 va=0 idx=112
+I/TC: XLAT_ALLOC used=2 max=32
+I/TC: XLAT_SPLIT level=1 va=0 idx=2
+I/TC: XLAT_ALLOC used=3 max=32
+I/TC: XLAT_SPLIT level=2 va=80000000 idx=88
+I/TC: XLAT_ALLOC used=4 max=32
+I/TC: XLAT_SPLIT level=2 va=80000000 idx=95
+I/TC: XLAT_ALLOC used=5 max=32
+I/TC: XLAT_SPLIT level=2 va=80000000 idx=96
+I/TC: XLAT_ALLOC used=6 max=32
+I/TC: XLAT_SPLIT level=2 va=80000000 idx=97
+I/TC: XLAT_ALLOC used=7 max=32
+I/TC: 
+I/TC: Non-secure external DT found
+I/TC: Switching console to device: /pl011@9040000
+I/TC: OP-TEE version: 8375a5022-dev (gcc version 11.3.0 (Buildroot 2022.08)) #11 Mon Nov 16 22:51:22 UTC 2026 aarch64
+I/TC: WARNING: This OP-TEE configuration might be insecure!
+I/TC: WARNING: Please check https://optee.readthedocs.io/en/latest/architecture/porting_guidelines.html
+I/TC: Primary CPU initializing
+I/TC: Primary CPU switching to normal world boot
+I/TC: Reserved shared memory is enabled
+I/TC: Dynamic shared memory is enabled
+I/TC: Normal World virtualization support is disabled
+I/TC: Asynchronous notifications are disabled
+I/TC: XLAT_MAP va=88e00000 pages=1 type=13
+I/TC: XLAT_SPLIT level=2 va=80000000 idx=71
+I/TC: XLAT_ALLOC used=8 max=32
+I/TC: XLAT_MAP va=88e00000 pages=1 type=13
+I/TC: XLAT_MAP va=88e00000 pages=1 type=13
+I/TC: XLAT_MAP va=88e01000 pages=1 type=13
+I/TC: XLAT_MAP va=88e00000 pages=1 type=13
+I/TC: XLAT_MAP va=88e01000 pages=1 type=13
+I/TC: XLAT_MAP va=88e00000 pages=1 type=13
+I/TC: XLAT_MAP va=88e00000 pages=1 type=13
