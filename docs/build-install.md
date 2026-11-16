@@ -241,6 +241,45 @@ QEMU起動は`install/`のプログラム・読み取り専用イメージと、
 インストール先へ秘密鍵・仮想デバイス状態が入らないことと、別prefix（空白を含む）の配置も検査する。
 [結果](results/install-layout.json)と[起動ログ抜粋](results/install-layout-excerpt.txt)を参照。
 
+## OP-TEEのページテーブル数変更と変更前のエラー
+
+QEMU ARMv8のfTPM構成では、OP-TEEの変換テーブル上限`MAX_XLAT_TABLES`を**8個から32個**に増やした。
+修正箇所は[`platform_config.h`](../optee/optee/optee_os/core/arch/arm/plat-vexpress/platform_config.h)の
+`PLATFORM_FLAVOR_qemu_armv8a`かつ`CFG_QEMU_JETSON_FTPM`の場合のみ。
+NVIDIAのfTPM/helper TA本体や、実機向けT234構成は変更していない。
+
+変更前の8個では、ユーザー環境のOP-TEEセキュアログに次のエラーが出た。
+行番号は当時のビルドのもの。
+
+```text
+E/TC:0 0 core_mmu_xlat_table_alloc:520 8 xlat tables exhausted
+E/TC:0 0 Panic 'Failed to spread pgdir on small tables' at core/mm/core_mmu.c:1922 <core_mmu_map_pages>
+```
+
+これはOP-TEEがメモリマッピングに必要な下位変換テーブルを確保できずpanicしたことを示す。
+通常側ではシリアルコンソール切り替え付近で出力が止まり、fTPM試験開始前に起動スクリプトがタイムアウトした。
+Linuxの最終出力だけでは原因を特定できず、`work/ftpm-virt/secure-first-native.log`で上記panicを確認した。
+
+32個への変更で静的なテーブル領域は32KiBから128KiBへ増え、追加消費は96KiB。
+この変更はOP-TEEファームウェアへ組み込むため、DTB再生成だけでは反映されない。
+初期構築では本書のfirmwareビルドに含まれる。変更前のfirmwareがある場合は、QEMU停止後に設定済みのビルド環境で次を実行する。
+
+```bash
+bash scripts/build-ftpm-virt-firmware.sh
+bash scripts/prepare-ftpm-virt-dtb.sh
+```
+
+`install/`内のflash.binも更新される。Linux、rootfs、ディスク、CAや鍵の再作成は不要。
+再起動する試験の選択は[test-guide.md](test-guide.md)に従い、完了済みのfirstは再実行しない。
+
+テーブル数を増やした後、手元の既存ディスクではPTAとsecondのPASSを確認した。
+さらに2026-11-17（日本時間）、ユーザーから[test-guide.md](test-guide.md)の全テストがPASSしたと報告を受けた。
+最後の全PASSはユーザー報告であり、この報告に対応する全ログをこちらで再検証したという意味ではない。
+[手元の検証結果](results/optee-xlat-tables.json)と[ログ抜粋](results/optee-xlat-tables-excerpt.txt)も参照。
+
+8個を超えた詳細なマッピング内訳と32個の最大負荷時の余裕は未計測。
+QEMUとT234実機はプラットフォーム・メモリ配置が異なるため、この結果だけで実機での発生や非発生を断定しない。
+
 ## 文書構成の選択
 
 ユーザー指定で旧install-layout.mdをbuild-install.mdへ改名し、ビルド・導入を集約した。

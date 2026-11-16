@@ -140,12 +140,12 @@ QEMUを停止してから実行し、既存ディスク・鍵・provisioningを�
 ```bash
 bash scripts/build-ftpm-virt-firmware.sh
 bash scripts/prepare-ftpm-virt-dtb.sh
-bash scripts/run-ftpm-virt.sh first
 ```
 
 ファームウェアの再ビルドによりinstall内のflash.binも更新される。Linuxやrootfsの再作成は不要。
 
 修正後のファームウェア全体を再ビルドし、テーブル配列が131072バイト（32個）であることを確認した。
 既存永続ディスクでPTA試験と`FTPM_TEST: PASS phase=second`、poweroffを確認した。
-ユーザーの新規ディスクでfirstの確認は必要。
+更新：2026-11-17（日本時間）、ユーザーからtest-guide.mdの全テストPASSの報告を受けた（ユーザー報告、全ログの再検証は未実施）。
+変更前のエラー原文・適用範囲は[ビルド・導入手順](build-install.md#op-teeのページテーブル数変更と変更前のエラー)を参照。
 [結果](results/optee-xlat-tables.json)と[ログ抜粋](results/optee-xlat-tables-excerpt.txt)を参照。

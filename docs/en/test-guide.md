@@ -160,3 +160,8 @@ The older check-ftpm-functional-results.py requires all six logs: first, second,
 It is not mandatory for this continuation guide: absent first.log or accounts-fixed.log would cause it to fail.
 Do not copy or edit logs to satisfy the checker. Gather the full evidence from the [older complete procedure](ftpm-functional-validation.md) if needed.
 These tests do not cover every TPM command, physical eFuse tamper resistance or rollback protection.
+
+## Confirmation after the translation table increase
+
+On 2026-11-17 (Japan time), the user reported all tests in this guide passed. The progress table records the state when the guide was created.
+See the [build guide](build-install.md#op-tee-translation-table-change-and-the-original-failure) for the 8-to-32 table change and original panic.

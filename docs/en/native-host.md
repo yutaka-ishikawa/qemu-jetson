@@ -135,12 +135,12 @@ Retain the existing disk, keys and provisioning.
 ```bash
 bash scripts/build-ftpm-virt-firmware.sh
 bash scripts/prepare-ftpm-virt-dtb.sh
-bash scripts/run-ftpm-virt.sh first
 ```
 
 The firmware rebuild also updates installed flash.bin. No Linux or rootfs rebuild is required.
 
 Rebuilt the complete firmware and verified the table array is 131072 bytes (32 tables).
 PTA tests and `FTPM_TEST: PASS phase=second` followed by poweroff passed with the existing persistent disk.
-First on the user newly built disk still needs confirmation.
+Update: on 2026-11-17 (Japan time), the user reported all test-guide.md tests passed (user-reported; not all logs independently rechecked).
+See the [build guide](build-install.md#op-tee-translation-table-change-and-the-original-failure) for original errors and scope.
 See [results](../results/optee-xlat-tables.json) and [log excerpt](../results/optee-xlat-tables-excerpt.txt).

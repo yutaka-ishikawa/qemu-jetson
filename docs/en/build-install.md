@@ -240,6 +240,39 @@ Boot installed QEMU, firmware, kernel Image and DTB against preserved NV state.
 Check secret/state exclusion and a custom install prefix containing spaces.
 See the [result](../results/install-layout.json) and [boot excerpts](../results/install-layout-excerpt.txt).
 
+## OP-TEE translation table change and the original failure
+
+For QEMU ARMv8 with CFG_QEMU_JETSON_FTPM, OP-TEE's MAX_XLAT_TABLES was increased from **8 to 32** in
+[platform_config.h](../../optee/optee/optee_os/core/arch/arm/plat-vexpress/platform_config.h).
+NVIDIA fTPM/helper TA bodies and the physical T234 profile are unchanged.
+With eight tables, the user's secure log showed (line numbers refer to that build):
+
+```text
+E/TC:0 0 core_mmu_xlat_table_alloc:520 8 xlat tables exhausted
+E/TC:0 0 Panic 'Failed to spread pgdir on small tables' at core/mm/core_mmu.c:1922 <core_mmu_map_pages>
+```
+
+OP-TEE could not allocate lower-level translation tables for a memory mapping and panicked.
+Linux output stopped near serial console handover; the launcher timed out before fTPM tests started.
+The cause was identified in work/ftpm-virt/secure-first-native.log, not from the final Linux message alone.
+Static table storage increased from 32KiB to 128KiB, an additional 96KiB.
+This is compiled into firmware: regenerating DTBs alone is insufficient.
+Initial builds already include the change. To update old firmware, stop QEMU and run in the configured build environment:
+
+```bash
+bash scripts/build-ftpm-virt-firmware.sh
+bash scripts/prepare-ftpm-virt-dtb.sh
+```
+
+Installed flash.bin is updated. Linux, rootfs, disks, CA and keys need no recreation.
+Select the next test using [test-guide.md](test-guide.md); do not rerun completed first tests.
+Local validation passed PTA and second on an existing persistent disk.
+On 2026-11-17 (Japan time), the user additionally reported all test-guide.md tests passed.
+This final confirmation is user-reported, not independent reinspection of every corresponding log.
+See the [local results](../results/optee-xlat-tables.json) and [excerpt](../results/optee-xlat-tables-excerpt.txt).
+The detailed mapping count exceeding eight and worst-case headroom at 32 have not been measured.
+QEMU and physical T234 memory layouts differ; this result alone establishes neither failure nor immunity on hardware.
+
 ## Document organization decision
 
 At the user request, the former install-layout.md became build-install.md for builds and installation.
