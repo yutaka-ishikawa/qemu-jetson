@@ -6,6 +6,32 @@ This compares Jetson Orin Nano (T234) with this repository's B2 functional profi
 Passing QEMU tests does not establish identical hardware, every TPM command, or security strength.
 No controlled physical-device comparison has been performed. Hardware protection depends on product configuration and manufacturing provisioning.
 
+## Is QEMU itself modified?
+
+**Yes.** This repository directly modifies the vendored QEMU 11.1.3 sources.
+This is not an unmodified upstream QEMU configured solely through command-line options.
+
+The principal B2 addition is [jetson-ftpm-virt.c](../../qemu/hw/arm/jetson-ftpm-virt.c),
+which registers jetson-ftpm-virt as a subclass of the upstream virt machine.
+
+| Addition | Behavior |
+| --- | --- |
+| identity-file | Validates a 72-byte JFTPM001 image and exposes it in a 4KiB ROM region at secure address 0x0c200000 |
+| provisioning-file | Validates JFPRV001 input and provides 64KiB RAM at secure address 0x0c400000, allowing the PTA to copy and erase handoff data |
+| Reset | Restores provisioning RAM from the retained initial image; QEMU does not rewrite the host input file |
+| Configuration restrictions | Rejects identity-file/provisioning-file changes after initialization |
+| Build integration | Adds the custom machine source in [meson.build](../../qemu/hw/arm/meson.build) |
+
+This supplies virtual identity and provisioning data; it does not reproduce the physical Fuse Controller or SE.
+Secure address-space placement separates guest access, not protection against the host administrator.
+TPM commands are handled by the NVIDIA fTPM TA inside the guest, not replaced by another TPM implementation in QEMU.
+The current [launcher](../../scripts/run-ftpm-virt.sh) uses neither QEMU -tpmdev nor swtpm.
+
+There are also custom T234 hardware-model changes including [jetson-t234-dev.c](../../qemu/hw/arm/jetson-t234-dev.c).
+That fuse-model path must be distinguished from the passing B2 profile.
+OP-TEE additionally has QEMU platform adaptations and the [table-capacity change](page-table-analysis.md).
+Keeping NVIDIA TA/PTA bodies minimally changed does not imply unmodified QEMU or OP-TEE platform code.
+
 ## Platform and software
 
 | Item | Physical Jetson | Current QEMU B2 |

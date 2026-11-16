@@ -6,6 +6,32 @@
 QEMUでの試験合格は、実機と全ハードウェア・全TPMコマンド・保護強度が同一という意味ではない。
 実機との同条件の比較測定は未実施。実機欄の保護機能は、製品の設定・製造時プロビジョニングに依存する。
 
+## QEMU自体を修正しているか
+
+**修正している。** 本リポジトリに同梱したQEMU 11.1.3のソースへ直接変更を加えている。
+標準QEMUに起動オプションを指定するだけの構成ではない。
+
+現在のB2で使う主な追加実装は[jetson-ftpm-virt.c](../qemu/hw/arm/jetson-ftpm-virt.c)。
+標準virtマシンを継承した独自マシンjetson-ftpm-virtを登録し、次の機能を追加している。
+
+| 追加機能 | 実装内容 |
+| --- | --- |
+| identity-file | 72バイトのJFTPM001を検証・読込み。Secureアドレス空間0x0c200000に4KiBのROM領域として配置 |
+| provisioning-file | JFPRV001を検証・読込み。Secureアドレス空間0x0c400000に64KiBのRAM領域を配置。PTAによるコピー後の消去を許容 |
+| リセット処理 | 保存した初期provisioning内容からRAMを復元。ホスト側ファイルはQEMUから書き換えない |
+| 設定変更の制限 | 初期化後のidentity-file/provisioning-file変更を拒否 |
+| ビルド登録 | [meson.build](../qemu/hw/arm/meson.build)で独自マシンのソースを追加 |
+
+これはB2の仮想ID・provisioning供給機構であり、実機Fuse ControllerやSEをそのまま再現する仕組みではない。
+Secure空間への配置はゲスト側の分離であり、ホスト管理者からの秘密保護を意味しない。
+TPMコマンド処理はQEMU内の別TPM実装へ置き換えておらず、ゲスト内のNVIDIA fTPM TAが行う。
+現在の[起動スクリプト](../scripts/run-ftpm-virt.sh)もQEMUの-tpmdevやswtpmを使用しない。
+
+別経路の[jetson-t234-dev.c](../qemu/hw/arm/jetson-t234-dev.c)等にも独自のT234モデル実装がある。
+こちらのFuseモデルの状態と、B2のPASSは区別する。
+OP-TEE側にもQEMUプラットフォーム移植と[ページテーブル上限の変更](page-table-analysis.md)がある。
+したがって「NVIDIA TA/PTA本体を極力変更しない」と「QEMUもOP-TEEプラットフォームも無変更」は別である。
+
 ## プラットフォームとソフトウェア
 
 | 項目 | Jetson実機 | 現在のQEMU B2 |
