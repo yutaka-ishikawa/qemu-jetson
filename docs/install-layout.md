@@ -166,6 +166,10 @@ CA秘密鍵やFirmware ID秘密鍵をゲストのrootfsへコピーしない。
 bash scripts/prepare-ftpm-virt-dtb.sh
 ```
 
+QEMUゲストは[決定0006](decisions/0006-guest-selinux.md)のAに従い、SELinuxを無効にする。
+DTBの起動引数に`selinux=0`を設定する。ホストのSELinux設定は変更しない。
+
+
 生成したDTBは`install/share/qemu-jetson/ftpm-virt/runtime-*.dtb`に配置される。
 
 ### 5. 初回試験を実行

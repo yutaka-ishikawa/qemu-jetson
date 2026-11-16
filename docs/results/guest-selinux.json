@@ -1,0 +1,14 @@
+{
+  "option": "A",
+  "guest_bootarg": "selinux=0",
+  "dtb_phases_verified": [
+    "first",
+    "second",
+    "export",
+    "bound"
+  ],
+  "test": "existing persistent disk, second phase",
+  "result": "PASS",
+  "new_user_rootfs_test": "requires user confirmation",
+  "selinux_label_socket_errors": false
+}

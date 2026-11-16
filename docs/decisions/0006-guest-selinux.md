@@ -2,7 +2,7 @@
 
 日本語 | [English](../en/decisions/0006-guest-selinux.md)
 
-状態：選択待ち。推奨A。ユーザーの決定前に実装しない。
+状態：ユーザー承認済み。Aを選択。QEMU専用の全4フェーズのDTBに`selinux=0`を追加する。
 
 ## 観測結果
 
@@ -20,3 +20,25 @@ AでもSELinuxの無効化はゲストのセキュリティ構成の変更とし
 TPMコマンド機能、OP-TEEのセキュア世界との分離、CAの信頼範囲とは区別する。
 どちらも実装後にjournald/udevの起動とfirst/secondのPASSを実際に検証する必要がある。
 既存の鍵・provisioning・NV状態を消して成功に見せる手順にはしない。
+
+## 適用手順
+
+QEMUが終了してから、既存ディスク・鍵・provisioningを保持して実行する。
+
+```bash
+git pull --ff-only
+bash scripts/prepare-ftpm-virt-dtb.sh
+bash scripts/run-ftpm-virt.sh first
+```
+
+既に初回試験がPASS済みの場合は`first`を再実行せず`second`を実行する。
+DTBはinstall/へ自動配置される。QEMU・カーネル・OP-TEE・rootfsの再ビルドは不要。
+Linuxログの`Kernel command line`に`selinux=0`が入ることを確認する。
+初回PASS後に同じディスクで`second`を実行し、永続性を検証する。
+
+## 検証
+
+全4フェーズのinstall済みDTBを逆変換して起動引数を確認した。
+手元の既存永続ディスクでsecondを実行し、journald/udevの起動、PTA試験、`FTPM_TEST: PASS phase=second`とpoweroffを確認した。
+SELinuxラベルによるソケット作成エラーはなかった。ユーザーの新規rootfsでのfirstは別途確認が必要。
+[ログ抜粋](../results/guest-selinux-excerpt.txt)と[結果](../results/guest-selinux.json)を保存した。

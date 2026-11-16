@@ -23,8 +23,9 @@ s = s.replace('\n\tchosen {', '\n\t' + dt_nodes((out/'provisioning.bin').read_by
 # TF-A provides PSCI, but the loaded external DT must describe its interface.
 if 'arm,psci-0.2' not in s:
     s = s.replace('\n\tchosen {', '\n\tpsci { compatible = "arm,psci-0.2"; method = "smc"; };\n\tchosen {', 1)
+# Decision 0006: Ubuntu test rootfs has no SELinux policy or file labels.
 for phase in ('first', 'second', 'export', 'bound'):
-    text = s.replace('\n\tchosen {', '\n\tchosen {\n bootargs = "console=ttyAMA0,115200 earlycon root=/dev/vda rw rootwait panic=5 systemd.log_target=console ftpm.test=' + phase + '";', 1)
+    text = s.replace('\n\tchosen {', '\n\tchosen {\n bootargs = "console=ttyAMA0,115200 earlycon root=/dev/vda rw rootwait panic=5 selinux=0 systemd.log_target=console ftpm.test=' + phase + '";', 1)
     if phase in ('export', 'bound'):
         text = text.replace('ftpm.test=' + phase, 'ftpm.identity_test=' + phase)
     (out/f'runtime-{phase}.dts').write_text(text)
