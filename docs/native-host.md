@@ -100,3 +100,8 @@ sudo env FTPM_FUNCTIONAL_PROFILE=1 bash scripts/build-ubuntu-rootfs.sh 2>&1 | te
 ```
 
 失敗時は`ROOTFS_DIAG`を含むログを確認する。rootfsへの試験データ追記・ディスク生成には進まない。
+
+診断トレースは`/bin/sh -ex`で実行し、元の`#!/bin/sh -e`と同様に最初のエラーで停止する。
+以前の診断は`-e`を欠き、途中のエラーを越えてstatus=0を出す可能性があった。
+`restorecon`が存在する場合は、`-n -v`によるラベルを書き換えない診断も行い、通常の証明書更新が隠すエラー出力を表示する。
+この変更は診断の修正であり、APT失敗の解決を意味しない。

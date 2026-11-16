@@ -20,7 +20,7 @@ else
         ldd /usr/bin/openssl >&2 || true
         echo 'ROOTFS_DIAG: tracing update-ca-certificates (last 100 lines)' >&2
         trace=$(mktemp /tmp/qemu-jetson-ca-trace.XXXXXX)
-        if /bin/sh -x /usr/sbin/update-ca-certificates --fresh --verbose >"$trace" 2>&1; then
+        if /bin/sh -ex /usr/sbin/update-ca-certificates --fresh --verbose >"$trace" 2>&1; then
             trace_status=0
         else
             trace_status=$?
@@ -28,6 +28,15 @@ else
         tail -n 100 "$trace" >&2 || true
         rm -f "$trace"
         echo "ROOTFS_DIAG: certificate trace status=$trace_status" >&2
+        if [ -x /sbin/restorecon ]; then
+            echo 'ROOTFS_DIAG: restorecon details and dry run (no relabeling)' >&2
+            ls -l /sbin/restorecon >&2 || true
+            if /sbin/restorecon -n -v /etc/ssl/certs/ca-certificates.crt >&2; then
+                echo 'ROOTFS_DIAG: restorecon dry-run status=0' >&2
+            else
+                echo "ROOTFS_DIAG: restorecon dry-run status=$?" >&2
+            fi
+        fi
     fi
     exit "$apt_status"
 fi

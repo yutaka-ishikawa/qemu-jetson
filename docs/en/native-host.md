@@ -96,3 +96,8 @@ sudo env FTPM_FUNCTIONAL_PROFILE=1 bash scripts/build-ubuntu-rootfs.sh 2>&1 | te
 ```
 
 On failure, inspect the log including `ROOTFS_DIAG`. Do not append test data or create a disk.
+
+The trace uses `/bin/sh -ex`, preserving the original `#!/bin/sh -e` stop-on-error behavior.
+Earlier diagnostics omitted `-e` and could report status=0 after an intermediate failure.
+When restorecon exists, a `-n -v` dry run (without relabeling) exposes errors normally suppressed by certificate updates.
+This corrects diagnostics; it does not establish that the APT failure is resolved.

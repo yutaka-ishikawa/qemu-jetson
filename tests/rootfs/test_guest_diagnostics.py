@@ -25,7 +25,7 @@ class GuestDiagnosticsTest(unittest.TestCase):
             postinst = directory/'postinst'
             postinst.touch()
             update = directory/'update-ca-certificates'
-            update.write_text('openssl version\nexit 127\n')
+            update.write_text('openssl version\necho SHOULD_NOT_RUN_AFTER_FAILURE\n')
             source = source.replace('/var/lib/dpkg/info/ca-certificates.postinst', str(postinst))
             source = source.replace('/usr/sbin/update-ca-certificates', str(update))
             # The trace must explicitly target the guest updater.
@@ -35,6 +35,7 @@ class GuestDiagnosticsTest(unittest.TestCase):
             self.assertIn('ROOTFS_DIAG: package installation failed (status=100)', result.stderr)
             self.assertIn('mock-openssl-failure', result.stderr)
             self.assertIn('certificate trace status=127', result.stderr)
+            self.assertNotIn('SHOULD_NOT_RUN_AFTER_FAILURE', result.stderr)
 
 
 if __name__ == '__main__':
