@@ -194,6 +194,39 @@ Normal-world logs go to the terminal; secure logs go to work/ftpm-virt/secure-<p
 Actual EK certificate binding and standard certificate NV-index verification follow through export, bind-ftpm-test-ek.py and bound.
 See the [full reproduction commands](ftpm-functional-validation.md#reproduction).
 
+## Recovering an archive containing only test files
+
+If disk creation fails because `usr/sbin` is missing and the tar contains only about 22 test entries, the Ubuntu base is absent.
+The old `prepare-ftpm-test-rootfs.py` used tar append mode, which silently created a new archive when the input did not exist.
+These contents alone do not establish whether Ubuntu assembly was skipped or failed.
+The corrected scripts check for Ubuntu and OP-TEE client contents before appending files or creating a disk.
+
+Run these commands at the repository root to preserve the incomplete archive and checksum, then rebuild Ubuntu.
+Keys, certificates, device identity, provisioning and existing disks are preserved.
+
+```bash
+git pull --ff-only
+source work/venv/bin/activate
+backup=$(mktemp -d "$PWD/work/ftpm-rootfs-backup.XXXXXX")
+sudo mv -- work/ftpm-virt/rootfs.tar "$backup/"
+if [ -f work/ftpm-virt/rootfs.tar.sha256 ]; then
+  sudo mv -- work/ftpm-virt/rootfs.tar.sha256 "$backup/"
+fi
+sudo env FTPM_FUNCTIONAL_PROFILE=1 bash scripts/build-ubuntu-rootfs.sh
+```
+
+Stop and inspect the error if the last command fails. Continue only after it succeeds.
+
+```bash
+python3 scripts/prepare-ftpm-test-rootfs.py \
+  work/ftpm-virt/rootfs.tar work/ftpm-test-provisioning
+sudo bash scripts/create-ftpm-virt-disk.sh
+bash scripts/prepare-ftpm-virt-dtb.sh
+bash scripts/run-ftpm-virt.sh first
+```
+
+Do not overwrite an existing disk. Run `second` from the preceding section only after the first PASS.
+
 ## Override install/build directories
 
 ```bash

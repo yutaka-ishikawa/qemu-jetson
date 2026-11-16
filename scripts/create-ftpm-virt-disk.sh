@@ -3,9 +3,9 @@ set -euo pipefail
 source "$(dirname -- "${BASH_SOURCE[0]}")/host-common.sh"
 cd "$repo"
 [[ $EUID == 0 ]] || { echo 'Run with sudo to preserve guest file ownership. See docs/native-host.md.' >&2; exit 1; }
-require_commands tar mke2fs truncate
+require_commands python3 tar mke2fs truncate
 out=${FTPM_IMAGE_DIR:-work/ftpm-virt}
-test -f "$out/rootfs.tar"
+python3 "$repo/scripts/rootfs_validation.py" "$out/rootfs.tar"
 [[ ! -e "$out/rootfs.ext4" && ! -e "$out/rootfs.ext4.part" ]] || { echo 'Refusing to overwrite persistent disk' >&2; exit 1; }
 root=$(mktemp -d "$repo/work/ftpm-disk.XXXXXX")
 trap 'rm -rf -- "$root"; rm -f -- "$out/rootfs.ext4.part"' EXIT

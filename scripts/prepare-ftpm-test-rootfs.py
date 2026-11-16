@@ -6,11 +6,17 @@ import io
 from pathlib import Path
 import tarfile
 from install_paths import guest_bin_dir, guest_lib_dir
+from rootfs_validation import validate_rootfs
 
 parser = argparse.ArgumentParser(description=__doc__)
 parser.add_argument('tar', type=Path)
 parser.add_argument('fixtures', type=Path)
 args = parser.parse_args()
+try:
+    validate_rootfs(args.tar)
+except (OSError, tarfile.TarError, ValueError) as error:
+    parser.error(f"{error}. Build Ubuntu first with scripts/build-ubuntu-rootfs.sh; "
+                 "see docs/install-layout.md for recovery. No archive was modified.")
 repo = Path(__file__).resolve().parents[1]
 out = repo/'work/ftpm-virt'
 identity = (out/'device-identity.bin').read_bytes()

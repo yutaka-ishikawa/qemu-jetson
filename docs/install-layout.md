@@ -194,6 +194,39 @@ bash scripts/run-ftpm-virt.sh second
 実際のfTPM EK公開鍵への証明書対応付けと標準NV indexの検証は、その後の`export`→`bind-ftpm-test-ek.py`→`bound`の工程。
 詳しいコマンドは[機能検証の再現手順](ftpm-functional-validation.md#再現手順)を参照。
 
+## rootfs.tarに試験用ファイルしかない場合の復旧
+
+`create-ftpm-virt-disk.sh`が`usr/sbin`不存在で失敗し、tarの内容が約22件の試験用ファイルだけの場合、Ubuntu本体が入っていない。
+旧`prepare-ftpm-test-rootfs.py`はtarの追記モードを使い、入力ファイルが存在しなくても新規tarを作成してしまった。
+この内容だけからUbuntu生成が未実行だったのか、失敗したのかは断定できない。
+修正版はUbuntu本体とOP-TEEクライアントの存在を確認し、不完全なtarへの追記とディスク作成を拒否する。
+
+リポジトリのトップで以下を実行する。問題のtarとチェックサムを退避し、Ubuntuを再構築する。
+鍵・証明書・device identity・provisioning・既存ディスクは変更しない。
+
+```bash
+git pull --ff-only
+source work/venv/bin/activate
+backup=$(mktemp -d "$PWD/work/ftpm-rootfs-backup.XXXXXX")
+sudo mv -- work/ftpm-virt/rootfs.tar "$backup/"
+if [ -f work/ftpm-virt/rootfs.tar.sha256 ]; then
+  sudo mv -- work/ftpm-virt/rootfs.tar.sha256 "$backup/"
+fi
+sudo env FTPM_FUNCTIONAL_PROFILE=1 bash scripts/build-ubuntu-rootfs.sh
+```
+
+最後のコマンドが失敗した場合はそこで止め、エラー出力を確認する。成功した場合だけ続行する。
+
+```bash
+python3 scripts/prepare-ftpm-test-rootfs.py \
+  work/ftpm-virt/rootfs.tar work/ftpm-test-provisioning
+sudo bash scripts/create-ftpm-virt-disk.sh
+bash scripts/prepare-ftpm-virt-dtb.sh
+bash scripts/run-ftpm-virt.sh first
+```
+
+既存ディスクを上書きしない。初回PASS後に限り、前節の`second`を実行する。
+
 ## 配置先とビルド先の変更
 
 ```bash
