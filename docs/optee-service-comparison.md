@@ -13,8 +13,8 @@ OP-TEE OSのカーネル内に登録されるPseudo Trusted Applicationである
 | --- | --- | --- | --- |
 | `tee-supplicant` | 通常世界のLinuxプロセス。常駐デーモン | OP-TEEからのRPC。外部TAロード、REEファイル操作、共有メモリ割当・解放、RPMBなど | NVIDIA版クライアントを配置し、起動を確認済み |
 | `nvftpm-helper-app` | 通常世界のLinuxコマンドラインツール（CA）。常駐デーモンではない | helper TAを呼び、製造・プロビジョニング関連の問い合わせや操作を行う | 配置済み。呼出先のTA/PTAを含む動作は未確認 |
-| fTPM helper TA | セキュア世界、OP-TEEユーザー空間のTA。UUID `a6a3a74a-77cb-433a-990c-1dfb8a3fbc4c` | LinuxのCAとhelper PTAの仲介、CSR処理など | 現在のQEMU用Early TAには未搭載 |
-| fTPM helper PTA | セキュア世界、OP-TEEカーネル内のPTA。UUID `6c879517-2dfc-4663-863d-4896e8ccbe3a` | 通常世界の準備状態、SN/ECID、証明書・プロビジョニング関連API | 未搭載。実行時に`ITEM_NOT_FOUND`を確認した対象 |
+| fTPM helper TA | セキュア世界、OP-TEEユーザー空間のTA。UUID `a6a3a74a-77cb-433a-990c-1dfb8a3fbc4c` | LinuxのCAとhelper PTAの仲介、CSR処理など | B2用Early TAへの組み込みビルドに成功。管理操作の実行は未確認 |
+| fTPM helper PTA | セキュア世界、OP-TEEカーネル内のPTA。UUID `6c879517-2dfc-4663-863d-4896e8ccbe3a` | 通常世界の準備状態、SN/ECID、証明書・プロビジョニング関連API | B2で全PTAの組み込み・初期化経路を確認。プロビジョニングデータを用いるAPI試験は未完了 |
 | fTPM TA | セキュア世界、OP-TEEユーザー空間のTA。UUID `bc50d971-d4c9-42c4-82cb-343fb7f37896` | TPM 2.0コマンドの実装 | ソース無変更でビルドしEarly TAに埋め込み。コマンド試験は未完了 |
 | `tpm_ftpm_tee` | 通常世界のLinuxカーネルドライバ | Linux TPMサブシステムとfTPM TAの接続 | NVIDIA配布モジュールを使用。正常動作は未確認 |
 
@@ -55,7 +55,7 @@ B2の「移植対象」はソース/APIの対応範囲を意味し、全機能�
 | `INJECT_EPS` (`0xffff000c`) | 外部EPS（Endorsement Primary Seed、64バイト）を設定 | 未対応を明示 | 条件付き移植対象。`CFG_JETSON_FTPM_HELPER_INJECT_EPS`有効時のみ実装 |
 
 NVIDIAのPTAでも、データや初期化状態が不足する場合は失敗する。APIの存在と利用可能性は別である。
-現在のQEMU構成ではPTA自体が存在しないため、上記の各コマンドへ到達する前にセッション作成が失敗する。
+B2移植前はPTA自体が存在せず、各コマンドに到達する前にセッション作成が失敗した。B2では全PTAを組み込んだ。ビルド・起動結果は[移植状況](ftpm-helper-port.md)を参照。
 
 ## fTPMが直接必要とするもの
 
@@ -69,7 +69,7 @@ B案のHUK由来EPS処理はこの経路の追加であり、helper PTA全体の
 
 NVIDIAの`optee_src_build.sh`ではfTPMを有効にすると
 `CFG_REE_STATE=y`と`CFG_JETSON_FTPM_HELPER_PTA=y`を指定する。
-現在のQEMU用ビルドはこの専用スクリプトを経由せず、この2つは有効になっていない。
+B2移植前のQEMU用ビルドはこの専用スクリプトを経由せず、この2つが無効だった。B2では`CFG_QEMU_JETSON_FTPM=y`で両方を有効にする。
 B1でも`CFG_REE_STATE`を有効にする必要がある。無効時の`tee_get_ree_state()`はUNKNOWNを返す。
 
 REE状態の流れは次のとおり。

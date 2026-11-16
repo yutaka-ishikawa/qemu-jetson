@@ -1,0 +1,30 @@
+{
+  "profile": "jetson-ftpm-virt B2",
+  "status": "full_helper_built_and_no_provision_boot_verified",
+  "checks": {
+    "qemu_build": "PASS",
+    "stock_virt_regression": "PASS",
+    "optee_full_helper_build": "PASS",
+    "helper_TA_contains_resign_ek_csr": "PASS",
+    "source_unchanged": {
+      "optee/optee/optee_os/core/pta/tegra/jetson_ftpm_helper_pta.c": "6b3ba20ecb2a5b50c37283b5386d19170468ff810ff059f4eaedfa47bcfe2991",
+      "optee/optee/samples/ftpm-helper/ta/ftpm_helper_ta.c": "2f212d4e8f73032962b497781cd61533a0e31a426b1eeb6082cee6a210031411",
+      "optee/optee/samples/ms-tpm-20-ref/Samples/ARM32-FirmwareTPM/optee_ta/fTPM/fTPM.c": "37b3cbf5bd9af6bebad1d0f0d926eab77b4d6d034ea6aed400920c3701bb3f52"
+    },
+    "structural_handoff_bounds_tests": 9,
+    "optee_and_linux_boot_without_provisioning": "PASS"
+  },
+  "expected_diagnostic": "fTPM DT or EKB is not available. fTPM provisioning is not supported.",
+  "limitations": [
+    "No device keys or CA generated pending decision 0003",
+    "No signing API success claimed",
+    "Full helper API execution not verified",
+    "TPM commands and persistence not verified",
+    "No-provision boot ran without a root disk; timeout was expected"
+  ],
+  "artifacts_sha256": {
+    "work/ftpm-virt/flash.bin": "aa573b0043b30bfc6e03be7a3fe2e42986f675d7b08324330f1f178c478d0d33",
+    "work/optee-virt/core/tee-pager_v2.bin": "e64b91fee62279871521445869a0fa0f8e61cb92e7e1572a1db64594f0ef7e95",
+    "work/optee-virt/early_ta/ftpm-helper/a6a3a74a-77cb-433a-990c-1dfb8a3fbc4c.stripped.elf": "2bb0b1b920e2eff0f2ee0c0b0a7a352440d935010b2efa66925bf616e1ea1afe"
+  }
+}

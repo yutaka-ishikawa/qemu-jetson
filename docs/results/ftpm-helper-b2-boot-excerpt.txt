@@ -1,0 +1,8 @@
+Actual no-provision/no-root-disk boot: expected provisioning failure; no TPM success claimed.
+I/TC: OP-TEE version: d83a2d5a0-dev (gcc version 11.3.0 (Buildroot 2022.08)) #7 Mon Nov 16 00:04:47 UTC 2026 aarch64
+E/TC:0 0 ftpm_helper_dt_init:579 ftpm_helper_dt_init: DT not found (ffffffff).
+I/TC: ftpm-helper PTA: fTPM DT or EKB is not available. fTPM provisioning is not supported.
+I/TC: Primary CPU switching to normal world boot
+[    1.027200] optee: initialized driver
+[    1.241472] Waiting for root device /dev/vda...
+qemu-system-aarch64: terminating on signal 15 from pid 1 (timeout)

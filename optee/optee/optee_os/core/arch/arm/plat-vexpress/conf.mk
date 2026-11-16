@@ -1,5 +1,16 @@
 PLATFORM_FLAVOR ?= qemu_virt
 
+# Full, unchanged NVIDIA helper PTA with virtual platform data providers.
+CFG_QEMU_JETSON_FTPM ?= n
+ifeq ($(CFG_QEMU_JETSON_FTPM),y)
+ifneq ($(PLATFORM_FLAVOR),qemu_armv8a)
+$(error CFG_QEMU_JETSON_FTPM requires vexpress-qemu_armv8a)
+endif
+$(call force,CFG_QEMU_DEVICE_IDENTITY,y)
+$(call force,CFG_REE_STATE,y)
+$(call force,CFG_JETSON_FTPM_HELPER_PTA,y)
+endif
+
 ifeq ($(PLATFORM_FLAVOR),qemu_virt)
 include core/arch/arm/cpu/cortex-a15.mk
 endif

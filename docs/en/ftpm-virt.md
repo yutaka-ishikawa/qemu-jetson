@@ -2,7 +2,7 @@
 
 [日本語](../ftpm-virt.md) | English
 
-> Current status: Linux, Ubuntu and tee-supplicant boot verified. fTPM command tests are incomplete. Handling the missing helper PTA is [awaiting a decision](decisions/0002-ftpm-helper-pta.md). The test procedure below is prepared, not a record of successful tests.
+> Current status: Linux, Ubuntu and tee-supplicant boot verified. fTPM command tests are incomplete. [B2, the complete PTA port, is approved](decisions/0002-ftpm-helper-pta.md). See [port status and extra steps](ftpm-helper-port.md) and the pending [key/certificate data choice](decisions/0003-ftpm-provisioning-data.md). The test procedure below is prepared, not a record of successful tests.
 
 
 See [alternatives and decision](decisions/0001-ftpm-execution-path.md). The QEMU `jetson-ftpm-virt` machine derives from `virt`.
@@ -23,10 +23,11 @@ This functional profile uses a persistent 72-byte file, mapped into a secure-onl
 The format is eight bytes `JFTPM001`, 32 secret random bytes, and 32 public device-ID bytes.
 The file is generated once with mode 0600 and never automatically replaced.
 The current OP-TEE HUK API consumes the first 16 secret bytes; the remainder is reserved.
-Only `CFG_QEMU_DEVICE_IDENTITY=y` enables the additional OTP implementation. The existing HUK derivation API binds EPS to the TA UUID and device ID.
+Only `CFG_QEMU_DEVICE_IDENTITY=y` enables the additional OTP implementation.
+B2 replaces the prototype HUK-derived EPS with the original NVIDIA helper PTA EPS path ([details](ftpm-helper-port.md)).
 No shared constant HUK is used. The TA's EPS retrieval code remains unchanged.
 
-Keep `work/ftpm-virt/device-identity.bin` and `rootfs.ext4` together. The disk includes the encrypted REE filesystem under `/data/tee`.
+Keep `work/ftpm-virt/device-identity.bin`, `provisioning.bin`, and `rootfs.ext4` together. The disk includes the encrypted REE filesystem under `/data/tee`.
 Neither belongs in Git. Copying them clones the TPM identity; create new state for a different device.
 This profile does not protect secrets from the host administrator, resist physical tampering, or prevent storage rollback.
 
@@ -44,6 +45,7 @@ scripts/fetch-ftpm-virt-kernel.py
 FTPM_FUNCTIONAL_PROFILE=1 KERNEL_MODULES_DIR="$PWD/work/ftpm-virt/modules" \
   scripts/build-ubuntu-rootfs.sh /path/to/optee/install/t234 work/ftpm-virt/rootfs.tar
 scripts/create-ftpm-virt-disk.sh
+# For B2, select key/certificate data and pack provisioning.bin as documented in ftpm-helper-port.md.
 scripts/prepare-ftpm-virt-dtb.sh
 scripts/run-ftpm-virt.sh first 2>&1 | tee work/ftpm-virt/first.log
 scripts/run-ftpm-virt.sh second 2>&1 | tee work/ftpm-virt/second.log
@@ -61,12 +63,12 @@ and NV/key/sealed-object persistence with PCR reset after fully stopping QEMU.
 Tegra SE, hardware key slots, manufacturing EK certificates, and Measured Boot are outside this functional profile.
 It uses `CFG_TA_MEASURED_BOOT=n`. PCR command functionality does not demonstrate boot measurement equivalence.
 
-## Observed results
+## Boot results before the B2 port
 
 The [machine-readable result](../results/ftpm-virt-boot.json) and [actual log excerpt](../results/ftpm-virt-boot-excerpt.txt) are preserved.
 Linux's OP-TEE driver, Ubuntu multi-user target, and tee-supplicant start successfully.
 The helper PTA load returns `ITEM_NOT_FOUND`; fTPM functionality is therefore not claimed.
-The [next decision](decisions/0002-ftpm-helper-pta.md) awaits the user.
+[The complete PTA port was selected](decisions/0002-ftpm-helper-pta.md) to address this absence. This log preserves the pre-port history.
 Ubuntu systemd-sysusers and systemd-resolved service failures also remain; overall Ubuntu service health is unverified.
 The DT reserves all secure RAM using memreserve so Linux cannot allocate it.
 

@@ -6,12 +6,12 @@ cd "$repo"
 phase=${1:-first}
 [[ $phase == first || $phase == second ]] || exit 2
 out=work/ftpm-virt
-for file in flash.bin Image device-identity.bin rootfs.ext4 "runtime-$phase.dtb"; do
+for file in flash.bin Image device-identity.bin provisioning.bin rootfs.ext4 "runtime-$phase.dtb"; do
     test -f "$out/$file" || { echo "Missing: $out/$file" >&2; exit 1; }
 done
 docker run --rm -v "$repo:/src" -w /src qemu-jetson-build:jammy \
     timeout "${FTPM_TIMEOUT:-300}" work/qemu-container-build/qemu-system-aarch64 \
-    -machine jetson-ftpm-virt,secure=on,gic-version=2,identity-file="$out/device-identity.bin" \
+    -machine jetson-ftpm-virt,secure=on,gic-version=2,identity-file="$out/device-identity.bin",provisioning-file="$out/provisioning.bin" \
     -cpu cortex-a57 -smp 1 -m 1024M -display none -monitor none -nic none \
     -serial stdio -serial "file:$out/secure-$phase.log" \
     -bios "$out/flash.bin" -dtb "$out/runtime-$phase.dtb" \

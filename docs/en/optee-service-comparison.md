@@ -13,8 +13,8 @@ The earlier description as an auxiliary service did not make this distinction cl
 | --- | --- | --- | --- |
 | `tee-supplicant` | Normal-world Linux process; resident daemon | OP-TEE RPC handling: external TA loading, REE filesystem operations, shared-memory allocation/free, RPMB and others | NVIDIA client installed; daemon startup verified |
 | `nvftpm-helper-app` | Normal-world Linux command-line client application (CA); not a resident daemon | Invokes the helper TA for manufacturing/provisioning queries and operations | Installed; operation with its target TA/PTA is unverified |
-| fTPM helper TA | Secure-world OP-TEE user-mode TA; UUID `a6a3a74a-77cb-433a-990c-1dfb8a3fbc4c` | Bridges the Linux CA to the helper PTA; includes CSR processing | Not embedded in the current QEMU Early TA set |
-| fTPM helper PTA | Secure-world OP-TEE kernel PTA; UUID `6c879517-2dfc-4663-863d-4896e8ccbe3a` | Normal-world readiness, SN/ECID, certificate and provisioning APIs | Absent; this is the UUID that returned `ITEM_NOT_FOUND` during execution |
+| fTPM helper TA | Secure-world OP-TEE user-mode TA; UUID `a6a3a74a-77cb-433a-990c-1dfb8a3fbc4c` | Bridges the Linux CA to the helper PTA; includes CSR processing | B2 Early TA integration build succeeded; management operations unverified |
+| fTPM helper PTA | Secure-world OP-TEE kernel PTA; UUID `6c879517-2dfc-4663-863d-4896e8ccbe3a` | Normal-world readiness, SN/ECID, certificate and provisioning APIs | B2 includes the full PTA and its initialization path; provisioned API execution tests incomplete |
 | fTPM TA | Secure-world OP-TEE user-mode TA; UUID `bc50d971-d4c9-42c4-82cb-343fb7f37896` | TPM 2.0 command implementation | Built from unchanged source and embedded as an Early TA; command tests incomplete |
 | `tpm_ftpm_tee` | Normal-world Linux kernel driver | Connects the Linux TPM subsystem to the fTPM TA | Uses NVIDIA's distributed module; successful operation unverified |
 
@@ -55,7 +55,7 @@ For B2, inclusion in the port describes source/API scope, not guaranteed success
 | `INJECT_EPS` (`0xffff000c`) | Sets an external 64-byte Endorsement Primary Seed | Explicitly unsupported | Conditional; implemented only with `CFG_JETSON_FTPM_HELPER_INJECT_EPS` |
 
 NVIDIA's PTA also returns errors when data or initialization is missing. API presence does not imply availability.
-In the current QEMU profile, the PTA itself is absent, so session creation fails before command dispatch.
+Before B2, the PTA was absent and session creation failed before command dispatch. B2 includes the full PTA; see [port status](ftpm-helper-port.md) for build and boot results.
 
 ## Direct dependencies of the fTPM TA
 
@@ -69,7 +69,7 @@ Option B's HUK-derived EPS adaptation implements that path and does not replace 
 
 When enabling fTPM, NVIDIA's `optee_src_build.sh` sets
 `CFG_REE_STATE=y` and `CFG_JETSON_FTPM_HELPER_PTA=y`.
-The current QEMU build bypasses that platform-specific script and enables neither option.
+The pre-B2 QEMU build bypassed that platform-specific script and enabled neither option. B2 enables both through `CFG_QEMU_JETSON_FTPM=y`.
 B1 also needs `CFG_REE_STATE`; without it, `tee_get_ree_state()` returns UNKNOWN.
 
 The REE state sequence is:

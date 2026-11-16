@@ -7,6 +7,7 @@
 #include "qemu/module.h"
 #include "hw/arm/virt.h"
 #include "hw/arm/machines-qom.h"
+#include "system/reset.h"
 
 #define TYPE_JETSON_FTPM_VIRT MACHINE_TYPE_NAME("jetson-ftpm-virt")
 OBJECT_DECLARE_SIMPLE_TYPE(JetsonFtpmVirtState, JETSON_FTPM_VIRT)
@@ -14,7 +15,11 @@ OBJECT_DECLARE_SIMPLE_TYPE(JetsonFtpmVirtState, JETSON_FTPM_VIRT)
 struct JetsonFtpmVirtState {
     VirtMachineState parent_obj;
     MemoryRegion identity;
+    MemoryRegion provisioning;
     char *identity_file;
+    char *provisioning_file;
+    uint8_t *provisioning_image;
+    size_t provisioning_size;
     bool initialized;
 };
 static void (*parent_init)(MachineState *);
@@ -34,6 +39,35 @@ static void set_identity(Object *obj, const char *value, Error **errp)
     }
     g_free(s->identity_file);
     s->identity_file = g_strdup(value);
+}
+
+static char *get_provisioning(Object *obj, Error **errp)
+{
+    return g_strdup(JETSON_FTPM_VIRT(obj)->provisioning_file ?: "");
+}
+
+static void set_provisioning(Object *obj, const char *value, Error **errp)
+{
+    JetsonFtpmVirtState *s = JETSON_FTPM_VIRT(obj);
+
+    if (s->initialized) {
+        error_setg(errp, "provisioning-file is immutable after initialization");
+        return;
+    }
+    g_free(s->provisioning_file);
+    s->provisioning_file = g_strdup(value);
+}
+
+static void reset_provisioning(void *opaque)
+{
+    JetsonFtpmVirtState *s = opaque;
+    void *ram = memory_region_get_ram_ptr(&s->provisioning);
+
+    memset(ram, 0, 65536);
+    if (s->provisioning_image) {
+        memcpy(ram, s->provisioning_image, s->provisioning_size);
+    }
+    memory_region_set_dirty(&s->provisioning, 0, 65536);
 }
 
 static void ftpm_virt_init(MachineState *ms)
@@ -61,6 +95,28 @@ static void ftpm_virt_init(MachineState *ms)
                            &error_fatal);
     memcpy(memory_region_get_ram_ptr(&s->identity), data, size);
     memory_region_add_subregion(vms->secure_sysmem, 0x0c200000, &s->identity);
+    /* NVIDIA's PTA copies and clears seed/key handoff data, so use RAM.
+     * The host file is read only at startup and is never modified by QEMU.
+     */
+    memory_region_init_ram(&s->provisioning, NULL, "ftpm-provisioning", 65536,
+                           &error_fatal);
+    memory_region_add_subregion(vms->secure_sysmem, 0x0c400000,
+                                &s->provisioning);
+    if (s->provisioning_file) {
+        g_clear_pointer(&data, g_free);
+        if (!g_file_get_contents(s->provisioning_file, &data, &size, &error)) {
+            error_report("provisioning-file: %s", error->message);
+            exit(EXIT_FAILURE);
+        }
+        if (size < 272 || size > 65536 || memcmp(data, "JFPRV001", 8)) {
+            error_report("provisioning-file must be a 272..65536-byte "
+                         "JFPRV001 image");
+            exit(EXIT_FAILURE);
+        }
+        s->provisioning_image = (uint8_t *)g_steal_pointer(&data);
+        s->provisioning_size = size;
+    }
+    qemu_register_reset(reset_provisioning, s);
     s->initialized = true;
 }
 
@@ -73,6 +129,8 @@ static void ftpm_virt_class_init(ObjectClass *oc, const void *data)
     mc->desc = "NVIDIA fTPM functional profile with per-device test identity";
     object_class_property_add_str(oc, "identity-file", get_identity,
                                    set_identity);
+    object_class_property_add_str(oc, "provisioning-file", get_provisioning,
+                                   set_provisioning);
 }
 
 static const TypeInfo ftpm_virt_type = {

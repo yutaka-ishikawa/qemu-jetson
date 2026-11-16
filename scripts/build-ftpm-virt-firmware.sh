@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Build NVIDIA OP-TEE's QEMU profile and unchanged NVIDIA fTPM TA (decision 0001).
+# Build the full NVIDIA helper PTA and unchanged TAs (decisions 0001/0002).
 set -euo pipefail
 repo=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")/.." && pwd)
 cd "$repo"
@@ -26,14 +26,18 @@ PY
 args=(PLATFORM=vexpress-qemu_armv8a CFG_ARM64_core=y CFG_USER_TA_TARGETS=ta_arm64
     CFG_TEE_CORE_NB_CORE=1 CFG_WITH_PAGER=n CFG_DT_DRIVER_EMBEDDED_TEST=n
     CFG_CORE_ASYNC_NOTIF=n CFG_PKCS11_TA=n CFG_QEMU_DEVICE_IDENTITY=y
+    CFG_QEMU_JETSON_FTPM=y
     CFG_TEE_TA_LOG_LEVEL=2 CROSS_COMPILE64="$CROSS_COMPILE" O="$osout")
 make -C optee/optee/optee_os "${args[@]}" -j "${JOBS:-2}"
+make -C optee/optee/samples/ftpm-helper/ta CROSS_COMPILE="$CROSS_COMPILE" \
+    TA_DEV_KIT_DIR="$osout/export-ta_arm64" \
+    O="$osout/early_ta/ftpm-helper" -j "${JOBS:-2}"
 make -C optee/optee/samples/ms-tpm-20-ref/Samples/ARM32-FirmwareTPM/optee_ta \
     CROSS_COMPILE="$CROSS_COMPILE" TA_DEV_KIT_DIR="$osout/export-ta_arm64" \
     OPTEE_OS_DIR="$repo/optee/optee/optee_os" CFG_USE_PLATFORM_EPS=y \
     CFG_TA_MEASURED_BOOT=n O="$osout" -j "${JOBS:-2}"
 make -C optee/optee/optee_os "${args[@]}" CFG_EARLY_TA=y \
-    EARLY_TA_PATHS="$osout/early_ta/ms-tpm/bc50d971-d4c9-42c4-82cb-343fb7f37896.stripped.elf" \
+    EARLY_TA_PATHS="$osout/early_ta/ms-tpm/bc50d971-d4c9-42c4-82cb-343fb7f37896.stripped.elf $osout/early_ta/ftpm-helper/a6a3a74a-77cb-433a-990c-1dfb8a3fbc4c.stripped.elf" \
     -j "${JOBS:-2}"
 "${CROSS_COMPILE}gcc" -nostdlib -static -no-pie -Wl,--build-id=none \
     -T firmware/linux-entry/link.ld firmware/linux-entry/entry.S -o "$out/linux-entry.elf"

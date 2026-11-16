@@ -38,3 +38,5 @@ Present material design/compatibility alternatives to the user, then record the 
 [Selected fTPM execution path](docs/en/decisions/0001-ftpm-execution-path.md).
 
 See the [functional profile](docs/en/ftpm-virt.md) for option-B build, boot, and persistence tests.
+
+B2 integrates the [complete NVIDIA helper PTA](docs/en/ftpm-helper-port.md). See also [SIGN_EK_CSR versus the EK](docs/en/ek-csr-signing.md).

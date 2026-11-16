@@ -38,3 +38,5 @@ Python依存定義は両言語で共用します。
 [今回のfTPM実行経路の選択](docs/decisions/0001-ftpm-execution-path.md)。
 
 B案の実装・起動・永続化検証手順は[機能検証構成](docs/ftpm-virt.md)を参照してください。
+
+B2では[NVIDIA helper PTA全体の移植](docs/ftpm-helper-port.md)を進めています。[SIGN_EK_CSRとEKの違い](docs/ek-csr-signing.md)も記録しています。
