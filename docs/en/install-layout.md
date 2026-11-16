@@ -116,6 +116,84 @@ python3 scripts/install-artifacts.py probe
 python3 scripts/install-artifacts.py client --client-export /path/to/optee/install/t234/usr
 ```
 
+## After the build: first boot and tests
+
+Once all five build/fetch commands above succeed, prepare the remaining inputs in this order.
+These are first-time steps using the default install/ and work/ paths. Run from the repository root with the same venv active.
+Reuse existing keys, provisioning image and disk; skip preparation already completed.
+Do not delete existing state merely to repeat tests.
+
+### 1. Create QEMU-only test CA, keys and certificates
+
+```bash
+source work/venv/bin/activate
+python3 scripts/generate-ftpm-test-provisioning.py work/ftpm-test-provisioning
+python3 scripts/pack-ftpm-provisioning.py \
+  work/ftpm-test-provisioning/manifest.json \
+  work/ftpm-virt/device-identity.bin \
+  work/ftpm-virt/provisioning.bin
+```
+
+Firmware compilation already created device-identity.bin; do not replace it.
+Credentials go under work/ftpm-test-provisioning/, and the PTA handoff image is work/ftpm-virt/provisioning.bin.
+Initial RSA/EC certificates are API fixtures. Binding certificates to actual fTPM EKs happens later.
+
+### 2. Assemble Ubuntu 22.04 ARM64 rootfs
+
+```bash
+sudo env FTPM_FUNCTIONAL_PROFILE=1 bash scripts/build-ubuntu-rootfs.sh
+```
+
+Use installed clients, libraries and kernel modules to create work/ftpm-virt/rootfs.tar.
+FTPM_FUNCTIONAL_PROFILE=1 includes the boot-time test services.
+Host apt/PRoot dependencies are required. A fresh privileged full native rootfs rebuild remains unverified in this execution environment.
+
+### 3. Add public verification inputs and create the disk
+
+```bash
+python3 scripts/prepare-ftpm-test-rootfs.py \
+  work/ftpm-virt/rootfs.tar work/ftpm-test-provisioning
+sudo bash scripts/create-ftpm-virt-disk.sh
+```
+
+Add public certificates/CSRs and the installed probe, then create work/ftpm-virt/rootfs.ext4.
+CA/Firmware ID private keys are not copied into the guest rootfs.
+The disk is owned by the user who invoked sudo.
+
+### 4. Generate boot DTBs
+
+```bash
+bash scripts/prepare-ftpm-virt-dtb.sh
+```
+
+DTBs are installed into install/share/qemu-jetson/ftpm-virt/runtime-*.dtb.
+
+### 5. Run the initial test
+
+```bash
+bash scripts/run-ftpm-virt.sh first
+```
+
+This boots automatic guest tests rather than an interactive login session.
+PTA_TEST verifies signing/certificate APIs; FTPM_TEST checks NV, PCR, signing and seal/unseal.
+Success prints FTPM_TEST: PASS phase=first and powers the guest off.
+Check failures/timeouts before proceeding; neither counts as success.
+
+### 6. Run reboot/persistence tests on the same disk
+
+Run only after the first phase passes. Do not repeat first.
+
+```bash
+bash scripts/run-ftpm-virt.sh second
+```
+
+Reuse the same keys/disk and check NV data, signing key and sealed-data persistence plus PCR reset.
+Success prints FTPM_TEST: PASS phase=second and powers off.
+Normal-world logs go to the terminal; secure logs go to work/ftpm-virt/secure-<phase>-native.log.
+
+Actual EK certificate binding and standard certificate NV-index verification follow through export, bind-ftpm-test-ek.py and bound.
+See the [full reproduction commands](ftpm-functional-validation.md#reproduction).
+
 ## Override install/build directories
 
 ```bash

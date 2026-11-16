@@ -40,6 +40,10 @@ with tarfile.open(args.tar, 'a') as tar:
     add_file(guest_bin_dir()/'ftpm-helper-probe', 'usr/local/sbin/ftpm-helper-probe', 0o755)
     add_file(guest_lib_dir()/'optee_armtz/7fc1d460-5a6c-4a5f-9b9e-6c298d3032a0.ta',
              'usr/lib/optee_armtz/7fc1d460-5a6c-4a5f-9b9e-6c298d3032a0.ta', 0o644)
+digest = hashlib.sha256()
+with args.tar.open('rb') as source:
+    for chunk in iter(lambda: source.read(1024 * 1024), b''):
+        digest.update(chunk)
 args.tar.with_suffix(args.tar.suffix+'.sha256').write_text(
-    hashlib.file_digest(args.tar.open('rb'), 'sha256').hexdigest()+'  '+args.tar.name+'\n')
+    digest.hexdigest()+'  '+args.tar.name+'\n')
 print('Test overlay and public-only fixtures added; no private credentials copied.')

@@ -116,6 +116,84 @@ python3 scripts/install-artifacts.py probe
 python3 scripts/install-artifacts.py client --client-export /path/to/optee/install/t234/usr
 ```
 
+## ビルド後：初回起動とテスト
+
+上の5つのビルド・取得コマンドがすべて成功したら、次の順に準備する。
+以下は既定の`install/`と`work/`を使う初回手順。同じvenvを有効にしたリポジトリのトップで実行する。
+既に鍵・provisioning image・ディスクがある場合は再生成せず、準備済みの段階を飛ばす。
+既存ファイルを消して試験をやり直す手順ではない。
+
+### 1. QEMU専用のテストCA・鍵・証明書を作成
+
+```bash
+source work/venv/bin/activate
+python3 scripts/generate-ftpm-test-provisioning.py work/ftpm-test-provisioning
+python3 scripts/pack-ftpm-provisioning.py \
+  work/ftpm-test-provisioning/manifest.json \
+  work/ftpm-virt/device-identity.bin \
+  work/ftpm-virt/provisioning.bin
+```
+
+`device-identity.bin`はfirmwareビルド時に作成済み。これを上書きしない。
+CA等は`work/ftpm-test-provisioning/`、PTAへ渡す情報は`work/ftpm-virt/provisioning.bin`に保存される。
+この段階のRSA/EC証明書はAPI試験用fixtureであり、実際のfTPM EKとの対応付けは後述の工程で行う。
+
+### 2. Ubuntu 22.04 ARM64 rootfsを作成
+
+```bash
+sudo env FTPM_FUNCTIONAL_PROFILE=1 bash scripts/build-ubuntu-rootfs.sh
+```
+
+`install/`のクライアント・ライブラリ・カーネルモジュールを使い、`work/ftpm-virt/rootfs.tar`を作成する。
+`FTPM_FUNCTIONAL_PROFILE=1`で、起動時に実行するテスト用サービスを組み込む。
+ホストのapt・PRoot等が必要。新しい方式による管理者権限でのrootfs全体の再構築は、この実行環境では未検証。
+
+### 3. 公開検証データを追加し、ディスクを作成
+
+```bash
+python3 scripts/prepare-ftpm-test-rootfs.py \
+  work/ftpm-virt/rootfs.tar work/ftpm-test-provisioning
+sudo bash scripts/create-ftpm-virt-disk.sh
+```
+
+検証用の公開証明書・CSRとinstall済みprobeを追加し、`work/ftpm-virt/rootfs.ext4`を作る。
+CA秘密鍵やFirmware ID秘密鍵をゲストのrootfsへコピーしない。
+ディスクはsudo実行元ユーザーの所有となる。
+
+### 4. 起動用DTBを生成
+
+```bash
+bash scripts/prepare-ftpm-virt-dtb.sh
+```
+
+生成したDTBは`install/share/qemu-jetson/ftpm-virt/runtime-*.dtb`に配置される。
+
+### 5. 初回試験を実行
+
+```bash
+bash scripts/run-ftpm-virt.sh first
+```
+
+これは対話用ログイン起動ではなく、ゲスト内のテストを自動実行する起動。
+`PTA_TEST`の署名・証明書試験と、`FTPM_TEST`のNV・PCR・署名・seal/unseal試験を行う。
+成功時は`FTPM_TEST: PASS phase=first`を表示してpoweroffする。
+失敗・タイムアウトは成功と扱わず、次へ進む前に出力を確認する。
+
+### 6. 同じディスクで再起動後の試験
+
+初回のPASSを確認してから実行する。`first`を再実行しない。
+
+```bash
+bash scripts/run-ftpm-virt.sh second
+```
+
+同じ鍵・ディスクを使用し、NVデータ・署名鍵・sealed dataの保持とPCRリセットを確認する。
+成功時は`FTPM_TEST: PASS phase=second`を表示してpoweroffする。
+通常世界のログは端末へ、セキュア側ログは`work/ftpm-virt/secure-<phase>-native.log`へ出力する。
+
+実際のfTPM EK公開鍵への証明書対応付けと標準NV indexの検証は、その後の`export`→`bind-ftpm-test-ek.py`→`bound`の工程。
+詳しいコマンドは[機能検証の再現手順](ftpm-functional-validation.md#再現手順)を参照。
+
 ## 配置先とビルド先の変更
 
 ```bash
