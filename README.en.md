@@ -10,6 +10,24 @@ This project aims to run NVIDIA's OP-TEE and fTPM with minimal changes to NVIDIA
 
 - [fTPM and EK certificate test guide](docs/en/test-guide.md)
 
+## Estimated disk space
+
+For a fresh build and the full test sequence, **allow at least 30GB of free space; 50GB is recommended for headroom**.
+If you retain an existing environment and build in another directory, reserve this space in addition to the existing environment.
+
+| Purpose | Estimate |
+| --- | ---: |
+| Git metadata and bundled sources | 3–5GB |
+| Toolchain and downloaded archives | 2–5GB |
+| QEMU, OP-TEE, TF-A and other build intermediates | 2–4GB |
+| Installed artifacts under install/ | 0.5–1GB |
+| Ubuntu rootfs, tar archive and virtual disk | 5–10GB |
+| Temporary extraction/assembly space, logs, etc. | 3–5GB |
+| **Total (rounded estimate)** | **About 16–30GB** |
+
+These estimates cover the current configuration that downloads NVIDIA's prebuilt kernel; they are not measured peak usage from a complete fresh build.
+If you also build the Linux kernel from source, allow another 10–20GB and reserve at least 50GB of free space.
+
 ## Design and procedures
 
 | Purpose | Guide |
