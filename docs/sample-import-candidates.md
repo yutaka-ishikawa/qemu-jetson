@@ -3,7 +3,7 @@
 日本語 | [English](en/sample-import-candidates.md)
 
 2026-11-17（日本時間）調査。ユーザー依頼によりsamples/ftpm-helper-probeを追加済み。
-以下の追加importは判断待ちであり、まだ取り込んでいない。
+ユーザーはB案を選択し、以下の5サンプルを取り込み済み。
 
 ## 推奨する取得元
 
@@ -27,7 +27,7 @@ masterを無条件に追従せず、このリポジトリのNVIDIA OP-TEE SDKと
 - B：Aにaes・sign_verifyを追加。暗号APIまで扱う分、検証対象が増える。
 - C：今回は候補の記録のみ。追加importは後で決める。
 
-状態：ユーザー判断待ち。採用後に選択内容と固定した取得元を追記する。
+状態：ユーザーはBを選択。5サンプルをsamples/へ取り込み済み。取得元コミットは71e8f3f320eef46a9369700bf30b91d67427d535。ライセンスと各ファイルのハッシュはsamples/optee-examples-source.jsonへ記録。実ビルドとゲスト実行は未検証。
 
 ## 同梱済みNVIDIAサンプルについて
 

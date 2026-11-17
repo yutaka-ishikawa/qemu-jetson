@@ -3,7 +3,7 @@
 [日本語](../sample-import-candidates.md) | English
 
 Investigated on 2026-11-17 (Japan time). samples/ftpm-helper-probe was added as requested.
-The additional imports below are pending a user decision and have not been imported.
+The user selected B; hello_world, random, secure_storage, aes and sign_verify have been imported.
 
 ## Recommended source
 
@@ -27,7 +27,7 @@ Do not track master blindly; verify build/runtime compatibility with this reposi
 - B: A plus aes and sign_verify, adding crypto API coverage and validation work.
 - C: Record candidates only and decide on additional imports later.
 
-Status: awaiting user decision. Record the selection and pinned source after selection.
+Status: the user selected B. All five examples are imported under samples/ from commit 71e8f3f320eef46a9369700bf30b91d67427d535. See samples/optee-examples-source.json for licensing and file hashes. Actual builds and guest execution remain unverified.
 
 ## Bundled NVIDIA samples
 

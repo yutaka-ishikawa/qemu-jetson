@@ -2,7 +2,7 @@
 
 日本語 | [English](en/samples-guide.md)
 
-対象は[samples/ftpm-helper-probe](../samples/ftpm-helper-probe/)。Linux側クライアントと、実際のNVIDIA helper PTAへ中継するテスト用TAをビルドする。
+hello_world・random・secure_storage・aes・sign_verifyとftpm-helper-probeを収録する。以下の基本手順の対象は[samples/ftpm-helper-probe](../samples/ftpm-helper-probe/)。Linux側クライアントと、実際のNVIDIA helper PTAへ中継するテスト用TAをビルドする。
 実装元はtests/ftpm-helper-probeのコピーで、PTA本体の代替ではない。
 本書のホスト側クロスビルドとゲスト内ビルドは選択肢。同じサンプルを両方でビルドする必要はない。
 
@@ -29,7 +29,7 @@ INSTALL_DIR、TA_DEV_KIT_DIR、TA_SIGN_KEY、Oはmake変数で変更可能。
 
 ```bash
 mkdir -p work/sample-share/sdk/lib
-cp -a samples/ftpm-helper-probe work/sample-share/
+cp -a samples/. work/sample-share/
 cp -a install/include work/sample-share/sdk/
 cp -a install/lib/aarch64-linux-gnu work/sample-share/sdk/lib/
 mkdir -p work/sample-share/sdk/lib/optee
@@ -82,7 +82,68 @@ PTA_TESTのPASS表示と終了コード0を確認する。証明書・CSR・署�
 これらを含む既存の全機能試験は[test-guide.md](test-guide.md)を参照。
 TA読込みエラーの場合は、UUID、配置先、OP-TEEが受け入れるTA署名鍵、tee-supplicantの状態を確認する。
 
+## 追加した5サンプル（B案）
+
+取得元は[optee_examples](https://github.com/linaro-swg/optee_examples/tree/71e8f3f320eef46a9369700bf30b91d67427d535)、固定コミットは71e8f3f320eef46a9369700bf30b91d67427d535。
+ライセンスと著作権表示を保持した。[取得元・ハッシュ一覧](../samples/optee-examples-source.json)と[ライセンス](../samples/LICENSE.optee_examples)を参照。
+各サンプル最上位のMakefileを調整し、原本はMakefile.upstreamとして保存。他の取り込みファイルは無変更。
+
+ホストではCROSS_COMPILEを設定済みのシェルで、全サンプルをまとめてビルドできる。
+
+```bash
+make -C samples
+```
+
+5サンプルだけを選ぶ場合は、上記に代えて次を実行する。
+
+```bash
+make -C samples hello_world random secure_storage aes sign_verify
+```
+
+個別には`make -C samples/hello_world`も利用可能。出力は既定でwork/samples/サンプル名/以下。
+引数なしの一括makeにはftpm-helper-probeも含む。
+
+ゲスト内でビルドする場合は、前述の共有準備・マウント・依存パッケージ導入・ホームへのコピーを済ませる。
+共有準備のコマンドはsamples全体をコピーするよう更新済み。古い共有がある場合はQEMU停止中にソースを更新し、ゲストへ再コピーする。
+ゲストでcradsecとして次を実行する。
+
+```bash
+cd "$HOME/optee-samples"
+make hello_world random secure_storage aes sign_verify CROSS_COMPILE= INSTALL_DIR="$PWD/sdk" TA_SIGN_KEY="$PWD/default_ta.pem" O="$PWD/build-all"
+```
+
+5つのTAを配置し、対応するlibteecでクライアントを実行する。
+
+```bash
+cd "$HOME/optee-samples"
+for name in hello_world random secure_storage aes sign_verify; do
+    sudo install -m 0644 build-all/"$name"/ta/*.ta /usr/lib/optee_armtz/
+done
+export LD_LIBRARY_PATH="$HOME/optee-samples/sdk/lib/aarch64-linux-gnu${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}"
+./build-all/hello_world/optee_example_hello_world
+./build-all/random/optee_example_random
+./build-all/secure_storage/optee_example_secure_storage
+./build-all/aes/optee_example_aes
+./build-all/sign_verify/optee_example_sign_verify
+```
+
+| サンプル | 確認点 |
+| --- | --- |
+| hello_world | TAが42を43へ増加させる |
+| random | TAが生成した乱数値を表示する |
+| secure_storage | オブジェクトの書込み・読出し・削除。object2は実行ごとに作成と削除が切り替わる |
+| aes | 既定のCTR暗号化・復号で`Clear text and decoded text match`を表示。ERRORや不一致表示がない |
+| sign_verify | `Sign and verify successful`を表示 |
+
+各コマンドの終了コードとエラーを確認してから次へ進む。fTPM試験のPASSマーカーは使わない。
+永続化を確認する場合はsecure_storageを1回実行し、正常電源断後に同じディスクで起動して再実行する。
+変更するのはサンプル自身のTAストレージであり、fTPM NVではない。object2は実行ごとに状態が切り替わるため、開始時の状態も記録する。
+AESの既定鍵・IVは公開されたテスト値であり、実データの保護には使わない。
+5サンプルは一般のOP-TEE APIを使い、NVIDIA helperやTPMコマンドの検証とは別。現在のREEストレージはホストによるロールバックへの耐性を提供しない。
+
 ## 検証状況
 
 元のtests側probeは既存B2試験で動作確認済み。本サンプルではmakeのdry-run（TAのsubmakeを含む）、ホスト側C構文確認、文書内シェル構文確認を実施。現環境ではクロスコンパイラが利用できず、コンパイル・リンク・TA署名は未実行。
 ゲスト内のapt導入・make・TA配置から実行までの新しい手順は、この開発環境では未実行。動作確認済みの手順として扱わない。
+
+追加5サンプルもmakeのdry-runとホスト側クライアントC構文確認まで。ARM64実ビルド・TA署名・QEMU実行は未検証。
