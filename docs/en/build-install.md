@@ -212,6 +212,26 @@ DTB bootargs include `lsm=lockdown,yama,integrity,apparmor,bpf`; host SELinux se
 
 DTBs are installed into install/share/qemu-jetson/ftpm-virt/runtime-*.dtb.
 
+#### Warnings during DTB generation
+
+`prepare-ftpm-virt-dtb.sh` decompiles the QEMU-generated DTB to DTS, adds boot arguments and other properties, then recompiles it to DTB.
+During this process, `dtc` may print warnings like these. Line numbers, device ordering and repetition depend on the configuration.
+This is sample output, not commands to execute.
+
+```text
+work/ftpm-virt/runtime-first.dts:274.3-21: Warning (clocks_property): /pl061@90b0000:clocks: cell 0 is not a phandle reference
+work/ftpm-virt/runtime-first.dts:300.3-21: Warning (clocks_property): /pl031@9010000:clocks: cell 0 is not a phandle reference
+work/ftpm-virt/runtime-first.dts:325.3-28: Warning (clocks_property): /pl011@9000000:clocks: cell 0 is not a phandle reference
+work/ftpm-virt/runtime-first.dts:258.3-30: Warning (gpios_property): /gpio-restart:gpios: cell 0 is not a phandle reference
+```
+
+Decompiled DTS represents phandle references as numeric cells instead of `<&label>` expressions, which can trigger reference checks during recompilation.
+These warnings alone do not mean DTB generation failed. Boot and fTPM tests have been verified using DTBs produced through this conversion path.
+
+If the command exits with status 0 and installs `runtime-*.dtb` under `install/share/qemu-jetson/ftpm-virt/`, proceed to initial setup or tests.
+Treat `Error`, syntax errors, a nonzero exit status or missing output artifacts as failures to investigate.
+Do not indiscriminately ignore other warnings. Successful DTB generation and passing guest boot/fTPM tests are separate checks.
+
 Build and installation are complete. For interactive use, continue with [initial account/key setup](runtime-guide.md#initial-setup-console). For functional validation, follow [test-guide.md](test-guide.md) from first. Do not run the same disk concurrently.
 For an already tested disk, skip completed stages as directed there.
 

@@ -212,6 +212,26 @@ DTBの起動引数に`lsm=lockdown,yama,integrity,apparmor,bpf`を設定する�
 
 生成したDTBは`install/share/qemu-jetson/ftpm-virt/runtime-*.dtb`に配置される。
 
+#### DTB生成時の警告
+
+`prepare-ftpm-virt-dtb.sh`では、QEMUが生成したDTBをDTSへ逆変換し、起動引数等を追加してDTBへ再変換する。
+この過程で、次のような`dtc`警告が表示されることがある。行番号・デバイスの並び・表示回数は構成により異なる。
+以下は出力例であり、実行するコマンドではない。
+
+```text
+work/ftpm-virt/runtime-first.dts:274.3-21: Warning (clocks_property): /pl061@90b0000:clocks: cell 0 is not a phandle reference
+work/ftpm-virt/runtime-first.dts:300.3-21: Warning (clocks_property): /pl031@9010000:clocks: cell 0 is not a phandle reference
+work/ftpm-virt/runtime-first.dts:325.3-28: Warning (clocks_property): /pl011@9000000:clocks: cell 0 is not a phandle reference
+work/ftpm-virt/runtime-first.dts:258.3-30: Warning (gpios_property): /gpio-restart:gpios: cell 0 is not a phandle reference
+```
+
+逆変換したDTSではphandle参照が`<&label>`ではなく数値のセルとして表現されるため、再コンパイル時に参照としての記述を確認するチェックが警告を出すことがある。
+上記の警告だけでDTB生成失敗とは判断しない。この変換経路で生成したDTBによる起動・fTPM試験は確認済み。
+
+コマンドが終了コード0で終了し、`install/share/qemu-jetson/ftpm-virt/runtime-*.dtb`へ配置できていれば、次の初期設定または試験へ進む。
+`Error`、構文エラー、終了コード0以外、成果物の未生成がある場合は処理失敗として調べる。
+ここに挙げたものと異なる警告を一律に無視しない。DTB生成の成功と、ゲスト起動・fTPM試験の合格は別に確認する。
+
 ここまででビルド・導入は完了。通常利用は[初回アカウント・公開鍵登録](runtime-guide.md#初期設定用コンソール)へ、機能検証は[テスト手順](test-guide.md)のfirstへ進む。目的に応じて選び、同じディスクを同時起動しない。
 既に試験済みのディスクは、テスト手順に従って完了済みの段階を飛ばす。
 
