@@ -235,6 +235,8 @@ work/ftpm-virt/runtime-first.dts:258.3-30: Warning (gpios_property): /gpio-resta
 ここまででビルド・導入は完了。通常利用は[初回アカウント・公開鍵登録](runtime-guide.md#初期設定用コンソール)へ、機能検証は[テスト手順](test-guide.md)のfirstへ進む。目的に応じて選び、同じディスクを同時起動しない。
 既に試験済みのディスクは、テスト手順に従って完了済みの段階を飛ばす。
 
+---
+
 ## 配置先とビルド先の変更
 
 ビルド・起動・DTB生成には同じINSTALL_DIRを指定する。

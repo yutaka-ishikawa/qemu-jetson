@@ -235,6 +235,8 @@ Do not indiscriminately ignore other warnings. Successful DTB generation and pas
 Build and installation are complete. For interactive use, continue with [initial account/key setup](runtime-guide.md#initial-setup-console). For functional validation, follow [test-guide.md](test-guide.md) from first. Do not run the same disk concurrently.
 For an already tested disk, skip completed stages as directed there.
 
+---
+
 ## Override install/build directories
 
 Use the same INSTALL_DIR for builds, launches and DTB generation.
