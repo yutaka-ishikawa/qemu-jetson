@@ -10,6 +10,28 @@ This project aims to run NVIDIA's OP-TEE and fTPM with minimal changes to NVIDIA
 
 ## Estimated disk space
 
+### Measured usage after build and installation
+
+On 2026-11-17 (Japan time), the user reported **5.4G** from `du -sh qemu-jetson` after build and installation.
+Major directories from the same environment's `du -sh *` output are listed below, preserving du's units and rounding.
+
+| Directory | Measured usage |
+| --- | ---: |
+| work/ | 2.4G |
+| kernel/ | 1.3G |
+| qemu/ | 882M |
+| install/ | 486M |
+| optee/ | 54M |
+| firmware/ | 38M |
+| samples/ | 436K |
+
+The 5.4G figure is the repository's post-build disk usage, a measured example below the estimates that follow.
+Peak usage, including temporary build/extraction directories and space outside the repository, has not been measured.
+`du -sh *` excludes hidden entries such as .git, so these excerpts are not a complete breakdown to sum against the total.
+This measurement alone does not establish peak usage during the full test sequence or the minimum required free space.
+
+### Capacity planning including temporary space (estimate)
+
 For a fresh build and the full test sequence, **allow at least 30GB of free space; 50GB is recommended for headroom**.
 If you retain an existing environment and build in another directory, reserve this space in addition to the existing environment.
 
