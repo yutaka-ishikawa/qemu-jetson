@@ -83,6 +83,30 @@ Build scripts append gcc, ar, objcopy, etc.
 Expected outputs are GCC 11.3.0 and target aarch64-buildroot-linux-gnu.
 If the toolchain is already installed elsewhere, change the directory in the export line.
 
+#### Messages printed during assembly
+
+A successful run can print messages like these near the end. Paths and temporary directory names vary.
+This is sample output, not commands to execute.
+
+```text
+Executing: /lib/systemd/systemd-sysv-install enable ssh
+Usage: tee-supplicant [options] [<device-name>]
+        -h, --help: this help
+        ...
+tool="tpm2_getcap" version="5.2" tctis="libtss2-tctildr" tcti-default=tcti-device
+depmod: WARNING: could not open modules.order at /tmp/qemu-jetson-rootfs.XXXXXX/root/lib/modules/5.15.199-tegra: No such file or directory
+Created /path/to/qemu-jetson/work/ftpm-virt/rootfs.tar
+```
+
+- `systemd-sysv-install enable ssh` is printed when enabling the SSH service.
+- The `tee-supplicant` usage text comes from the setup script running `tee-supplicant --help` to check execution. It is not a startup failure caused by invalid arguments.
+- The `tpm2_getcap` line is the corresponding `--version` check.
+- The `modules.order` warning occurs because the selectively extracted kernel modules do not include that file. This warning alone does not mean rootfs assembly failed.
+
+A final `Created .../rootfs.tar` message and exit status 0 indicate that the tar archive and SHA-256 file were generated.
+This does not certify guest boot or fTPM test success. Do not delete or rebuild the rootfs solely because of these messages; continue with adding public verification inputs.
+If `Created` is absent or the exit status is nonzero, inspect earlier errors. This guidance does not apply to other `depmod` errors.
+
 ### 3. Python venv
 
 ```bash

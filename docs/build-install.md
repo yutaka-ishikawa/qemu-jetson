@@ -83,6 +83,30 @@ export CROSS_COMPILE="$PWD/work/toolchains/aarch64--glibc--stable-2022.08-1/bin/
 確認結果はGCC `11.3.0`、ターゲット`aarch64-buildroot-linux-gnu`となる。
 既に別の場所へ展開してある場合は、export行のディレクトリをその場所へ置き換える。
 
+#### 作成時に表示されるメッセージ
+
+正常終了する場合にも、末尾付近に次のような表示が出る。パスや一時ディレクトリ名は環境によって異なる。
+以下は出力例であり、実行するコマンドではない。
+
+```text
+Executing: /lib/systemd/systemd-sysv-install enable ssh
+Usage: tee-supplicant [options] [<device-name>]
+        -h, --help: this help
+        ...
+tool="tpm2_getcap" version="5.2" tctis="libtss2-tctildr" tcti-default=tcti-device
+depmod: WARNING: could not open modules.order at /tmp/qemu-jetson-rootfs.XXXXXX/root/lib/modules/5.15.199-tegra: No such file or directory
+Created /path/to/qemu-jetson/work/ftpm-virt/rootfs.tar
+```
+
+- `systemd-sysv-install enable ssh`はSSHサービスの有効化に伴う表示。
+- `tee-supplicant`のUsageは、setupスクリプトが動作確認のため`tee-supplicant --help`を実行した結果。引数エラーによる起動失敗ではない。
+- `tpm2_getcap`の行は、同じく`--version`によるバージョン確認。
+- `modules.order`の警告は、取得対象を絞ったカーネルモジュールに同ファイルが含まれないため。これだけではrootfs作成失敗を意味しない。
+
+最後に`Created .../rootfs.tar`が表示され、コマンドが終了コード0で終了すれば、tarとSHA-256ファイルの生成は完了。
+この表示はゲスト起動やfTPM試験の合格を意味しない。上記表示だけを理由にrootfsを削除・再作成せず、次の公開検証データ追加へ進む。
+`Created`が出ない場合や終了コードが0以外の場合は、それ以前のエラーを確認する。他の`depmod`エラーまで無視するものではない。
+
 ### 3. Python venv
 
 ```bash
