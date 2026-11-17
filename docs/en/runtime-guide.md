@@ -54,16 +54,29 @@ Do not rerun adduser for an existing account. Key registration preserves existin
 A fresh rootfs already contains the packages. This section only creates the account and registers its public key.
 Root's password is not set by this procedure; use regular-user sudo. Setup is a privileged host-operator console, not the usual boot mode.
 
-## Normal boot and SSH
+## Normal boot (no options)
+
+The examples below are alternatives selected for your purpose, not a sequence to execute. Run only one host-side `run-ftpm-virt.sh` command.
+Before trying another launch example, run `sudo poweroff` inside the guest and wait for QEMU to exit.
+Options can be combined, except that `--qemu-console` and `--monitor-socket` are mutually exclusive.
+Guest, separate-host-terminal and GDB commands are follow-up operations for the selected example.
 
 ```bash
 bash scripts/run-ftpm-virt.sh
-# Or enable SSH:
-bash scripts/run-ftpm-virt.sh --ssh
 ```
 
 Never run concurrent instances against the disk. Default: four CPUs, 1GiB RAM, no test execution, automatic poweroff or 300-second limit.
-Log into the console using the created user. From another host terminal:
+Log into the console using the created user.
+
+## Launch option 1: SSH
+
+Choose this instead of the launch without options when SSH is needed:
+
+```bash
+bash scripts/run-ftpm-virt.sh --ssh
+```
+
+After boot, connect from another host terminal:
 
 ```bash
 ssh -p 2222 -i "$HOME/.ssh/id_ed25519" cradsec@127.0.0.1
@@ -73,7 +86,7 @@ Forwarding is localhost-only; change it with --ssh-port 2223.
 Without --ssh, no NIC is created and sshd's startup condition is false.
 The dedicated /etc/ssh/sshd_config_qemu sets PermitRootLogin no, AuthenticationMethods publickey and PasswordAuthentication no.
 
-## Manually mount a host directory
+## Launch option 2: Host sharing (9p, manual mount)
 
 On the host:
 
@@ -92,29 +105,34 @@ sudo umount /mnt/host
 9p tag: hostshare. Default read-only. Pass an absolute mountpoint to change /mnt/host.
 Writes require explicit options on both sides:
 
+On the host, choose this instead of the read-only launch:
+
 ```bash
-# Host
 bash scripts/run-ftpm-virt.sh --share /path/to/host/data --share-rw
-# Guest
+```
+
+After that boot, inside the guest:
+
+```bash
 sudo qemu-mount-host --rw /mnt/host
 ```
 
 Writable mapped-xattr exports need host filesystem xattr support. Host permissions still apply.
 Share only necessary directories, excluding private keys and CA secrets.
 
-## CPUs and tests
+## Launch option 3: CPU count
+
+Example combining two CPUs and SSH:
 
 ```bash
 bash scripts/run-ftpm-virt.sh --cpus 2 --ssh
-bash scripts/run-ftpm-virt.sh second --cpus 4
 ```
 
 Range 1..8, default four. The launcher generates matching DTBs and requires dtc.
 Old one-CPU/GICv2 firmware is rejected with a rebuild instruction. GICv3 uses the unchanged NVIDIA kernel.
 Check online CPUs inside the guest with getconf _NPROCESSORS_ONLN.
-Select first/second/export/bound explicitly; never rerun first on a completed disk.
 
-## QEMU monitor and GDB
+## Launch option 4: QEMU console and monitor
 
 ```bash
 bash scripts/run-ftpm-virt.sh --qemu-console
@@ -126,18 +144,34 @@ For a separate terminal:
 
 ```bash
 bash scripts/run-ftpm-virt.sh --monitor-socket "$PWD/work/qemu-monitor.sock"
-# Another host terminal, with socat installed:
+```
+
+After that launch, in another host terminal with socat installed:
+
+```bash
 socat -,raw,echo=0 UNIX-CONNECT:"$PWD/work/qemu-monitor.sock"
 ```
 
 Existing socket paths are rejected. Remove a stale socket only after confirming QEMU has exited.
 --qemu-console and --monitor-socket are mutually exclusive.
 
+## Launch option 5: GDB
+
+Launch with CPUs halted until GDB connects:
+
 ```bash
 bash scripts/run-ftpm-virt.sh --gdb --wait-gdb
-# Another host terminal, with AArch64-capable GDB:
+```
+
+After that launch, in another host terminal with AArch64-capable GDB:
+
+```bash
 gdb-multiarch
-# Inside GDB:
+```
+
+Inside GDB:
+
+```text
 target remote 127.0.0.1:1234
 info registers
 continue
@@ -147,6 +181,17 @@ continue
 No boot output while waiting is expected. Normal mode has no timeout; for paused test modes explicitly use --timeout 0 if needed.
 This is a guest CPU stub. Load matching ELF symbols at the correct ASLR-adjusted addresses; automatic kernel/OP-TEE relocation is not provided.
 To debug QEMU's host process instead, use host GDB with gdb -p PID. Installed binaries are stripped; use the matching unstripped work/qemu-build binary for detailed symbols.
+
+## Launch option 6: Test modes
+
+These modes run automated tests instead of normal boot. Choose this example only at the second-test stage; it is not an additional step required for interactive use.
+
+```bash
+bash scripts/run-ftpm-virt.sh second --cpus 4
+```
+
+Select first/second/export/bound explicitly; never rerun first on a completed disk.
+Tests exit automatically. Follow [test-guide.md](test-guide.md) for ordering, prerequisites and success criteria.
 
 ## View the man page
 

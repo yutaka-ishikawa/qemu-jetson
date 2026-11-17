@@ -56,16 +56,29 @@ poweroff
 rootパスワードはこの手順では設定しない。必要な管理は一般ユーザーのsudoで行う。
 setupはホスト操作者向けのrootコンソールなので、設定後は通常起動を使う。
 
-## 通常起動とSSH
+## 通常起動（オプションなし）
+
+以降は連続して実行する手順ではなく、目的に応じて選ぶ起動例。ホスト側の`run-ftpm-virt.sh`は1つだけ実行する。
+別の起動例を試す場合は、先にゲスト内で`sudo poweroff`し、QEMUの終了を待つ。
+オプションは組み合わせられるが、`--qemu-console`と`--monitor-socket`は同時指定できない。
+各節の「ゲスト側」「別のホスト端末」「GDB内」は、その起動例を使う場合に続けて行う操作。
 
 ```bash
 bash scripts/run-ftpm-virt.sh
-# SSHが必要な場合
-bash scripts/run-ftpm-virt.sh --ssh
 ```
 
 同時起動はしない。既定は4CPU・RAM 1GiB、通常モードに試験実行・自動poweroff・300秒制限はない。
-コンソールは作成した一般ユーザーでログインする。SSHは別のホスト端末から接続する。
+コンソールは作成した一般ユーザーでログインする。
+
+## 起動オプション1：SSH
+
+SSHを使う場合は、オプションなしの起動に代えて次を選ぶ。
+
+```bash
+bash scripts/run-ftpm-virt.sh --ssh
+```
+
+起動後、別のホスト端末から接続する。
 
 ```bash
 ssh -p 2222 -i "$HOME/.ssh/id_ed25519" cradsec@127.0.0.1
@@ -75,7 +88,7 @@ SSH待受け転送はlocalhostのみ。--ssh-port 2223等で変更できる。
 --sshなしではネットワークデバイスを作らず、sshdも起動条件を満たさない。
 SSH設定は/etc/ssh/sshd_config_qemuを使用し、PermitRootLogin no、AuthenticationMethods publickey、PasswordAuthentication noを固定する。
 
-## ホストディレクトリの手動マウント
+## 起動オプション2：ホスト共有（9p・手動マウント）
 
 ホスト側：
 
@@ -94,29 +107,34 @@ sudo umount /mnt/host
 タグはhostshare。9p/virtioを使い、既定は読み取り専用。マウント先を変える場合はsudo qemu-mount-host /mnt/data。
 書込みが必要な場合は両側で明示する。
 
+ホスト側（読み取り専用の起動例に代えて選ぶ）：
+
 ```bash
-# ホスト
 bash scripts/run-ftpm-virt.sh --share /path/to/host/data --share-rw
-# ゲスト
+```
+
+その起動後、ゲスト側：
+
+```bash
 sudo qemu-mount-host --rw /mnt/host
 ```
 
 mapped-xattrを使用するため書込み先FSのxattr対応が必要。ホストの権限を超えて書き込めるわけではない。
 共有は必要なディレクトリに限定し、ホストの秘密鍵やCA秘密鍵を置いたディレクトリを共有しない。
 
-## CPU数と試験モード
+## 起動オプション3：CPU数
+
+2CPUとSSHを組み合わせて起動する例：
 
 ```bash
 bash scripts/run-ftpm-virt.sh --cpus 2 --ssh
-bash scripts/run-ftpm-virt.sh second --cpus 4
 ```
 
 CPUは1〜8、既定4。起動時に指定数に合わせてDTBを生成するためdtcが必要。
 旧1CPU/GICv2ファームウェアは再ビルドを要求して停止する。新構成はGICv3を使い、NVIDIA配布カーネルは変更しない。
 ゲストではgetconf _NPROCESSORS_ONLNで稼働CPU数を確認する。
-試験モードは明示的にfirst/second/export/boundを選ぶ。firstを既存の完了済みディスクで実行しない。
 
-## QEMUモニターとGDB
+## 起動オプション4：QEMUコンソール・モニター
 
 ```bash
 bash scripts/run-ftpm-virt.sh --qemu-console
@@ -128,18 +146,34 @@ quitやCtrl-a xはQEMUの即時終了で、ゲストの正常停止ではない�
 
 ```bash
 bash scripts/run-ftpm-virt.sh --monitor-socket "$PWD/work/qemu-monitor.sock"
-# 別のホスト端末（socatが必要）
+```
+
+その起動後、別のホスト端末（socatが必要）：
+
+```bash
 socat -,raw,echo=0 UNIX-CONNECT:"$PWD/work/qemu-monitor.sock"
 ```
 
 既存のソケットパスは上書きしない。古いソケットを消す場合はQEMU終了を確認してから行う。
 --qemu-consoleと--monitor-socketは排他。
 
+## 起動オプション5：GDB
+
+GDB接続を待ってCPUを停止する起動例：
+
 ```bash
 bash scripts/run-ftpm-virt.sh --gdb --wait-gdb
-# 別のホスト端末（AArch64対応GDB）
+```
+
+その起動後、別のホスト端末（AArch64対応GDB）：
+
+```bash
 gdb-multiarch
-# GDB内
+```
+
+GDB内：
+
+```text
 target remote 127.0.0.1:1234
 info registers
 continue
@@ -149,6 +183,17 @@ continue
 待機中に出力がないのは意図どおり。通常起動は時間制限なし。試験で待つ場合は--timeout 0等を明示する。
 この接続はゲストCPU用スタブであり、シンボルは対象のELFとASLR配置に合わせて読み込む。OP-TEE/カーネルのシンボルを自動再配置する機能はない。
 QEMU本体をデバッグする場合はホスト用GDBでgdb -p PIDを使う。install内はstrip済みのため、詳細解析には一致するwork/qemu-buildの未stripバイナリを使う。
+
+## 起動オプション6：試験モード
+
+通常起動に代えて、自動試験を実行するモード。以下はsecondを実行する段階で選ぶ例であり、通常利用に必要な追加操作ではない。
+
+```bash
+bash scripts/run-ftpm-virt.sh second --cpus 4
+```
+
+試験モードは明示的にfirst/second/export/boundを選ぶ。firstを既存の完了済みディスクで実行しない。
+試験は自動終了する。実行順序・前提条件・成功判定は[test-guide.md](test-guide.md)に従う。
 
 ## manの表示
 
