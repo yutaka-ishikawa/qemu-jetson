@@ -16,13 +16,13 @@ sudo bash scripts/install-host-deps.sh
 # Configure NVIDIA CROSS_COMPILE, dtc and the Python venv per build-install.md.
 bash scripts/build-qemu.sh
 bash scripts/build-ftpm-virt-firmware.sh
-bash scripts/install-ftpm-runtime-overlay.sh
+sudo bash scripts/install-ftpm-runtime-overlay.sh
 python3 scripts/install-artifacts.py manual
 ```
 
 QEMU is rebuilt with 9p and user networking; firmware uses GICv3 and supports up to eight CPUs.
 Only files are updated on an existing disk: do not recreate rootfs.tar/rootfs.ext4.
-The disk updater needs write permission and rejects a disk used by QEMU.
+Run the disk updater with sudo; it rejects a disk used by QEMU. Disk ownership is preserved, and a newly created lock is assigned to the disk owner so normal launches remain unprivileged.
 New rootfs builds already include runtime-overlay and openssh-server/sudo/dbus/dbus, so skip the offline disk upgrade and guest package installer for a fresh build.
 
 ## Initial setup console

@@ -88,7 +88,7 @@ ssh -p 2222 dev@127.0.0.1
 bash scripts/run-ftpm-virt.sh --cpus 2 --share /path/to/data --share-rw
 .fi
 .SH INSTALLATION
-Existing disks first need scripts/install-ftpm-runtime-overlay.sh while QEMU is stopped,
+Existing disks first need sudo bash scripts/install-ftpm-runtime-overlay.sh while QEMU is stopped,
 then scripts/setup-ftpm-runtime-guest.sh inside the setup console to install SSH packages.
 Rebuild firmware using scripts/build-ftpm-virt-firmware.sh for multicore operation.
 See docs/runtime-guide.md for exact commands. Never regenerate keys or recreate an existing TPM disk for this upgrade.

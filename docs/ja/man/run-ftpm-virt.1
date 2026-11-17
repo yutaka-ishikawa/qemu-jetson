@@ -88,7 +88,7 @@ ssh -p 2222 dev@127.0.0.1
 bash scripts/run-ftpm-virt.sh --cpus 2 --share /path/to/data --share-rw
 .fi
 .SH 導入
-既存ディスクはQEMU停止中にscripts/install-ftpm-runtime-overlay.shを適用し、
+既存ディスクはQEMU停止中にsudo bash scripts/install-ftpm-runtime-overlay.shを適用し、
 setupコンソール内のscripts/setup-ftpm-runtime-guest.shでSSH等のパッケージを導入する。
 複数コア用にscripts/build-ftpm-virt-firmware.shでファームウェアを再ビルドする。
 具体的な手順はdocs/runtime-guide.mdを参照。既存TPMディスクや鍵は再生成しない。

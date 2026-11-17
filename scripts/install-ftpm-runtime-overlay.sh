@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 # Offline install of console/network/SSH configuration, preserving all device state.
 set -euo pipefail
+[[ $EUID == 0 ]] || { echo "Run: sudo bash scripts/install-ftpm-runtime-overlay.sh" >&2; exit 1; }
 source "$(dirname -- "${BASH_SOURCE[0]}")/host-common.sh"
 cd "$repo"
 require_commands python3 debugfs e2fsck
@@ -9,7 +10,15 @@ import fcntl
 from pathlib import Path
 import os, subprocess, sys, tempfile
 repo=Path(sys.argv[1]); disk=(repo/'work/ftpm-virt/rootfs.ext4').resolve()
-lock=(repo/'work/ftpm-virt/runtime.lock').open('a')
+if not disk.is_file(): raise SystemExit('Existing rootfs.ext4 is required')
+lock_path=repo/'work/ftpm-virt/runtime.lock'
+new_lock=not lock_path.exists()
+lock=lock_path.open('a')
+if new_lock:
+    # Do not leave a root-owned lock that prevents the ordinary user's launch.
+    owner=disk.stat()
+    os.fchown(lock.fileno(),owner.st_uid,owner.st_gid)
+    os.fchmod(lock.fileno(),0o600)
 try: fcntl.flock(lock,fcntl.LOCK_EX|fcntl.LOCK_NB)
 except BlockingIOError: raise SystemExit('Stop QEMU before updating the disk')
 if not disk.is_file() or not os.access(disk, os.W_OK):

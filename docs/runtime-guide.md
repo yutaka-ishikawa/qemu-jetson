@@ -16,13 +16,13 @@ sudo bash scripts/install-host-deps.sh
 # build-install.mdに従いNVIDIA CROSS_COMPILE、dtc、Python venvを設定
 bash scripts/build-qemu.sh
 bash scripts/build-ftpm-virt-firmware.sh
-bash scripts/install-ftpm-runtime-overlay.sh
+sudo bash scripts/install-ftpm-runtime-overlay.sh
 python3 scripts/install-artifacts.py manual
 ```
 
 QEMUは9pとユーザーネットワーク対応、ファームウェアはGICv3・最大8CPU対応で再ビルドする。
 既存ディスクはファイル更新だけを行い、rootfs.tarやrootfs.ext4を作り直さない。
-install-ftpm-runtime-overlay.shはディスクへの書込み権限が必要。QEMUが使用中なら中止する。
+install-ftpm-runtime-overlay.shはsudoで実行する。QEMUが使用中なら中止する。ディスク所有者は変更せず、新規ロックファイルもディスク所有者へ戻すため、通常起動は一般ユーザーで行える。
 新規構築の場合はruntime-overlayとopenssh-server/sudo/dbus/dbusがrootfs生成時に組み込まれるため、ディスク更新と下記のゲストパッケージ導入は不要。
 
 ## 初期設定用コンソール
