@@ -3,6 +3,11 @@
 日本語 | [English](en/hardware-qemu-differences.md)
 
 対象はJetson Orin Nano（T234）と、本リポジトリのB2機能検証構成`jetson-ftpm-virt`。
+
+**B2**は、NVIDIA版OP-TEEのQEMU用構成でfTPMを動かす[案B（決定0001）](decisions/0001-ftpm-execution-path.md)のうち、**NVIDIA helper PTA全体と依存機能を移植する方式**の名称。
+[B2の定義と採用理由（決定0002）](decisions/0002-ftpm-helper-pta.md)を参照。NVIDIA製品やリリースの名称ではない。
+具体的な実装範囲は[helper PTA移植設計](ftpm-helper-port.md)に記載している。
+
 QEMUでの試験合格は、実機と全ハードウェア・全TPMコマンド・保護強度が同一という意味ではない。
 実機との同条件の比較測定は未実施。実機欄の保護機能は、製品の設定・製造時プロビジョニングに依存する。
 

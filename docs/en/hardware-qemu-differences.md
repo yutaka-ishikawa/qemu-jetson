@@ -3,6 +3,11 @@
 [日本語](../hardware-qemu-differences.md) | English
 
 This compares Jetson Orin Nano (T234) with this repository's B2 functional profile, jetson-ftpm-virt.
+
+**B2** names the approach that **ports the complete NVIDIA helper PTA and its dependencies**, within [option B (decision 0001)](decisions/0001-ftpm-execution-path.md), which runs fTPM using the NVIDIA OP-TEE QEMU configuration.
+See [the B2 definition and selection rationale (decision 0002)](decisions/0002-ftpm-helper-pta.md). It is not an NVIDIA product or release name.
+The [helper PTA port design](ftpm-helper-port.md) describes the implementation scope.
+
 Passing QEMU tests does not establish identical hardware, every TPM command, or security strength.
 No controlled physical-device comparison has been performed. Hardware protection depends on product configuration and manufacturing provisioning.
 
