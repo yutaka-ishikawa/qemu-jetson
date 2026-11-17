@@ -28,6 +28,24 @@ qemu-mount-host
 adduser cradsec
 usermod -aG sudo cradsec
 qemu-register-ssh-key cradsec /mnt/host/login.pub
+```
+
+Before powering off, verify `/home/cradsec/.ssh/authorized_keys` inside the guest.
+
+```bash
+stat -c '%a %U:%G %n' /home/cradsec/.ssh /home/cradsec/.ssh/authorized_keys
+ssh-keygen -lf /mnt/host/login.pub
+ssh-keygen -lf /home/cradsec/.ssh/authorized_keys
+grep -Fqx -f /mnt/host/login.pub /home/cradsec/.ssh/authorized_keys && echo 'Public key installed: OK'
+```
+
+Check that `stat` reports `700 cradsec:cradsec` for `.ssh` and `600 cradsec:cradsec` for `authorized_keys`.
+Both `ssh-keygen` outputs should include the same key fingerprint, and the final command should print `Public key installed: OK`.
+If other keys were already registered, the authorized_keys output lists multiple fingerprints.
+If the file is missing, ownership/permissions differ, or the key does not match, check the public-key input path, rerun the registration command and verify again.
+After successful verification, power off.
+
+```bash
 poweroff
 ```
 
