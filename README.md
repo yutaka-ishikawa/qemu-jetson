@@ -7,10 +7,6 @@ QEMU for NVIDIA Jetson Orin Nano
 
 NVIDIA版OP-TEE／fTPMを、ソース変更を極力抑えてQEMU上で動かすための開発プロジェクトです。
 
-- [OP-TEEサンプル：ビルド・QEMUゲスト内での実行](docs/samples-guide.md)
-
-- [fTPM・EK証明書テスト手順](docs/test-guide.md)
-
 ## 必要なディスク容量の目安
 
 新規構築から全テストまで実行する場合、**空き容量30GB以上、余裕を見て50GBを推奨**します。
@@ -29,36 +25,51 @@ NVIDIA版OP-TEE／fTPMを、ソース変更を極力抑えてQEMU上で動かす
 これは現在のNVIDIA配布カーネルを取得する構成の概算であり、新規構築全工程で実測したピーク値ではありません。
 Linuxカーネルもソースからビルドする場合は、さらに10〜20GB程度を見込み、空き容量50GB以上を推奨します。
 
-## 設計と手順
+## ドキュメント一覧
 
-| 目的 | 手順書 |
-| --- | --- |
-| 新規clone・環境準備・ビルド・ディスク・DTB作成 | [build-install.md](docs/build-install.md) |
-| 初回ユーザー/公開鍵登録・通常起動・SSH・共有・デバッグ | [runtime-guide.md](docs/runtime-guide.md) |
-| first/second・EK証明書・永続化の試験 | [test-guide.md](docs/test-guide.md) |
-| 既存ディスク/環境の更新・修正適用 | [upgrade-guide.md](docs/upgrade-guide.md) |
-| OP-TEEサンプルのホスト側クロスビルド・QEMUゲスト内make・実行 | [samples-guide.md](docs/samples-guide.md) |
+新規環境はbuild-install.mdから開始してください。設計資料・検証記録・判断記録も以下にまとめています。
 
+| 分類 | 内容 | ドキュメント |
+| --- | --- | --- |
+| 利用手順 | 新規clone・環境準備・ビルド・ディスク・DTB作成 | [build-install.md](docs/build-install.md) |
+| 利用手順 | 初回ユーザー・公開鍵登録、通常起動・SSH・9p・デバッグ | [runtime-guide.md](docs/runtime-guide.md) |
+| 利用手順 | first/second・EK証明書・永続化の試験 | [test-guide.md](docs/test-guide.md) |
+| 利用手順 | 既存ディスク・環境の更新と修正適用 | [upgrade-guide.md](docs/upgrade-guide.md) |
+| 利用手順 | サンプルのホスト側クロスビルド・QEMUゲスト内make・実行 | [samples-guide.md](docs/samples-guide.md) |
+| 環境・構築 | Dockerを使わないホスト環境 | [native-host.md](docs/native-host.md) |
+| 環境・構築 | 同梱ソースとビルド構成 | [source-layout.md](docs/source-layout.md) |
+| 環境・構築 | Ubuntu 22.04 ARM64 rootfs | [ubuntu-rootfs.md](docs/ubuntu-rootfs.md) |
+| 状況・検証 | 完了状況と残件 | [project-status.md](docs/project-status.md) |
+| 状況・検証 | Jetson実機とQEMU環境の違い | [hardware-qemu-differences.md](docs/hardware-qemu-differences.md) |
+| 状況・検証 | 最終テストの証拠整理 | [final-test-evidence.md](docs/final-test-evidence.md) |
+| 状況・検証 | OP-TEEページテーブル使用量の解析 | [page-table-analysis.md](docs/page-table-analysis.md) |
+| 状況・検証 | fTPM・helper PTAの過去の検証結果と再現記録 | [ftpm-functional-validation.md](docs/ftpm-functional-validation.md) |
+| 設計・調査 | 目的と段階的な進め方 | [requirements.md](docs/requirements.md) |
+| 設計・調査 | 無変更T234 OP-TEEのQEMU起動設計 | [qemu-boot-design.md](docs/qemu-boot-design.md) |
+| 設計・調査 | T234実装計画と段階的な検証の記録 | [implementation-plan.md](docs/implementation-plan.md) |
+| 設計・調査 | B案：NVIDIA fTPMのQEMU機能検証構成 | [ftpm-virt.md](docs/ftpm-virt.md) |
+| 設計・調査 | B2：NVIDIA helper PTA全体の移植 | [ftpm-helper-port.md](docs/ftpm-helper-port.md) |
+| 設計・調査 | OP-TEEのデーモン・TA・PTAとサービスの比較 | [optee-service-comparison.md](docs/optee-service-comparison.md) |
+| 設計・調査 | SIGN_EK_CSRの署名鍵とEKの違い | [ek-csr-signing.md](docs/ek-csr-signing.md) |
+| 設計・調査 | OP-TEEサンプルのimport候補 | [sample-import-candidates.md](docs/sample-import-candidates.md) |
+| T234検証 | T234 Fuseの読み取り専用モデル | [t234-fuse.md](docs/t234-fuse.md) |
+| T234検証 | 段階A：最初のOP-TEEログ | [t234-stage-a.md](docs/t234-stage-a.md) |
+| リリース調査 | Jetson Linuxリリース候補 | [release-candidates.md](docs/release-candidates.md) |
+| リリース調査 | R36.5.2 OP-TEE／fTPMソース調査 | [r36.5.2-source-investigation.md](docs/r36.5.2-source-investigation.md) |
+| リリース調査 | R36.5.2 無変更ビルド記録 | [r36.5.2-build.md](docs/r36.5.2-build.md) |
+| リファレンス | 起動スクリプトのmanページ | [日本語](docs/ja/man/run-ftpm-virt.1) / [English](docs/man/run-ftpm-virt.1) |
+| 判断記録 | 0001: fTPM実行経路の選択 | [0001-ftpm-execution-path.md](docs/decisions/0001-ftpm-execution-path.md) |
+| 判断記録 | 0002: QEMU構成のfTPM helper PTA | [0002-ftpm-helper-pta.md](docs/decisions/0002-ftpm-helper-pta.md) |
+| 判断記録 | 0003: B2の検証用プロビジョニング情報 | [0003-ftpm-provisioning-data.md](docs/decisions/0003-ftpm-provisioning-data.md) |
+| 判断記録 | 0004: Dockerを使わないビルド・実行 | [0004-native-host.md](docs/decisions/0004-native-host.md) |
+| 判断記録 | 0005: install/へのビルド成果物の集約 | [0005-install-prefix.md](docs/decisions/0005-install-prefix.md) |
+| 判断記録 | 0006: Ubuntu QEMUゲストのSELinux構成 | [0006-guest-selinux.md](docs/decisions/0006-guest-selinux.md) |
+| 判断記録 | 0007: 起動時のudev・ttyAMA0待ち | [0007-boot-device-wait.md](docs/decisions/0007-boot-device-wait.md) |
+| 判断記録 | 0008: 通常起動・SSH・ホスト共有・CPU数 | [0008-interactive-runtime.md](docs/decisions/0008-interactive-runtime.md) |
+| 判断記録 | 0009: 新規構築・通常利用・テスト・更新の文書分離 | [0009-guide-organization.md](docs/decisions/0009-guide-organization.md) |
+| 判断記録 | 0010: OP-TEEサンプルの追加 | [0010-optee-samples.md](docs/decisions/0010-optee-samples.md) |
 
-- [完了状況と残件](docs/project-status.md)
-
-- [通常起動・SSH・9p共有・デバッグ](docs/runtime-guide.md)
-
-- [実機とQEMU環境の違い](docs/hardware-qemu-differences.md)
-- [最終テストの証拠整理](docs/final-test-evidence.md)
-- [OP-TEEページテーブル使用量の解析](docs/page-table-analysis.md)
-
-
-- [Fuseモデルと検証](docs/t234-fuse.md)
-- [段階A：最初のOP-TEEログ](docs/t234-stage-a.md)
-- [同梱ソースとビルド構成](docs/source-layout.md)
-- [Ubuntu 22.04 ARM64 rootfs構築](docs/ubuntu-rootfs.md)
-- [要件と作業方針](docs/requirements.md)
-- [QEMU起動設計](docs/qemu-boot-design.md)
-- [実装手順](docs/implementation-plan.md)
-- [L4Tリリース候補](docs/release-candidates.md)
-- [R36.5.2ソース調査](docs/r36.5.2-source-investigation.md)
-- [R36.5.2無変更ビルド結果](docs/r36.5.2-build.md)
+## 現在の実装状況
 
 QEMUの実装基準は、2026-11-16確認時点の最新安定版 **11.1.3** です。
 NVIDIA版OP-TEE／fTPMのT234向け無変更ビルドは成功しています。
