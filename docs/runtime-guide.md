@@ -172,3 +172,18 @@ man/SSHクライアント/socat/GDBはホストに必要な場合だけ導入す
 
 開発側の既存ディスクで4/8CPUのLinux、一般ユーザー公開鍵SSH、root/パスワード認証拒否、9p手動マウント（RO/RW）、モニター切替・UNIX接続、GDB停止/レジスタ取得、通常電源断を確認した。4/8CPUのboundもPASS。
 新規rootfs全体の管理者権限での再構築は未実施。詳細は[機械可読結果](results/runtime.json)と[ログ抜粋](results/runtime-excerpt.txt)を参照。
+
+## 通常起動でシリアルログインが出ない場合
+
+通常モードでもttyAMA0で一般ユーザーのログインができる。--sshはシリアルログインを無効にしない。
+旧runtime-overlayのsetupサービスにConflicts=serial-getty@ttyAMA0.serviceがあり、setupの起動条件が偽でもsystemdのジョブ依存関係が通常のシリアルgettyを止めていた。
+修正版はConflictsを除去し、setupとgettyそれぞれの逆のConditionKernelCommandLineで切り替える。
+QEMU終了後に次を実行する。再ビルドやアカウント・鍵の再登録は不要。
+
+```bash
+git pull --ff-only
+sudo bash scripts/install-ftpm-runtime-overlay.sh
+bash scripts/run-ftpm-virt.sh --ssh
+```
+
+rootの通常ログインを有効にする修正ではない。コンソールには作成済みの一般ユーザーと、そのローカルパスワードでログインする。

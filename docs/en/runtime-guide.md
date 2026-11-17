@@ -169,3 +169,18 @@ The supported eight-CPU configuration uses a project-only TF-A MPIDR topology ma
 
 On the developer existing disk, verified 4/8 CPU Linux, regular-user public-key SSH, root/password rejection, manual RO/RW 9p, monitor mux/UNIX access, GDB stop/register reads and orderly poweroff. Bound passed with four and eight CPUs.
 A fresh privileged rootfs rebuild was not performed. See [results](../results/runtime.json) and [excerpts](../results/runtime-excerpt.txt).
+
+## Missing serial login in normal mode
+
+Normal mode allows regular-user login on ttyAMA0. --ssh does not disable serial login.
+The old setup unit had Conflicts=serial-getty@ttyAMA0.service. systemd resolved this conflict even when the setup unit's condition was false, suppressing normal serial getty.
+The corrected unit removes Conflicts and selects setup/getty using opposite ConditionKernelCommandLine conditions.
+Stop QEMU, then run:
+
+```bash
+git pull --ff-only
+sudo bash scripts/install-ftpm-runtime-overlay.sh
+bash scripts/run-ftpm-virt.sh --ssh
+```
+
+No rebuild, account recreation or key registration is needed. This does not enable normal root login: use the existing regular account and its local password.

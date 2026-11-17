@@ -117,3 +117,15 @@ runtimecheck@127.0.0.1: Permission denied (publickey).
 SHA-256: aa67a169b0bba217aa0aa88a65346920c84c42447c36ba5f7ea65f422c1fe5d8
 8
 
+
+=== serial getty fix: normal ===
+SHA-256: c1cdae4ea215f6ada656624c8f6fd8a28b18c35536bc2f775ea3f6a2e1fb94b3
+[    0.000000] Kernel command line: console=ttyAMA0,115200 earlycon root=/dev/vda rw rootwait panic=5 lsm=lockdown,yama,integrity,apparmor,bpf systemd.log_target=console
+[  OK  ] Started Serial Getty on ttyAMA0.
+localhost login: qemu-system-aarch64: terminating on signal 15 from pid 60138 (timeout)
+
+=== serial getty fix: setup ===
+SHA-256: 27eb31b82b650ca91c37f0d232599dcae6bde1e90911411ca7f5011a38049e3a
+[    0.000000] Kernel command line: console=ttyAMA0,115200 earlycon root=/dev/vda rw rootwait panic=5 lsm=lockdown,yama,integrity,apparmor,bpf systemd.log_target=console qemu.setup=1
+[  OK  ] Started Explicit QEMU initial setup root console.
+root@localhost:/# [  OK  ] Started User Login Management.

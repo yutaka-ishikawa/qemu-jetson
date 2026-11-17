@@ -20,7 +20,9 @@
     "orderly_shutdown": true,
     "man_install": true,
     "nvidia_ta_pta_bodies_unchanged": true,
-    "live_qemu_device_lock": true
+    "live_qemu_device_lock": true,
+    "normal_serial_getty_login": true,
+    "setup_console_exclusive_by_kernel_condition": true
   },
   "debugger": "GDB remote stop/register packets and HMP checked; no symbol/ASLR automation",
   "network_validation": "local test-only HTTP relay used for package downloads because environment direct guest HTTP was restricted; no relay installed in product",

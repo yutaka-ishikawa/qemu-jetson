@@ -2,7 +2,6 @@
 Description=Explicit QEMU initial setup root console
 ConditionKernelCommandLine=qemu.setup=1
 After=local-fs.target systemd-networkd.service
-Conflicts=serial-getty@ttyAMA0.service
 [Service]
 Type=simple
 KillSignal=SIGHUP
