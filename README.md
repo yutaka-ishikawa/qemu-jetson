@@ -19,6 +19,8 @@ NVIDIA版OP-TEE／fTPMを、ソース変更を極力抑えてQEMU上で動かす
 | 既存ディスク/環境の更新・修正適用 | [upgrade-guide.md](docs/upgrade-guide.md) |
 
 
+- [完了状況と残件](docs/project-status.md)
+
 - [通常起動・SSH・9p共有・デバッグ](docs/runtime-guide.md)
 
 - [実機とQEMU環境の違い](docs/hardware-qemu-differences.md)

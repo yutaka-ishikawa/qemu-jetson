@@ -20,6 +20,8 @@ This project aims to run NVIDIA's OP-TEE and fTPM with minimal changes to NVIDIA
 | Update an existing disk/environment or apply fixes | [upgrade-guide.md](docs/en/upgrade-guide.md) |
 
 
+- [Completion status and remaining work](docs/en/project-status.md)
+
 - [Interactive boot, SSH, 9p and debugging](docs/en/runtime-guide.md)
 
 - [Physical hardware versus QEMU](docs/en/hardware-qemu-differences.md)
