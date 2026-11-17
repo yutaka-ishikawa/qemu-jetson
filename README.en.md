@@ -38,6 +38,7 @@ If you also build the Linux kernel from source, allow another 10–20GB and rese
 | Initial account/key setup, normal boot, SSH, sharing, debugging | [runtime-guide.md](docs/en/runtime-guide.md) |
 | first/second, EK certificates and persistence tests | [test-guide.md](docs/en/test-guide.md) |
 | Update an existing disk/environment or apply fixes | [upgrade-guide.md](docs/en/upgrade-guide.md) |
+| OP-TEE samples: host cross-build, make and execution inside QEMU | [samples-guide.md](docs/en/samples-guide.md) |
 
 
 - [Completion status and remaining work](docs/en/project-status.md)

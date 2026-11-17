@@ -37,6 +37,7 @@ Linuxカーネルもソースからビルドする場合は、さらに10〜20GB
 | 初回ユーザー/公開鍵登録・通常起動・SSH・共有・デバッグ | [runtime-guide.md](docs/runtime-guide.md) |
 | first/second・EK証明書・永続化の試験 | [test-guide.md](docs/test-guide.md) |
 | 既存ディスク/環境の更新・修正適用 | [upgrade-guide.md](docs/upgrade-guide.md) |
+| OP-TEEサンプルのホスト側クロスビルド・QEMUゲスト内make・実行 | [samples-guide.md](docs/samples-guide.md) |
 
 
 - [完了状況と残件](docs/project-status.md)
