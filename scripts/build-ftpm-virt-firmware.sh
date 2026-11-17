@@ -24,9 +24,9 @@ else:
         f.write(b'JFTPM001' + os.urandom(64))
 PY
 args=(PLATFORM=vexpress-qemu_armv8a CFG_ARM64_core=y CFG_USER_TA_TARGETS=ta_arm64
-    CFG_TEE_CORE_NB_CORE=1 CFG_WITH_PAGER=n CFG_DT_DRIVER_EMBEDDED_TEST=n
+    CFG_TEE_CORE_NB_CORE=8 CFG_WITH_PAGER=n CFG_DT_DRIVER_EMBEDDED_TEST=n
     CFG_CORE_ASYNC_NOTIF=n CFG_PKCS11_TA=n CFG_QEMU_DEVICE_IDENTITY=y
-    CFG_QEMU_JETSON_FTPM=y
+    CFG_QEMU_JETSON_FTPM=y CFG_ARM_GICV3=y
     CFG_TEE_TA_LOG_LEVEL=2 CROSS_COMPILE64="$CROSS_COMPILE" O="$osout")
 make -C optee/optee/optee_os "${args[@]}" -j "${JOBS:-2}"
 make -C optee/optee/samples/ftpm-helper/ta CROSS_COMPILE="$CROSS_COMPILE" \
@@ -42,19 +42,21 @@ make -C optee/optee/optee_os "${args[@]}" CFG_EARLY_TA=y \
 "${CROSS_COMPILE}gcc" -nostdlib -static -no-pie -Wl,--build-id=none \
     -T firmware/linux-entry/link.ld firmware/linux-entry/entry.S -o "$out/linux-entry.elf"
 "${CROSS_COMPILE}objcopy" -O binary "$out/linux-entry.elf" "$out/linux-entry.bin"
-make -C firmware/tf-a PLAT=qemu ARCH=aarch64 SPD=opteed BL32_RAM_LOCATION=tdram \
+make -C firmware/tf-a PLAT=qemu ARCH=aarch64 SPD=opteed QEMU_USE_GIC_DRIVER=QEMU_GICV3 QEMU_JETSON_FTPM=1 BL32_RAM_LOCATION=tdram \
     ARM_LINUX_KERNEL_AS_BL33=1 CROSS_COMPILE="$CROSS_COMPILE" \
     BL32="$osout/core/tee-header_v2.bin" BL32_EXTRA1="$osout/core/tee-pager_v2.bin" \
     BL32_EXTRA2="$osout/core/tee-pageable_v2.bin" BL33="$out/linux-entry.bin" \
-    BUILD_BASE="$repo/work/tf-a" DEBUG=0 WERROR=0 -j "${JOBS:-2}" all fip
+    BUILD_BASE="$repo/work/tf-a-ftpm" DEBUG=0 WERROR=0 -j "${JOBS:-2}" all fip
 python3 - "$repo" <<'PY'
 import pathlib, sys
 repo = pathlib.Path(sys.argv[1])
 with (repo/'work/ftpm-virt/flash.bin').open('wb') as f:
     f.truncate(64 * 1024 * 1024)
-    f.write((repo/'work/tf-a/qemu/release/bl1.bin').read_bytes())
+    f.write((repo/'work/tf-a-ftpm/qemu/release/bl1.bin').read_bytes())
     f.seek(0x40000)
-    f.write((repo/'work/tf-a/qemu/release/fip.bin').read_bytes())
+    f.write((repo/'work/tf-a-ftpm/qemu/release/fip.bin').read_bytes())
 PY
 
+printf '8\n' > "$out/firmware-cpus.txt"
+printf '3\n' > "$out/firmware-gic.txt"
 python3 "$repo/scripts/install-artifacts.py" firmware

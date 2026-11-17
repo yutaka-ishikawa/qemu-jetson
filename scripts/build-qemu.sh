@@ -2,14 +2,14 @@
 set -euo pipefail
 source "$(dirname -- "${BASH_SOURCE[0]}")/host-common.sh"
 require_commands cc make python3 ninja pkg-config
-if ! pkg-config --exists 'glib-2.0 >= 2.66' pixman-1 zlib; then
+if ! pkg-config --exists 'glib-2.0 >= 2.66' pixman-1 zlib slirp; then
     echo 'QEMU development libraries are missing. See docs/native-host.md.' >&2
     exit 1
 fi
 mkdir -p "$qemu_build_dir"
 cd "$qemu_build_dir"
 "$repo/qemu/configure" --target-list=aarch64-softmmu --without-default-features \
-    --disable-werror --disable-docs --prefix="$install_dir" --bindir=bin \
+    --enable-slirp --enable-virtfs --enable-attr --disable-werror --disable-docs --prefix="$install_dir" --bindir=bin \
     --libdir=lib --libexecdir=libexec --includedir=include --datadir=share
 # Build installation targets and their dependencies, without unrelated test binaries.
 python3 - "${JOBS:-2}" <<'PY_TARGETS'
@@ -24,3 +24,5 @@ PY_TARGETS
 "$qemu_build_dir/pyvenv/bin/meson" install --no-rebuild --strip
 "$qemu_bin" --version
 python3 "$repo/scripts/check-qemu-baseline.py" "$qemu_bin" --data-dir "$qemu_data_dir"
+
+python3 "$repo/scripts/install-artifacts.py" manual

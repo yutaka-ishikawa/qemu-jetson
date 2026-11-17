@@ -169,3 +169,5 @@ See the [build guide](build-install.md#op-tee-translation-table-change-and-the-o
 ## Related evidence and hardware differences
 
 See [hardware differences](hardware-qemu-differences.md) and [final evidence](final-test-evidence.md).
+
+See [interactive runtime, SSH, sharing and debugging](runtime-guide.md). The launcher now defaults to normal boot and four CPUs; select tests explicitly. That guide includes the old-firmware upgrade steps.

@@ -1,0 +1,12 @@
+[Unit]
+Description=Shut down and detach fTPM before stopping its supplicant
+After=jetson-tee-supplicant.service
+Requires=jetson-tee-supplicant.service
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+ExecStart=/bin/true
+ExecStop=/usr/local/sbin/qemu-ftpm-shutdown
+TimeoutStopSec=25
+[Install]
+WantedBy=multi-user.target

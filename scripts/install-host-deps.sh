@@ -7,5 +7,5 @@ case "${ID:-} ${ID_LIKE:-}" in *ubuntu*|*debian*) ;; *) echo 'See docs/native-ho
 apt-get update
 apt-get install -y --no-install-recommends \
     build-essential python3-venv python3-pip python3-tomli ninja-build pkg-config \
-    libglib2.0-dev libpixman-1-dev zlib1g-dev libfdt-dev device-tree-compiler \
+    libslirp-dev libattr1-dev libglib2.0-dev libpixman-1-dev zlib1g-dev libfdt-dev device-tree-compiler \
     proot qemu-user e2fsprogs kmod fakeroot git curl ca-certificates xz-utils bzip2

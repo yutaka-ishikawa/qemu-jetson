@@ -1,0 +1,12 @@
+#!/usr/bin/env bash
+set -euo pipefail
+[[ $EUID == 0 ]] || { echo 'Run with sudo.' >&2; exit 1; }
+mode=ro
+if [[ ${1:-} == --rw ]]; then mode=rw; shift; fi
+[[ $# -le 1 ]] || { echo 'Usage: qemu-mount-host [--rw] [MOUNTPOINT]' >&2; exit 2; }
+point=${1:-/mnt/host}
+[[ $point == /* ]] || { echo 'Use an absolute mount point' >&2; exit 2; }
+mountpoint -q "$point" && { echo "Already mounted: $point" >&2; exit 1; }
+mkdir -p -- "$point"
+mount -t 9p -o "trans=virtio,version=9p2000.L,msize=262144,cache=none,$mode" hostshare "$point"
+echo "Mounted hostshare at $point ($mode)"

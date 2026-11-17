@@ -1,0 +1,9 @@
+#!/usr/bin/env bash
+# Keep the backend alive until the TPM has shut down and detached.
+set -euo pipefail
+if [[ -c /dev/tpmrm0 ]]; then
+    timeout 15 env TPM2TOOLS_TCTI=device:/dev/tpmrm0 tpm2_shutdown -c
+fi
+if [[ -d /sys/module/tpm_ftpm_tee ]]; then
+    modprobe -r tpm_ftpm_tee
+fi

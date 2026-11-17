@@ -1,6 +1,8 @@
 [Unit]
-Description=OP-TEE supplicant for the Jetson QEMU development environment
-After=systemd-udev-trigger.service
+Description=OP-TEE supplicant before udev probes the fTPM driver
+DefaultDependencies=no
+After=systemd-remount-fs.service
+Before=systemd-udev-trigger.service
 
 [Service]
 Type=simple
@@ -10,4 +12,4 @@ Restart=on-failure
 RestartSec=2
 
 [Install]
-WantedBy=multi-user.target
+WantedBy=sysinit.target

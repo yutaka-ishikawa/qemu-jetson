@@ -1,0 +1,119 @@
+=== second-4cpu-gic3-aligned.log ===
+SHA-256: 01a930875f88c508b5d272d7be527094fcbe26ed4b4ad337229b35e7751f8736
+[    0.000000] Kernel command line: console=ttyAMA0,115200 earlycon root=/dev/vda rw rootwait panic=5 lsm=lockdown,yama,integrity,apparmor,bpf systemd.log_target=console ftpm.test=second
+[    0.083645] SMP: Total of 4 processors activated.
+[   14.595732] ftpm-functional-test[199]: FTPM_TEST: START phase=second
+[   22.054039] ftpm-functional-test[199]: PTA_TEST: PING_NS READY PASS
+[   22.057950] ftpm-functional-test[199]: PTA_TEST: online mode / version 2.0 PASS
+[   22.062069] ftpm-functional-test[199]: PTA_TEST: API sn.bin PASS
+[   22.065746] ftpm-functional-test[199]: PTA_TEST: API ecid.bin PASS
+[   22.068206] ftpm-functional-test[199]: PTA_TEST: API rsa-cert.der PASS
+[   22.070857] ftpm-functional-test[199]: PTA_TEST: API ec-cert.der PASS
+[   22.074142] ftpm-functional-test[199]: PTA_TEST: API sid-cert.der PASS
+[   22.077970] ftpm-functional-test[199]: PTA_TEST: API fw-cert.der PASS
+[   22.080996] ftpm-functional-test[199]: PTA_TEST: API rsa-csr.der PASS
+[   22.083543] ftpm-functional-test[199]: PTA_TEST: API ec-csr.der PASS
+[   22.086330] ftpm-functional-test[199]: PTA_TEST: SIGN_EK_CSR raw signature received PASS
+[   22.088716] ftpm-functional-test[199]: PTA_TEST: invalid parameters and disabled INJECT_EPS rejected PASS
+[   23.785982] ftpm-functional-test[199]: PTA_TEST: certificates/CSR match, CA chains, Firmware ID signature PASS
+[   25.083921] ftpm-functional-test[199]: FTPM_TEST: reboot NV/key persistence and PCR reset PASS
+[   25.616882] ftpm-functional-test[199]: FTPM_TEST: RSA sign/verify PASS
+[   26.160392] ftpm-functional-test[199]: FTPM_TEST: seal/unseal PASS
+[   26.253543] ftpm-functional-test[199]: FTPM_TEST: PASS phase=second
+
+=== bound-8cpu.log ===
+SHA-256: 72ed80f68c280e49499f7d334f9c705dbe7dfb6e634f8e44c212a4d05a1ca047
+[    0.000000] Kernel command line: console=ttyAMA0,115200 earlycon root=/dev/vda rw rootwait panic=5 lsm=lockdown,yama,integrity,apparmor,bpf systemd.log_target=console ftpm.identity_test=bound
+[    0.105264] SMP: Total of 8 processors activated.
+[   32.309035] ftpm-identity-test[253]: PTA_TEST: PING_NS READY PASS
+[   32.311276] ftpm-identity-test[253]: PTA_TEST: online mode / version 2.0 PASS
+[   32.315127] ftpm-identity-test[253]: PTA_TEST: API sn.bin PASS
+[   32.317119] ftpm-identity-test[253]: PTA_TEST: API ecid.bin PASS
+[   32.318604] ftpm-identity-test[253]: PTA_TEST: API rsa-cert.der PASS
+[   32.321247] ftpm-identity-test[253]: PTA_TEST: API ec-cert.der PASS
+[   32.322734] ftpm-identity-test[253]: PTA_TEST: API sid-cert.der PASS
+[   32.325019] ftpm-identity-test[253]: PTA_TEST: API fw-cert.der PASS
+[   32.327146] ftpm-identity-test[253]: PTA_TEST: API rsa-csr.der PASS
+[   32.329262] ftpm-identity-test[253]: PTA_TEST: API ec-csr.der PASS
+[   32.331279] ftpm-identity-test[253]: PTA_TEST: SIGN_EK_CSR raw signature received PASS
+[   32.333730] ftpm-identity-test[253]: PTA_TEST: invalid parameters and disabled INJECT_EPS rejected PASS
+[   34.024585] ftpm-identity-test[251]: PTA_TEST: certificates/CSR match, CA chains, Firmware ID signature PASS
+[   34.289311] ftpm-identity-test[226]: EK_TEST: actual RSA/EC EK keys match PTA certificates PASS
+[   35.309084] ftpm-identity-test[226]: EK_TEST: standard RSA/EC EK certificate NV indices PASS
+[   35.441950] ftpm-identity-test[291]: FTPM_TEST: START phase=second
+[   36.176776] ftpm-identity-test[291]: PTA_TEST: PING_NS READY PASS
+[   36.180635] ftpm-identity-test[291]: PTA_TEST: online mode / version 2.0 PASS
+[   36.182541] ftpm-identity-test[291]: PTA_TEST: API sn.bin PASS
+[   36.185801] ftpm-identity-test[291]: PTA_TEST: API ecid.bin PASS
+[   36.187750] ftpm-identity-test[291]: PTA_TEST: API rsa-cert.der PASS
+[   36.189380] ftpm-identity-test[291]: PTA_TEST: API ec-cert.der PASS
+[   36.191397] ftpm-identity-test[291]: PTA_TEST: API sid-cert.der PASS
+[   36.193311] ftpm-identity-test[291]: PTA_TEST: API fw-cert.der PASS
+[   36.194797] ftpm-identity-test[291]: PTA_TEST: API rsa-csr.der PASS
+[   36.197383] ftpm-identity-test[291]: PTA_TEST: API ec-csr.der PASS
+[   36.198997] ftpm-identity-test[291]: PTA_TEST: SIGN_EK_CSR raw signature received PASS
+[   36.204315] ftpm-identity-test[291]: PTA_TEST: invalid parameters and disabled INJECT_EPS rejected PASS
+[   37.829085] ftpm-identity-test[291]: PTA_TEST: certificates/CSR match, CA chains, Firmware ID signature PASS
+[   39.100628] ftpm-identity-test[291]: FTPM_TEST: reboot NV/key persistence and PCR reset PASS
+[   39.669288] ftpm-identity-test[291]: FTPM_TEST: RSA sign/verify PASS
+[   40.203711] ftpm-identity-test[291]: FTPM_TEST: seal/unseal PASS
+[   40.309907] ftpm-identity-test[291]: FTPM_TEST: PASS phase=second
+[   40.370543] ftpm-identity-test[226]: EK_TEST: PASS
+
+=== bound-default4-final.log ===
+SHA-256: cef3cefe2508cd10fc1555920e5673ea1d87b0845ec6cb2893c88680d3ad217c
+[    0.000000] Kernel command line: console=ttyAMA0,115200 earlycon root=/dev/vda rw rootwait panic=5 lsm=lockdown,yama,integrity,apparmor,bpf systemd.log_target=console ftpm.identity_test=bound
+[    0.078425] SMP: Total of 4 processors activated.
+[   30.124341] ftpm-identity-test[221]: PTA_TEST: PING_NS READY PASS
+[   30.127772] ftpm-identity-test[221]: PTA_TEST: online mode / version 2.0 PASS
+[   30.132683] ftpm-identity-test[221]: PTA_TEST: API sn.bin PASS
+[   30.134598] ftpm-identity-test[221]: PTA_TEST: API ecid.bin PASS
+[   30.136861] ftpm-identity-test[221]: PTA_TEST: API rsa-cert.der PASS
+[   30.139639] ftpm-identity-test[221]: PTA_TEST: API ec-cert.der PASS
+[   30.141551] ftpm-identity-test[221]: PTA_TEST: API sid-cert.der PASS
+[   30.143545] ftpm-identity-test[221]: PTA_TEST: API fw-cert.der PASS
+[   30.146012] ftpm-identity-test[221]: PTA_TEST: API rsa-csr.der PASS
+[   30.147706] ftpm-identity-test[221]: PTA_TEST: API ec-csr.der PASS
+[   30.149430] ftpm-identity-test[221]: PTA_TEST: SIGN_EK_CSR raw signature received PASS
+[   30.150947] ftpm-identity-test[221]: PTA_TEST: invalid parameters and disabled INJECT_EPS rejected PASS
+[   31.650320] ftpm-identity-test[219]: PTA_TEST: certificates/CSR match, CA chains, Firmware ID signature PASS
+[   31.921929] ftpm-identity-test[196]: EK_TEST: actual RSA/EC EK keys match PTA certificates PASS
+[   32.858567] ftpm-identity-test[196]: EK_TEST: standard RSA/EC EK certificate NV indices PASS
+[   33.035087] ftpm-identity-test[259]: FTPM_TEST: START phase=second
+[   33.745226] ftpm-identity-test[259]: PTA_TEST: PING_NS READY PASS
+[   33.748476] ftpm-identity-test[259]: PTA_TEST: online mode / version 2.0 PASS
+[   33.751095] ftpm-identity-test[259]: PTA_TEST: API sn.bin PASS
+[   33.754915] ftpm-identity-test[259]: PTA_TEST: API ecid.bin PASS
+[   33.758285] ftpm-identity-test[259]: PTA_TEST: API rsa-cert.der PASS
+[   33.759781] ftpm-identity-test[259]: PTA_TEST: API ec-cert.der PASS
+[   33.761987] ftpm-identity-test[259]: PTA_TEST: API sid-cert.der PASS
+[   33.763884] ftpm-identity-test[259]: PTA_TEST: API fw-cert.der PASS
+[   33.765368] ftpm-identity-test[259]: PTA_TEST: API rsa-csr.der PASS
+[   33.768414] ftpm-identity-test[259]: PTA_TEST: API ec-csr.der PASS
+[   33.769872] ftpm-identity-test[259]: PTA_TEST: SIGN_EK_CSR raw signature received PASS
+[   33.771309] ftpm-identity-test[259]: PTA_TEST: invalid parameters and disabled INJECT_EPS rejected PASS
+[   35.191547] ftpm-identity-test[259]: PTA_TEST: certificates/CSR match, CA chains, Firmware ID signature PASS
+[   36.296776] ftpm-identity-test[259]: FTPM_TEST: reboot NV/key persistence and PCR reset PASS
+[   36.816266] ftpm-identity-test[259]: FTPM_TEST: RSA sign/verify PASS
+[   37.335110] ftpm-identity-test[259]: FTPM_TEST: seal/unseal PASS
+[   37.407964] ftpm-identity-test[259]: FTPM_TEST: PASS phase=second
+[   37.473085] ftpm-identity-test[196]: EK_TEST: PASS
+
+=== ssh-user.log ===
+SHA-256: 2ab9cdce1b622ff623c4e98c75864750a58ac298702dbd29046dbd83417f5017
+Warning: Permanently added '[127.0.0.1]:2222' (ED25519) to the list of known hosts.
+uid=1000(runtimecheck) gid=1000(runtimecheck) groups=1000(runtimecheck)
+4
+
+=== ssh-root.log ===
+SHA-256: 48a1ee5cd2e0f3a376b03624364e39fb7b186088de9640d11eb656bf7de03b73
+root@127.0.0.1: Permission denied (publickey).
+
+=== ssh-password.log ===
+SHA-256: a9cdd6608d0fdf96a11a6e55280b0fee0b99340a012b71fc1d3b96848fac2d93
+runtimecheck@127.0.0.1: Permission denied (publickey).
+
+=== ssh-final-8cpu.log ===
+SHA-256: aa67a169b0bba217aa0aa88a65346920c84c42447c36ba5f7ea65f422c1fe5d8
+8
+

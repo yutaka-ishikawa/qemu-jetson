@@ -264,3 +264,8 @@ ifneq (${ARCH},aarch32)
 	ENABLE_SVE_FOR_NS	:= 1
 	ENABLE_SME_FOR_NS	:= 1
 endif
+
+# Project-only topology; leave the upstream QEMU profiles unchanged.
+ifneq (${QEMU_JETSON_FTPM},)
+$(eval $(call add_define,QEMU_JETSON_FTPM))
+endif

@@ -1,0 +1,110 @@
+.TH RUN-FTPM-VIRT 1 "2026-11-17" "qemu-jetson" "ユーザーコマンド"
+.SH 名前
+run-ftpm-virt \- Jetson fTPM QEMUゲストの起動
+.SH 書式
+.B bash scripts/run-ftpm-virt.sh
+.RI [ モード ] " [オプション]"
+.SH 説明
+install内のQEMU・ファームウェア・Linuxを既存ID・provisioning・ディスクで起動する。
+引数なしは通常起動。自動試験・自動電源断は行わない。
+rootの既定パスワードは存在しない。root SSHとSSHパスワード認証は禁止。
+初期設定はsetupのコンソールで一般ユーザーを作成し、公開鍵を登録する。
+.SH モード
+.TP
+.B normal
+通常起動（既定）。時間制限なし。
+.TP
+.B setup
+初期設定用rootコンソール。root SSHではない。時間制限なし。
+adduser、sudoグループ追加、qemu-register-ssh-keyによる公開鍵登録を行う。
+設定後はpoweroffする。setupコンソールを信頼しない利用者へ公開しない。
+.TP
+.B first, second, export, bound
+明示的な自動試験。firstは新規ディスク専用。
+制限時間はFTPM_TIMEOUTまたは300秒。
+.SH オプション
+.TP
+.B --setup
+setupモードを選択する。
+.TP
+.BI --cpus " N"
+1〜8コア。既定4。8コア対応ファームウェアへの再ビルドが必要。
+指定数に合わせてDTBを再生成する。
+.TP
+.B --ssh
+ユーザーネットワークと127.0.0.1:2222からゲスト22番への転送を有効化。
+normal/setup専用。ゲストのopenssh-server、一般ユーザーと公開鍵登録が必要。
+.TP
+.BI --ssh-port " PORT"
+別のlocalhost TCPポートでSSH転送を有効化。
+.TP
+.BI --share " DIRECTORY"
+指定ホストディレクトリ1個を9pタグhostshareで共有。既定は読み取り専用。
+空白を含むパスも指定可能。ゲスト内では手動マウントする。
+.TP
+.B --share-rw
+共有への書込みを許可。--shareとゲスト側の--rwが必要。
+ホストのアクセス権は維持される。mapped-xattrによる書込みにはホストFSのxattr対応が必要。
+.TP
+.BI --timeout " SECONDS"
+制限時間を変更。0は無制限。
+.TP
+.B -h, --help
+使い方を表示。
+.TP
+.B --qemu-console
+stdioをシリアルとモニターで共有。Ctrl-a cで切替え、Ctrl-a xで即時終了。
+.TP
+.BI --monitor-socket " PATH"
+別端末用モニターUNIXソケットを作成。--qemu-consoleとは排他。
+.TP
+.B --gdb
+localhostの1234番でゲストCPU用リモートデバッグを提供。
+.TP
+.BI --gdb-port " PORT"
+別のlocalhost GDBポートを指定。
+.TP
+.B --wait-gdb
+GDBを有効にし、ファームウェア実行前にCPUを停止（-S）。
+.SH ゲスト内のコマンド
+.TP
+.B sudo qemu-mount-host
+hostshareを/mnt/hostへ読み取り専用でマウント。自動マウントやfstab登録は行わない。
+.TP
+.B sudo qemu-mount-host --rw /mnt/host
+ホスト側--share-rw使用時に書込み可能でマウント。
+.TP
+.B sudo umount /mnt/host
+共有をアンマウント。
+.TP
+.B sudo qemu-register-ssh-key USER /path/to/key.pub
+既存の一般ユーザーへ公開鍵1個を検証して追加する。rootは指定できない。
+.SH 使用例
+.nf
+bash scripts/run-ftpm-virt.sh
+bash scripts/run-ftpm-virt.sh setup --ssh --share "$PWD/work/runtime-share"
+bash scripts/run-ftpm-virt.sh --cpus 4 --ssh --ssh-port 2222
+ssh -p 2222 dev@127.0.0.1
+bash scripts/run-ftpm-virt.sh --cpus 2 --share /path/to/data --share-rw
+.fi
+.SH 導入
+既存ディスクはQEMU停止中にscripts/install-ftpm-runtime-overlay.shを適用し、
+setupコンソール内のscripts/setup-ftpm-runtime-guest.shでSSH等のパッケージを導入する。
+複数コア用にscripts/build-ftpm-virt-firmware.shでファームウェアを再ビルドする。
+具体的な手順はdocs/runtime-guide.mdを参照。既存TPMディスクや鍵は再生成しない。
+.SH ファイル
+起動成果物：install/share/qemu-jetson/ftpm-virt/。
+ID・provisioning・rootfs.ext4：work/ftpm-virt/。
+secureログ：work/ftpm-virt/secure-MODE-native.log。同じモードの次回起動で上書き。
+.SH 環境変数
+INSTALL_DIRで配置先、FTPM_SECURE_LOGでsecureログを変更する。
+FTPM_TIMEOUTは--timeout未指定の試験モードだけに適用。
+.SH 終了状態
+124はタイムアウト。試験成功にはPASSマーカーも必要。
+通常起動は必要なログイン・サービス動作と正常な電源断を確認する。
+.SH 関連項目
+.BR ssh (1),
+.BR mount (8),
+.BR passwd (1)
+.PP
+docs/runtime-guide.md, docs/build-install.md, docs/test-guide.md

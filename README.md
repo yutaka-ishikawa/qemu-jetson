@@ -11,6 +11,8 @@ NVIDIA版OP-TEE／fTPMを、ソース変更を極力抑えてQEMU上で動かす
 
 ## 設計と手順
 
+- [通常起動・SSH・9p共有・デバッグ](docs/runtime-guide.md)
+
 - [実機とQEMU環境の違い](docs/hardware-qemu-differences.md)
 - [最終テストの証拠整理](docs/final-test-evidence.md)
 - [OP-TEEページテーブル使用量の解析](docs/page-table-analysis.md)

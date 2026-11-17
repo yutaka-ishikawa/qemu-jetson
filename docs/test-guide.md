@@ -177,3 +177,5 @@ OP-TEEのテーブル数8→32の変更理由と変更前のpanicは[ビルド�
 ## 実機との差分と検証証拠
 
 [実機とQEMUの違い](hardware-qemu-differences.md)と[最終テストの証拠整理](final-test-evidence.md)を参照。
+
+対話利用は[通常起動・SSH・共有・デバッグ](runtime-guide.md)を参照。現行ランチャーは引数なしで通常起動、既定4CPU。試験モードは明示する。旧ファームウェアからの更新手順も同書に記載。

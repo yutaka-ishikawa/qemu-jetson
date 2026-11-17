@@ -1,0 +1,36 @@
+{
+  "status": "PASS",
+  "scope": "developer environment, preserved fTPM disk; not a fresh privileged rootfs rebuild",
+  "default_cpus": 4,
+  "cpu_range": "1..8; endpoint counts 4 and 8 booted, intermediate counts not individually boot-tested",
+  "firmware": "GICv3, TF-A project-only MPIDR topology, OP-TEE NB_CORE=8",
+  "checks": {
+    "four_cpu_second": true,
+    "bound_8cpu": true,
+    "bound_4cpu": true,
+    "public_key_ssh": true,
+    "root_ssh_rejected": true,
+    "password_ssh_rejected": true,
+    "normal_boot_no_tests": true,
+    "eight_online_ssh": true,
+    "nine_p_writable": true,
+    "nine_p_readonly": true,
+    "monitor_mux": true,
+    "monitor_socket_and_gdb": true,
+    "orderly_shutdown": true,
+    "man_install": true,
+    "nvidia_ta_pta_bodies_unchanged": true,
+    "live_qemu_device_lock": true
+  },
+  "debugger": "GDB remote stop/register packets and HMP checked; no symbol/ASLR automation",
+  "network_validation": "local test-only HTTP relay used for package downloads because environment direct guest HTTP was restricted; no relay installed in product",
+  "limitations": [
+    "fresh privileged full rootfs assembly unverified",
+    "no new first test or TPM state reinitialization",
+    "existing hardware/security limitations still apply"
+  ],
+  "artifact_sha256": {
+    "Image": "ac24d392d257d2ed358c167d37871c3d1702d45d57c65c598d1b6d62a6b0a1ec",
+    "flash.bin": "8b3ec3fa874606472a1dfee02717aab33cf4fd39b3027a447ee51fb397aa8879"
+  }
+}

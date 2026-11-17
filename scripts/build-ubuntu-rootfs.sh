@@ -41,6 +41,8 @@ trap 'rm -rf -- "$context"; rm -f -- "$output.part"' EXIT
 tar --numeric-owner -xpf "$repo/work/downloads/ubuntu-base-22.04.5-base-arm64.tar.gz" -C "$root"
 overlay="$context/overlay"
 cp -a --no-preserve=ownership "$repo/configs/rootfs/overlay" "$overlay"
+cp -a --no-preserve=ownership "$repo/configs/rootfs/runtime-overlay/." "$overlay/"
+cp -a --no-preserve=ownership "$repo/configs/rootfs/runtime-overlay/." "$overlay/"
 if [[ ${FTPM_FUNCTIONAL_PROFILE:-0} == 1 ]]; then
     cp -a --no-preserve=ownership "$repo/configs/rootfs/functional-overlay/." "$overlay/"
 fi

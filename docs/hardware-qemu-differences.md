@@ -36,7 +36,7 @@ OP-TEE側にもQEMUプラットフォーム移植と[ページテーブル上限
 
 | 項目 | Jetson実機 | 現在のQEMU B2 |
 | --- | --- | --- |
-| CPU・周辺機器 | Orin NanoのCortex-A78AEとTegra周辺機器 | virtを基にした仮想機械。起動スクリプトはCortex-A57、1 CPU、RAM 1GiB |
+| CPU・周辺機器 | Orin NanoのCortex-A78AEとTegra周辺機器 | virtを基にした仮想機械。起動スクリプトはCortex-A57、既定4 CPU（1〜8指定可）、RAM 1GiB、GICv3 |
 | NVIDIA開発環境 | Jetson向けクロスビルド | 同じNVIDIAツールチェーンで対象コードを再ビルド。実機用バイナリ全般の無変更実行は保証しない |
 | Linux | 対応L4TカーネルとTegraドライバ | NVIDIA配布L4T R36.5.2のImage（5.15.199-tegra）と対応fTPMモジュール。Tegra機器を使うドライバは未再現部分がある |
 | ユーザーランド | 配布イメージ・導入パッケージによる | Ubuntu 22.04 ARM64 baseに必要なサービス・ツールを追加。Jetsonユーザーランド全体の複製ではない |
@@ -45,7 +45,7 @@ OP-TEE側にもQEMUプラットフォーム移植と[ページテーブル上限
 | GPU・CUDA | 実GPUで実行 | 未提供。今回の要件外 |
 | ブート | Jetsonの製品ブートチェーン | QEMU向けTF-A、OP-TEE、Linux entry shimを使用。BootROM、MB1/MB2、製品Secure Bootチェーン全体は再現しない |
 | I/O・性能 | 実ストレージ、割り込み、タイミング | virtio-blk、仮想UART等。性能、競合、タイムアウト、実時間精度の同等性は未検証 |
-| ネットワーク | 実機の設定次第 | 現行起動スクリプトは-nic none。ネットワーク経由の認証試験は未実施 |
+| ネットワーク | 実機の設定次第 | 既定-nic none。--sshでvirtio-net/ユーザーネットワークとlocalhost転送を有効化。一般ユーザー公開鍵SSHを提供 |
 
 ## eFuse・鍵・証明書・永続状態
 
@@ -90,3 +90,5 @@ B2のfTPM PASSをもって、このT234構成が完成したとは扱わない�
 製品の信頼基盤・保護強度や実機での最終検証を代替しない。
 
 [ページテーブル計測](page-table-analysis.md)でQEMUの観測ピーク9/32個を確認。実機の使用数を示すものではない。
+
+対話起動・SSH・9p共有・デバッグの設定は[通常起動ガイド](runtime-guide.md)を参照。ページテーブル計測は当時の1CPU構成であり、4/8CPUの最大使用数を示すものではない。

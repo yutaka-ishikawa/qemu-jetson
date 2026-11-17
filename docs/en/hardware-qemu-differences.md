@@ -36,7 +36,7 @@ Keeping NVIDIA TA/PTA bodies minimally changed does not imply unmodified QEMU or
 
 | Item | Physical Jetson | Current QEMU B2 |
 | --- | --- | --- |
-| CPU and peripherals | Orin Nano Cortex-A78AE and Tegra peripherals | virt-based machine; launcher selects Cortex-A57, one CPU, 1GiB RAM |
+| CPU and peripherals | Orin Nano Cortex-A78AE and Tegra peripherals | virt-based machine; launcher selects Cortex-A57, default four CPUs (1..8 selectable), 1GiB RAM and GICv3 |
 | NVIDIA development tools | Jetson cross-build environment | Rebuilds target software using NVIDIA's toolchain; arbitrary unmodified Jetson binary execution is not guaranteed |
 | Linux | Matching L4T kernel and Tegra drivers | NVIDIA L4T R36.5.2 Image, 5.15.199-tegra, and matching fTPM modules; Tegra peripherals are only partially modeled |
 | Userland | Depends on distribution image and packages | Ubuntu 22.04 ARM64 base plus required services/tools; not a complete Jetson userland clone |
@@ -45,7 +45,7 @@ Keeping NVIDIA TA/PTA bodies minimally changed does not imply unmodified QEMU or
 | GPU/CUDA | Physical GPU | Not provided; outside current requirements |
 | Boot | Jetson product boot chain | QEMU TF-A, OP-TEE and Linux entry shim; not a reproduction of BootROM, MB1/MB2 or the complete product Secure Boot chain |
 | I/O and timing | Physical storage and interrupts | virtio-blk and virtual UARTs; performance, concurrency, timeouts and real-time equivalence are unverified |
-| Networking | Device configuration | Launcher uses -nic none; network authentication tests have not been performed |
+| Networking | Device configuration | Default -nic none; --ssh enables virtio-net/user networking and localhost forwarding for regular-user public-key SSH |
 
 ## eFuse, keys, certificates and persistence
 
@@ -90,3 +90,5 @@ Use this environment to develop and test NVIDIA fTPM/helper software functions, 
 It does not replace product trust/protection or final verification on physical hardware.
 
 [Table measurements](page-table-analysis.md) reached 9/32 on QEMU; this is not a physical-device usage measurement.
+
+See [interactive runtime](runtime-guide.md) for SSH, 9p and debugging. Earlier table measurements used one CPU and do not establish four/eight-CPU worst-case usage.

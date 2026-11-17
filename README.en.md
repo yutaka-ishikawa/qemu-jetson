@@ -12,6 +12,8 @@ This project aims to run NVIDIA's OP-TEE and fTPM with minimal changes to NVIDIA
 
 ## Design and procedures
 
+- [Interactive boot, SSH, 9p and debugging](docs/en/runtime-guide.md)
+
 - [Physical hardware versus QEMU](docs/en/hardware-qemu-differences.md)
 - [Final test evidence](docs/en/final-test-evidence.md)
 - [OP-TEE page-table usage analysis](docs/en/page-table-analysis.md)

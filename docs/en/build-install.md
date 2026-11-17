@@ -284,3 +284,5 @@ The former ftpm-test-guide.md was renamed and expanded to include the initial te
 See [hardware differences](hardware-qemu-differences.md) and [final evidence](final-test-evidence.md).
 
 See the [usage analysis](page-table-analysis.md): controlled ASLR seed probes reached 9/32 tables, leaving 23, and bound passed in that layout. This is not a worst-case guarantee.
+
+See [interactive runtime, SSH, sharing and debugging](runtime-guide.md). The launcher now defaults to normal boot and four CPUs; select tests explicitly. That guide includes the old-firmware upgrade steps.

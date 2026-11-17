@@ -33,3 +33,5 @@ Reducing deadlines or hiding systemd status is not a causal fix.
 Do not disable all udev processing: TPM device discovery and access settings may depend on it.
 Persistent changes require scope/impact review and second/bound regression checks.
 Current [build](../build-install.md) and [test](../test-guide.md) workflows remain unchanged.
+
+User decision: retain the current boot waits; no dedicated optimization. The later default of four CPUs is a separate requirement.

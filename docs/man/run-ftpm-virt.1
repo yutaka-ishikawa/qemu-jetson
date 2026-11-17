@@ -1,0 +1,110 @@
+.TH RUN-FTPM-VIRT 1 "2026-11-17" "qemu-jetson" "User Commands"
+.SH NAME
+run-ftpm-virt \- boot the Jetson fTPM QEMU guest
+.SH SYNOPSIS
+.B bash scripts/run-ftpm-virt.sh
+.RI [ mode ] " [options]"
+.SH DESCRIPTION
+Boots installed QEMU/firmware/Linux with the existing device identity, provisioning and disk.
+Normal mode is the default and does not run tests or power off automatically.
+Root has no default password. Root SSH and all SSH password authentication are disabled.
+Use setup mode to create a regular user and register its public key locally.
+.SH MODES
+.TP
+.B normal
+Interactive Linux boot (default), no launcher time limit.
+.TP
+.B setup
+Explicit initial-setup root console, not a root SSH login. No time limit.
+Run adduser, add the user to sudo, and use qemu-register-ssh-key USER PUBLIC_KEY_FILE.
+Power off when finished; do not expose setup consoles to untrusted users.
+.TP
+.B first, second, export, bound
+Explicit automated test modes. First is only for a fresh test disk.
+Tests default to FTPM_TIMEOUT or 300 seconds.
+.SH OPTIONS
+.TP
+.B --setup
+Select setup mode.
+.TP
+.BI --cpus " N"
+1 to 8 CPUs, default 4. Requires firmware rebuilt for eight CPUs.
+The launcher regenerates DTBs for the selected CPU count.
+.TP
+.B --ssh
+Enable user-mode networking and forward 127.0.0.1:2222 to guest TCP port 22.
+Normal/setup modes only. Requires guest openssh-server, a regular account and its authorized public key.
+.TP
+.BI --ssh-port " PORT"
+Enable SSH forwarding on another localhost TCP port.
+.TP
+.BI --share " DIRECTORY"
+Export one host directory using 9p with tag hostshare. Read-only by default.
+Paths containing spaces are supported. Guest mounting is manual.
+.TP
+.B --share-rw
+Allow writes to the exported directory. Requires --share and a guest --rw mount.
+Host filesystem permissions still apply; mapped-xattr requires filesystem xattr support for writes.
+.TP
+.BI --timeout " SECONDS"
+Override the mode time limit. Zero means unlimited.
+.TP
+.B -h, --help
+Display usage.
+.TP
+.B --qemu-console
+Multiplex monitor/serial on stdio; Ctrl-a c switches, Ctrl-a x exits immediately.
+.TP
+.BI --monitor-socket " PATH"
+Create a monitor UNIX socket for a separate terminal. Exclusive with --qemu-console.
+.TP
+.B --gdb
+Guest CPU remote debugger on localhost port 1234.
+.TP
+.BI --gdb-port " PORT"
+Select another localhost GDB port.
+.TP
+.B --wait-gdb
+Enable GDB and halt CPUs before firmware executes (-S).
+.SH GUEST COMMANDS
+.TP
+.B sudo qemu-mount-host
+Mount hostshare read-only at /mnt/host. No automatic mount or fstab entry is created.
+.TP
+.B sudo qemu-mount-host --rw /mnt/host
+Mount writable, provided the host launcher used --share-rw.
+.TP
+.B sudo umount /mnt/host
+Unmount the share.
+.TP
+.B sudo qemu-register-ssh-key USER /path/to/key.pub
+Validate and append one public key for an existing regular non-root account.
+.SH EXAMPLES
+.nf
+bash scripts/run-ftpm-virt.sh
+bash scripts/run-ftpm-virt.sh setup --ssh --share "$PWD/work/runtime-share"
+bash scripts/run-ftpm-virt.sh --cpus 4 --ssh --ssh-port 2222
+ssh -p 2222 dev@127.0.0.1
+bash scripts/run-ftpm-virt.sh --cpus 2 --share /path/to/data --share-rw
+.fi
+.SH INSTALLATION
+Existing disks first need scripts/install-ftpm-runtime-overlay.sh while QEMU is stopped,
+then scripts/setup-ftpm-runtime-guest.sh inside the setup console to install SSH packages.
+Rebuild firmware using scripts/build-ftpm-virt-firmware.sh for multicore operation.
+See docs/runtime-guide.md for exact commands. Never regenerate keys or recreate an existing TPM disk for this upgrade.
+.SH FILES
+Installed boot artifacts: install/share/qemu-jetson/ftpm-virt/.
+Mutable identity, provisioning and rootfs.ext4: work/ftpm-virt/.
+Secure logs: work/ftpm-virt/secure-MODE-native.log (overwritten on the next same-mode boot).
+.SH ENVIRONMENT
+INSTALL_DIR overrides the install prefix. FTPM_SECURE_LOG overrides the secure log path.
+FTPM_TIMEOUT affects test modes only unless --timeout is specified.
+.SH EXIT STATUS
+124 means a launcher timeout. Test success additionally requires the documented PASS markers.
+Normal boot succeeds by reaching the intended guest service/login and shutting down normally.
+.SH SEE ALSO
+.BR ssh (1),
+.BR mount (8),
+.BR passwd (1)
+.PP
+docs/runtime-guide.md, docs/build-install.md, docs/test-guide.md

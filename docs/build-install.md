@@ -291,3 +291,5 @@ QEMUとT234実機はプラットフォーム・メモリ配置が異なるため
 [実機とQEMUの違い](hardware-qemu-differences.md)と[最終テストの証拠整理](final-test-evidence.md)を参照。
 
 ページテーブル使用量は[解析結果](page-table-analysis.md)を参照。ASLR seedを変えた計測で最大9/32個、残り23個を確認し、9個の配置でもboundがPASSした。全負荷での上限保証ではない。
+
+対話利用は[通常起動・SSH・共有・デバッグ](runtime-guide.md)を参照。現行ランチャーは引数なしで通常起動、既定4CPU。試験モードは明示する。旧ファームウェアからの更新手順も同書に記載。

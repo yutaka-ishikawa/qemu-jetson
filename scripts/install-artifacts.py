@@ -43,19 +43,19 @@ def tree(source, target):
 
 def main():
     p=argparse.ArgumentParser(description=__doc__)
-    p.add_argument('component', choices=['firmware','probe','client','kernel','dtb','t234'])
+    p.add_argument('component', choices=['firmware','probe','client','kernel','dtb','t234','manual'])
     p.add_argument('--client-export',type=Path)
     args=p.parse_args()
     prefix=install_dir()
     if prefix in (Path('/'), REPO):
         p.error('Use an artifact directory, not / or the repository root')
     if args.component=='firmware':
-        for name in ['flash.bin','linux-entry.bin','linux-entry.elf']:
+        for name in ['flash.bin','linux-entry.bin','linux-entry.elf','firmware-cpus.txt','firmware-gic.txt']:
             copy(REPO/'work/ftpm-virt'/name,boot_dir()/name)
         for name in ['tee-header_v2.bin','tee-pager_v2.bin','tee-pageable_v2.bin','tee.elf']:
             copy(REPO/'work/optee-virt/core'/name,prefix/'share/qemu-jetson/optee'/name)
         for name in ['bl1.bin','bl2.bin','bl31.bin','fip.bin']:
-            copy(REPO/'work/tf-a/qemu/release'/name,prefix/'share/qemu-jetson/tf-a'/name)
+            copy(REPO/'work/tf-a-ftpm/qemu/release'/name,prefix/'share/qemu-jetson/tf-a'/name)
         tree(REPO/'work/optee-virt/export-ta_arm64',ta_dev_kit())
         for directory in ['ms-tpm','ftpm-helper']:
             for source in (REPO/'work/optee-virt/early_ta'/directory).glob('*.ta'):
@@ -86,8 +86,11 @@ def main():
         copy(REPO/'work/ftpm-virt/Image',boot_dir()/'Image')
         tree(REPO/'work/ftpm-virt/modules/lib/modules',prefix/'lib/modules')
     elif args.component=='dtb':
-        for phase in ['first','second','export','bound']:
+        for phase in ['normal','setup','first','second','export','bound']:
             copy(REPO/f'work/ftpm-virt/runtime-{phase}.dtb',boot_dir()/f'runtime-{phase}.dtb')
+    elif args.component=='manual':
+        copy(REPO/'docs/man/run-ftpm-virt.1',prefix/'share/man/man1/run-ftpm-virt.1')
+        copy(REPO/'docs/ja/man/run-ftpm-virt.1',prefix/'share/man/ja/man1/run-ftpm-virt.1')
     elif args.component=='t234':
         baseline=REPO/'work/optee-baseline/tee-raw.bin'
         if baseline.is_file(): copy(baseline,prefix/'share/qemu-jetson/t234/tee-raw.bin')
