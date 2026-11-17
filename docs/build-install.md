@@ -109,9 +109,10 @@ venv作成とpip install、コンパイラのダウンロード・展開は毎�
 
 ## ビルドと配置
 
+上記のvenvとCROSS_COMPILEを設定した同じシェルで、次の5コマンドを順に実行する。
+
 ```bash
 bash scripts/build-qemu.sh
-# 上記の環境を設定済みの同じシェルで実行
 bash scripts/build-ftpm-virt-firmware.sh
 bash scripts/build-optee-client.sh
 bash scripts/build-ftpm-helper-probe.sh
@@ -192,10 +193,11 @@ DTBの起動引数に`lsm=lockdown,yama,integrity,apparmor,bpf`を設定する�
 
 ## 配置先とビルド先の変更
 
+ビルド・起動・DTB生成には同じINSTALL_DIRを指定する。
+
 ```bash
 INSTALL_DIR="$PWD/local-sdk" bash scripts/build-qemu.sh
 INSTALL_DIR="$PWD/local-sdk" bash scripts/build-optee-client.sh
-# 起動・DT生成も同じINSTALL_DIRを使う
 INSTALL_DIR="$PWD/local-sdk" bash scripts/prepare-ftpm-virt-dtb.sh
 ```
 

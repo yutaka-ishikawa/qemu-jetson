@@ -109,9 +109,10 @@ See the [baseline build record](r36.5.2-build.md) for archive provenance, checks
 
 ## Build and install
 
+Run the following five commands in order in the same shell with the venv and CROSS_COMPILE configured above.
+
 ```bash
 bash scripts/build-qemu.sh
-# Run in the shell configured above.
 bash scripts/build-ftpm-virt-firmware.sh
 bash scripts/build-optee-client.sh
 bash scripts/build-ftpm-helper-probe.sh
@@ -191,6 +192,8 @@ Build and installation are complete. For interactive use, continue with [initial
 For an already tested disk, skip completed stages as directed there.
 
 ## Override install/build directories
+
+Use the same INSTALL_DIR for builds, launches and DTB generation.
 
 ```bash
 INSTALL_DIR="$PWD/local-sdk" bash scripts/build-qemu.sh
