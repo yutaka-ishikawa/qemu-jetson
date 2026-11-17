@@ -12,6 +12,14 @@ This project aims to run NVIDIA's OP-TEE and fTPM with minimal changes to NVIDIA
 
 ## Design and procedures
 
+| Purpose | Guide |
+| --- | --- |
+| Fresh clone, host setup, build, disk and DTBs | [build-install.md](docs/en/build-install.md) |
+| Initial account/key setup, normal boot, SSH, sharing, debugging | [runtime-guide.md](docs/en/runtime-guide.md) |
+| first/second, EK certificates and persistence tests | [test-guide.md](docs/en/test-guide.md) |
+| Update an existing disk/environment or apply fixes | [upgrade-guide.md](docs/en/upgrade-guide.md) |
+
+
 - [Interactive boot, SSH, 9p and debugging](docs/en/runtime-guide.md)
 
 - [Physical hardware versus QEMU](docs/en/hardware-qemu-differences.md)

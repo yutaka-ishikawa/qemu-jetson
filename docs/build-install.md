@@ -31,6 +31,18 @@ install/
 NVIDIA提供カーネルの取得スクリプトも、取得後にImageとモジュールを`install/`へ配置する。
 QEMUが使用するホストのGLib等はホスト依存パッケージであり、このディレクトリへ再配布しない。
 
+## 新規cloneから開始
+
+```bash
+sudo apt-get update
+sudo apt-get install -y git
+git clone https://github.com/yutaka-ishikawa/qemu-jetson.git
+cd qemu-jetson
+```
+
+本書は新規環境の作成用。work/に既存ディスクや鍵がある場合は[upgrade-guide.md](upgrade-guide.md)へ進む。
+新規rootfsにはruntimeサービス・SSH・sudo・dbusが組み込まれる。構築後に既存ディスク用overlay更新やゲストパッケージ導入を重ねて実行する必要はない。
+
 ## ビルド環境の具体的な設定（x86_64 Ubuntu）
 
 以下は**x86_64版Ubuntu 22.04以降**のホスト用。すべてclone済みリポジトリのトップで実行する。
@@ -175,40 +187,8 @@ DTBの起動引数に`lsm=lockdown,yama,integrity,apparmor,bpf`を設定する�
 
 生成したDTBは`install/share/qemu-jetson/ftpm-virt/runtime-*.dtb`に配置される。
 
-ここまでで初期導入は完了。[テスト手順](test-guide.md)へ進み、初回試験から開始する。
+ここまででビルド・導入は完了。通常利用は[初回アカウント・公開鍵登録](runtime-guide.md#初期設定用コンソール)へ、機能検証は[テスト手順](test-guide.md)のfirstへ進む。目的に応じて選び、同じディスクを同時起動しない。
 既に試験済みのディスクは、テスト手順に従って完了済みの段階を飛ばす。
-
-## rootfs.tarに試験用ファイルしかない場合の復旧
-
-`create-ftpm-virt-disk.sh`が`usr/sbin`不存在で失敗し、tarの内容が約22件の試験用ファイルだけの場合、Ubuntu本体が入っていない。
-旧`prepare-ftpm-test-rootfs.py`はtarの追記モードを使い、入力ファイルが存在しなくても新規tarを作成してしまった。
-この内容だけからUbuntu生成が未実行だったのか、失敗したのかは断定できない。
-修正版はUbuntu本体とOP-TEEクライアントの存在を確認し、不完全なtarへの追記とディスク作成を拒否する。
-
-リポジトリのトップで以下を実行する。問題のtarとチェックサムを退避し、Ubuntuを再構築する。
-鍵・証明書・device identity・provisioning・既存ディスクは変更しない。
-
-```bash
-git pull --ff-only
-source work/venv/bin/activate
-backup=$(mktemp -d "$PWD/work/ftpm-rootfs-backup.XXXXXX")
-sudo mv -- work/ftpm-virt/rootfs.tar "$backup/"
-if [ -f work/ftpm-virt/rootfs.tar.sha256 ]; then
-  sudo mv -- work/ftpm-virt/rootfs.tar.sha256 "$backup/"
-fi
-sudo env FTPM_FUNCTIONAL_PROFILE=1 bash scripts/build-ubuntu-rootfs.sh
-```
-
-最後のコマンドが失敗した場合はそこで止め、エラー出力を確認する。成功した場合だけ続行する。
-
-```bash
-python3 scripts/prepare-ftpm-test-rootfs.py \
-  work/ftpm-virt/rootfs.tar work/ftpm-test-provisioning
-sudo bash scripts/create-ftpm-virt-disk.sh
-bash scripts/prepare-ftpm-virt-dtb.sh
-```
-
-既存ディスクを上書きしない。復旧後の試験は[test-guide.md](test-guide.md)を参照。
 
 ## 配置先とビルド先の変更
 
@@ -293,3 +273,5 @@ QEMUとT234実機はプラットフォーム・メモリ配置が異なるため
 ページテーブル使用量は[解析結果](page-table-analysis.md)を参照。ASLR seedを変えた計測で最大9/32個、残り23個を確認し、9個の配置でもboundがPASSした。全負荷での上限保証ではない。
 
 対話利用は[通常起動・SSH・共有・デバッグ](runtime-guide.md)を参照。現行ランチャーは引数なしで通常起動、既定4CPU。試験モードは明示する。旧ファームウェアからの更新手順も同書に記載。
+
+文書構成は現在、[決定0009](decisions/0009-guide-organization.md)のAに従い、新規構築・通常利用・テスト・既存更新の4文書へ分離している。

@@ -31,6 +31,18 @@ Keep host QEMU separate from guest ARM64 programs; guest binaries run inside the
 The NVIDIA kernel fetch script also installs its Image and modules after retrieval.
 Host dependency libraries such as GLib remain host packages, not redistributed here.
 
+## Start from a fresh clone
+
+```bash
+sudo apt-get update
+sudo apt-get install -y git
+git clone https://github.com/yutaka-ishikawa/qemu-jetson.git
+cd qemu-jetson
+```
+
+This guide creates a new environment. If work/ already contains a disk or credentials, use [upgrade-guide.md](upgrade-guide.md).
+Fresh rootfs assembly includes runtime services, SSH, sudo and dbus. Do not run the offline runtime updater or guest package installer after a fresh build.
+
 ## Explicit build environment setup (x86_64 Ubuntu)
 
 These commands target an **x86_64 Ubuntu 22.04+ host**. Run them from the cloned repository root.
@@ -175,40 +187,8 @@ DTB bootargs include `lsm=lockdown,yama,integrity,apparmor,bpf`; host SELinux se
 
 DTBs are installed into install/share/qemu-jetson/ftpm-virt/runtime-*.dtb.
 
-Initial installation is complete. Continue with [test procedures](test-guide.md), starting with the initial test.
+Build and installation are complete. For interactive use, continue with [initial account/key setup](runtime-guide.md#initial-setup-console). For functional validation, follow [test-guide.md](test-guide.md) from first. Do not run the same disk concurrently.
 For an already tested disk, skip completed stages as directed there.
-
-## Recovering an archive containing only test files
-
-If disk creation fails because `usr/sbin` is missing and the tar contains only about 22 test entries, the Ubuntu base is absent.
-The old `prepare-ftpm-test-rootfs.py` used tar append mode, which silently created a new archive when the input did not exist.
-These contents alone do not establish whether Ubuntu assembly was skipped or failed.
-The corrected scripts check for Ubuntu and OP-TEE client contents before appending files or creating a disk.
-
-Run these commands at the repository root to preserve the incomplete archive and checksum, then rebuild Ubuntu.
-Keys, certificates, device identity, provisioning and existing disks are preserved.
-
-```bash
-git pull --ff-only
-source work/venv/bin/activate
-backup=$(mktemp -d "$PWD/work/ftpm-rootfs-backup.XXXXXX")
-sudo mv -- work/ftpm-virt/rootfs.tar "$backup/"
-if [ -f work/ftpm-virt/rootfs.tar.sha256 ]; then
-  sudo mv -- work/ftpm-virt/rootfs.tar.sha256 "$backup/"
-fi
-sudo env FTPM_FUNCTIONAL_PROFILE=1 bash scripts/build-ubuntu-rootfs.sh
-```
-
-Stop and inspect the error if the last command fails. Continue only after it succeeds.
-
-```bash
-python3 scripts/prepare-ftpm-test-rootfs.py \
-  work/ftpm-virt/rootfs.tar work/ftpm-test-provisioning
-sudo bash scripts/create-ftpm-virt-disk.sh
-bash scripts/prepare-ftpm-virt-dtb.sh
-```
-
-Do not overwrite an existing disk. Continue testing using [test-guide.md](test-guide.md).
 
 ## Override install/build directories
 
@@ -285,4 +265,6 @@ See [hardware differences](hardware-qemu-differences.md) and [final evidence](fi
 
 See the [usage analysis](page-table-analysis.md): controlled ASLR seed probes reached 9/32 tables, leaving 23, and bound passed in that layout. This is not a worst-case guarantee.
 
-See [interactive runtime, SSH, sharing and debugging](runtime-guide.md). The launcher now defaults to normal boot and four CPUs; select tests explicitly. That guide includes the old-firmware upgrade steps.
+See [interactive runtime, SSH, sharing and debugging](runtime-guide.md). The launcher now defaults to normal boot and four CPUs; select tests explicitly. Existing-environment upgrades are in [upgrade-guide.md](upgrade-guide.md).
+
+The current four-guide separation follows option A of [decision 0009](decisions/0009-guide-organization.md): fresh build, normal use, tests and upgrades.

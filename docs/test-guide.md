@@ -5,6 +5,8 @@
 この手順は[ビルド・インストール手順](build-install.md)で準備したB2構成を使い、firstから全試験を実行する。QEMU専用テストCAによる機能検証であり、NVIDIA製造証明書の信頼は提供しない。
 従来の[機能検証の再現手順](ftpm-functional-validation.md)は初期構築からの全工程を記載する。現在のビルド・導入はbuild-install.md、テスト実行は本書を参照する。
 
+新規構築は[build-install.md](build-install.md)、既存環境の更新は[upgrade-guide.md](upgrade-guide.md)、通常利用は[runtime-guide.md](runtime-guide.md)を参照。本書はテスト実行と判定だけを扱う。
+
 ## 開始前と現在の位置
 
 すべてリポジトリ直下、同じPython venvで実行する。

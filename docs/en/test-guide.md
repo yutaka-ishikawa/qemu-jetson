@@ -5,6 +5,8 @@
 Use the B2 environment prepared with the [build and installation guide](build-install.md), starting with first. These tests use a QEMU-only test CA and provide no NVIDIA manufacturing trust.
 The older [functional validation procedure](ftpm-functional-validation.md) covers initial assembly as well; use build-install.md for current assembly and this guide for all test execution.
 
+For a fresh build use [build-install.md](build-install.md); for upgrades use [upgrade-guide.md](upgrade-guide.md); for normal use see [runtime-guide.md](runtime-guide.md). This guide covers test execution and assessment only.
+
 ## Prerequisites and current progress
 
 Run from the repository root with the same Python venv:

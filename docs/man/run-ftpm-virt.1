@@ -84,14 +84,13 @@ Validate and append one public key for an existing regular non-root account.
 bash scripts/run-ftpm-virt.sh
 bash scripts/run-ftpm-virt.sh setup --ssh --share "$PWD/work/runtime-share"
 bash scripts/run-ftpm-virt.sh --cpus 4 --ssh --ssh-port 2222
-ssh -p 2222 dev@127.0.0.1
+ssh -p 2222 cradsec@127.0.0.1
 bash scripts/run-ftpm-virt.sh --cpus 2 --share /path/to/data --share-rw
 .fi
 .SH INSTALLATION
-Existing disks first need sudo bash scripts/install-ftpm-runtime-overlay.sh while QEMU is stopped,
-then scripts/setup-ftpm-runtime-guest.sh inside the setup console to install SSH packages.
-Rebuild firmware using scripts/build-ftpm-virt-firmware.sh for multicore operation.
-See docs/runtime-guide.md for exact commands. Never regenerate keys or recreate an existing TPM disk for this upgrade.
+Fresh environment: follow docs/build-install.md, then initial user/key setup in docs/runtime-guide.md.
+Existing environment: follow docs/upgrade-guide.md; preserve accounts, keys and TPM state.
+Automated tests are documented separately in docs/test-guide.md.
 .SH FILES
 Installed boot artifacts: install/share/qemu-jetson/ftpm-virt/.
 Mutable identity, provisioning and rootfs.ext4: work/ftpm-virt/.
@@ -107,4 +106,4 @@ Normal boot succeeds by reaching the intended guest service/login and shutting d
 .BR mount (8),
 .BR passwd (1)
 .PP
-docs/runtime-guide.md, docs/build-install.md, docs/test-guide.md
+docs/build-install.md, docs/runtime-guide.md, docs/test-guide.md, docs/upgrade-guide.md

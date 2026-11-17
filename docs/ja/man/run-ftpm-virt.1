@@ -84,18 +84,17 @@ hostshareを/mnt/hostへ読み取り専用でマウント。自動マウント�
 bash scripts/run-ftpm-virt.sh
 bash scripts/run-ftpm-virt.sh setup --ssh --share "$PWD/work/runtime-share"
 bash scripts/run-ftpm-virt.sh --cpus 4 --ssh --ssh-port 2222
-ssh -p 2222 dev@127.0.0.1
+ssh -p 2222 cradsec@127.0.0.1
 bash scripts/run-ftpm-virt.sh --cpus 2 --share /path/to/data --share-rw
 .fi
 .SH 導入
-既存ディスクはQEMU停止中にsudo bash scripts/install-ftpm-runtime-overlay.shを適用し、
-setupコンソール内のscripts/setup-ftpm-runtime-guest.shでSSH等のパッケージを導入する。
-複数コア用にscripts/build-ftpm-virt-firmware.shでファームウェアを再ビルドする。
-具体的な手順はdocs/runtime-guide.mdを参照。既存TPMディスクや鍵は再生成しない。
+新規環境はdocs/build-install.md、その後のユーザー・公開鍵登録はdocs/runtime-guide.mdを参照。
+既存環境はdocs/upgrade-guide.mdを参照し、アカウント・鍵・TPM状態を保持する。
+自動試験はdocs/test-guide.mdへ分離している。
 .SH ファイル
-起動成果物：install/share/qemu-jetson/ftpm-virt/。
-ID・provisioning・rootfs.ext4：work/ftpm-virt/。
-secureログ：work/ftpm-virt/secure-MODE-native.log。同じモードの次回起動で上書き。
+配置済み起動ファイル：install/share/qemu-jetson/ftpm-virt/。
+可変ID・provisioning・rootfs.ext4：work/ftpm-virt/。
+secureログはwork/ftpm-virt/secure-MODE-native.log。同じモードの次回起動で上書き。
 .SH 環境変数
 INSTALL_DIRで配置先、FTPM_SECURE_LOGでsecureログを変更する。
 FTPM_TIMEOUTは--timeout未指定の試験モードだけに適用。
@@ -107,4 +106,4 @@ FTPM_TIMEOUTは--timeout未指定の試験モードだけに適用。
 .BR mount (8),
 .BR passwd (1)
 .PP
-docs/runtime-guide.md, docs/build-install.md, docs/test-guide.md
+docs/build-install.md, docs/runtime-guide.md, docs/test-guide.md, docs/upgrade-guide.md

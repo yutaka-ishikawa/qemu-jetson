@@ -5,25 +5,7 @@
 Use this alongside [build/install](build-install.md) and [tests](test-guide.md).
 Launcher man pages: [English](../man/run-ftpm-virt.1) and [Japanese](../ja/man/run-ftpm-virt.1).
 
-## Upgrade an existing environment once
-
-Stop QEMU. Run at the repository root, checking each command succeeds. Preserve the disk, identity, seeds and CA.
-New host dependencies include libslirp-dev and libattr1-dev.
-
-```bash
-git pull --ff-only
-sudo bash scripts/install-host-deps.sh
-# Configure NVIDIA CROSS_COMPILE, dtc and the Python venv per build-install.md.
-bash scripts/build-qemu.sh
-bash scripts/build-ftpm-virt-firmware.sh
-sudo bash scripts/install-ftpm-runtime-overlay.sh
-python3 scripts/install-artifacts.py manual
-```
-
-QEMU is rebuilt with 9p and user networking; firmware uses GICv3 and supports up to eight CPUs.
-Only files are updated on an existing disk: do not recreate rootfs.tar/rootfs.ext4.
-Run the disk updater with sudo; it rejects a disk used by QEMU. Disk ownership is preserved, and a newly created lock is assigned to the disk owner so normal launches remain unprivileged.
-New rootfs builds already include runtime-overlay and openssh-server/sudo/dbus/dbus, so skip the offline disk upgrade and guest package installer for a fresh build.
+New environments start with [build-install.md](build-install.md). For an existing disk, complete [upgrade-guide.md](upgrade-guide.md) first.
 
 ## Initial setup console
 
@@ -31,30 +13,27 @@ Root is locked with no default password. Normal boot does not enable passwordles
 Only explicit setup mode connects a root shell to ttyAMA0 for provisioning.
 Root SSH and SSH password authentication are always disabled.
 
-For an existing disk, stage just the runtime installer and your PUBLIC key for a read-only share:
+After fresh installation, stage only your PUBLIC key. If existing user/key setup is complete, skip account creation and proceed to normal boot.
 
 ```bash
-mkdir -p work/runtime-share/scripts work/runtime-share/configs/rootfs
-cp scripts/setup-ftpm-runtime-guest.sh work/runtime-share/scripts/
-cp -a configs/rootfs/runtime-overlay work/runtime-share/configs/rootfs/
-install -m 0644 "$HOME/.ssh/id_ed25519.pub" work/runtime-share/login.pub
-bash scripts/run-ftpm-virt.sh setup --ssh --share "$PWD/work/runtime-share"
+mkdir -p work/login-share
+install -m 0644 "$HOME/.ssh/id_ed25519.pub" work/login-share/login.pub
+bash scripts/run-ftpm-virt.sh setup --share "$PWD/work/login-share"
 ```
 
 Use your own public-key filename. Never copy the private key. At the guest setup console:
 
 ```bash
 qemu-mount-host
-bash /mnt/host/scripts/setup-ftpm-runtime-guest.sh
-adduser dev
-usermod -aG sudo dev
-qemu-register-ssh-key dev /mnt/host/login.pub
+adduser cradsec
+usermod -aG sudo cradsec
+qemu-register-ssh-key cradsec /mnt/host/login.pub
 poweroff
 ```
 
-Replace dev with your regular username. The adduser password is for local login/sudo, not SSH.
+The example username is cradsec; replace it if needed. The adduser password is for local login/sudo, not SSH.
 Do not rerun adduser for an existing account. Key registration preserves existing keys and avoids duplicate entries.
-Fresh rootfs builds can skip setup-ftpm-runtime-guest.sh because packages are installed already.
+A fresh rootfs already contains the packages. This section only creates the account and registers its public key.
 Root's password is not set by this procedure; use regular-user sudo. Setup is a privileged host-operator console, not the usual boot mode.
 
 ## Normal boot and SSH
@@ -69,7 +48,7 @@ Never run concurrent instances against the disk. Default: four CPUs, 1GiB RAM, n
 Log into the console using the created user. From another host terminal:
 
 ```bash
-ssh -p 2222 -i "$HOME/.ssh/id_ed25519" dev@127.0.0.1
+ssh -p 2222 -i "$HOME/.ssh/id_ed25519" cradsec@127.0.0.1
 ```
 
 Forwarding is localhost-only; change it with --ssh-port 2223.
@@ -169,18 +148,3 @@ The supported eight-CPU configuration uses a project-only TF-A MPIDR topology ma
 
 On the developer existing disk, verified 4/8 CPU Linux, regular-user public-key SSH, root/password rejection, manual RO/RW 9p, monitor mux/UNIX access, GDB stop/register reads and orderly poweroff. Bound passed with four and eight CPUs.
 A fresh privileged rootfs rebuild was not performed. See [results](../results/runtime.json) and [excerpts](../results/runtime-excerpt.txt).
-
-## Missing serial login in normal mode
-
-Normal mode allows regular-user login on ttyAMA0. --ssh does not disable serial login.
-The old setup unit had Conflicts=serial-getty@ttyAMA0.service. systemd resolved this conflict even when the setup unit's condition was false, suppressing normal serial getty.
-The corrected unit removes Conflicts and selects setup/getty using opposite ConditionKernelCommandLine conditions.
-Stop QEMU, then run:
-
-```bash
-git pull --ff-only
-sudo bash scripts/install-ftpm-runtime-overlay.sh
-bash scripts/run-ftpm-virt.sh --ssh
-```
-
-No rebuild, account recreation or key registration is needed. This does not enable normal root login: use the existing regular account and its local password.

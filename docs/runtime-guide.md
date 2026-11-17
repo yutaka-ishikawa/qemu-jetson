@@ -5,25 +5,7 @@
 [ビルド・導入](build-install.md)と[テスト](test-guide.md)に加えて、対話的にLinuxを使う手順。
 起動コマンドのmanは[日本語](ja/man/run-ftpm-virt.1)／[英語](man/run-ftpm-virt.1)。
 
-## 既存環境の更新（初回のみ）
-
-QEMUを終了してから、リポジトリ直下で実行する。既存のディスク・ID・seed・CAを保持する。
-ホスト依存にlibslirp-devとlibattr1-devが追加された。コマンドは各段階の成功を確認してから続ける。
-
-```bash
-git pull --ff-only
-sudo bash scripts/install-host-deps.sh
-# build-install.mdに従いNVIDIA CROSS_COMPILE、dtc、Python venvを設定
-bash scripts/build-qemu.sh
-bash scripts/build-ftpm-virt-firmware.sh
-sudo bash scripts/install-ftpm-runtime-overlay.sh
-python3 scripts/install-artifacts.py manual
-```
-
-QEMUは9pとユーザーネットワーク対応、ファームウェアはGICv3・最大8CPU対応で再ビルドする。
-既存ディスクはファイル更新だけを行い、rootfs.tarやrootfs.ext4を作り直さない。
-install-ftpm-runtime-overlay.shはsudoで実行する。QEMUが使用中なら中止する。ディスク所有者は変更せず、新規ロックファイルもディスク所有者へ戻すため、通常起動は一般ユーザーで行える。
-新規構築の場合はruntime-overlayとopenssh-server/sudo/dbus/dbusがrootfs生成時に組み込まれるため、ディスク更新と下記のゲストパッケージ導入は不要。
+新規環境は[build-install.md](build-install.md)から開始する。既存ディスクの更新は先に[upgrade-guide.md](upgrade-guide.md)を実施する。
 
 ## 初期設定用コンソール
 
@@ -31,31 +13,28 @@ rootはロックされ、既定パスワードはない。通常起動でrootへ
 明示的なsetupモードだけが初期設定用rootシェルを/dev/ttyAMA0へ接続する。
 SSHでは常にrootログインとパスワード認証を禁止する。
 
-既存ディスクにサービスを導入するため、共有用に必要なファイルと公開鍵だけを準備する。
-以下の鍵ファイルは自分の公開鍵に置き換える。秘密鍵をコピーしない。
+新規構築後は公開鍵だけを共有用ディレクトリへ準備する。以下の鍵ファイルは自分の公開鍵に置き換え、秘密鍵はコピーしない。
+既にユーザー・公開鍵登録済みなら、この初期設定を飛ばして通常起動へ進む。
 
 ```bash
-mkdir -p work/runtime-share/scripts work/runtime-share/configs/rootfs
-cp scripts/setup-ftpm-runtime-guest.sh work/runtime-share/scripts/
-cp -a configs/rootfs/runtime-overlay work/runtime-share/configs/rootfs/
-install -m 0644 "$HOME/.ssh/id_ed25519.pub" work/runtime-share/login.pub
-bash scripts/run-ftpm-virt.sh setup --ssh --share "$PWD/work/runtime-share"
+mkdir -p work/login-share
+install -m 0644 "$HOME/.ssh/id_ed25519.pub" work/login-share/login.pub
+bash scripts/run-ftpm-virt.sh setup --share "$PWD/work/login-share"
 ```
 
 setupコンソールでゲスト内の次を実行する。mountは手動であり自動マウントしない。
 
 ```bash
 qemu-mount-host
-bash /mnt/host/scripts/setup-ftpm-runtime-guest.sh
-adduser dev
-usermod -aG sudo dev
-qemu-register-ssh-key dev /mnt/host/login.pub
+adduser cradsec
+usermod -aG sudo cradsec
+qemu-register-ssh-key cradsec /mnt/host/login.pub
 poweroff
 ```
 
-devは任意の一般ユーザー名へ変更する。adduserで設定するパスワードはローカルログイン・sudo用であり、SSHでは受け付けない。
+例ではcradsecを使用する。必要なら任意の一般ユーザー名へ変更する。adduserで設定するパスワードはローカルログイン・sudo用であり、SSHでは受け付けない。
 既にユーザーが存在する場合、adduserを再実行しない。公開鍵登録は既存の鍵を残し、重複追加しない。
-新規rootfsではパッケージ導入済みなので、setup-ftpm-runtime-guest.shの実行を省略できる。
+新規rootfsには必要なサービスが導入済み。ここではビルドやパッケージ導入を行わない。
 rootパスワードはこの手順では設定しない。必要な管理は一般ユーザーのsudoで行う。
 setupはホスト操作者向けのrootコンソールなので、設定後は通常起動を使う。
 
@@ -71,7 +50,7 @@ bash scripts/run-ftpm-virt.sh --ssh
 コンソールは作成した一般ユーザーでログインする。SSHは別のホスト端末から接続する。
 
 ```bash
-ssh -p 2222 -i "$HOME/.ssh/id_ed25519" dev@127.0.0.1
+ssh -p 2222 -i "$HOME/.ssh/id_ed25519" cradsec@127.0.0.1
 ```
 
 SSH待受け転送はlocalhostのみ。--ssh-port 2223等で変更できる。
@@ -172,18 +151,3 @@ man/SSHクライアント/socat/GDBはホストに必要な場合だけ導入す
 
 開発側の既存ディスクで4/8CPUのLinux、一般ユーザー公開鍵SSH、root/パスワード認証拒否、9p手動マウント（RO/RW）、モニター切替・UNIX接続、GDB停止/レジスタ取得、通常電源断を確認した。4/8CPUのboundもPASS。
 新規rootfs全体の管理者権限での再構築は未実施。詳細は[機械可読結果](results/runtime.json)と[ログ抜粋](results/runtime-excerpt.txt)を参照。
-
-## 通常起動でシリアルログインが出ない場合
-
-通常モードでもttyAMA0で一般ユーザーのログインができる。--sshはシリアルログインを無効にしない。
-旧runtime-overlayのsetupサービスにConflicts=serial-getty@ttyAMA0.serviceがあり、setupの起動条件が偽でもsystemdのジョブ依存関係が通常のシリアルgettyを止めていた。
-修正版はConflictsを除去し、setupとgettyそれぞれの逆のConditionKernelCommandLineで切り替える。
-QEMU終了後に次を実行する。再ビルドやアカウント・鍵の再登録は不要。
-
-```bash
-git pull --ff-only
-sudo bash scripts/install-ftpm-runtime-overlay.sh
-bash scripts/run-ftpm-virt.sh --ssh
-```
-
-rootの通常ログインを有効にする修正ではない。コンソールには作成済みの一般ユーザーと、そのローカルパスワードでログインする。

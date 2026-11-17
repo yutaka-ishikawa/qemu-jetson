@@ -11,6 +11,14 @@ NVIDIA版OP-TEE／fTPMを、ソース変更を極力抑えてQEMU上で動かす
 
 ## 設計と手順
 
+| 目的 | 手順書 |
+| --- | --- |
+| 新規clone・環境準備・ビルド・ディスク・DTB作成 | [build-install.md](docs/build-install.md) |
+| 初回ユーザー/公開鍵登録・通常起動・SSH・共有・デバッグ | [runtime-guide.md](docs/runtime-guide.md) |
+| first/second・EK証明書・永続化の試験 | [test-guide.md](docs/test-guide.md) |
+| 既存ディスク/環境の更新・修正適用 | [upgrade-guide.md](docs/upgrade-guide.md) |
+
+
 - [通常起動・SSH・9p共有・デバッグ](docs/runtime-guide.md)
 
 - [実機とQEMU環境の違い](docs/hardware-qemu-differences.md)
