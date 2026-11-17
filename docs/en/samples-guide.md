@@ -8,7 +8,18 @@ Host cross-compilation and guest-native compilation below are alternatives; ther
 
 ## Cross-compile on the host
 
-Complete firmware/client builds and the venv/CROSS_COMPILE configuration in [build-install.md](build-install.md). From the repository root:
+First follow [build-install.md](build-install.md) to extract the toolchain, create the venv with Python dependencies, and build/install the firmware and client under install/.
+In a new terminal, run the following from the repository root to configure the build environment:
+
+```bash
+source work/venv/bin/activate
+export CROSS_COMPILE="$PWD/work/toolchains/aarch64--glibc--stable-2022.08-1/bin/aarch64-buildroot-linux-gnu-"
+"${CROSS_COMPILE}gcc" --version
+python3 -c 'import cryptography, Crypto, elftools; print("OP-TEE Python dependencies: OK")'
+```
+
+These commands activate existing prerequisites; they do not create the toolchain or venv. Adjust CROSS_COMPILE if the toolchain was extracted elsewhere.
+Then run the following in the same shell:
 
 ```bash
 make -C samples/ftpm-helper-probe

@@ -8,7 +8,18 @@ hello_world・random・secure_storage・aes・sign_verifyとftpm-helper-probeを
 
 ## ホスト側でクロスビルドする場合
 
-[build-install.md](build-install.md)のfirmware・clientビルドとvenv/CROSS_COMPILE設定を済ませ、リポジトリ直下で実行する。
+[build-install.md](build-install.md)に従い、ツールチェーンの展開、venvとPython依存パッケージの準備、firmware・clientのビルドとinstall/への配置を済ませておく。
+新しい端末では、リポジトリ直下で次を実行してビルド環境を設定する。
+
+```bash
+source work/venv/bin/activate
+export CROSS_COMPILE="$PWD/work/toolchains/aarch64--glibc--stable-2022.08-1/bin/aarch64-buildroot-linux-gnu-"
+"${CROSS_COMPILE}gcc" --version
+python3 -c 'import cryptography, Crypto, elftools; print("OP-TEE Python dependencies: OK")'
+```
+
+上記は準備済みの環境を有効にする操作であり、ツールチェーンやvenvを新規作成するものではない。別の場所へツールチェーンを展開した場合はCROSS_COMPILEのパスを変更する。
+同じシェルで、次を実行する。
 
 ```bash
 make -C samples/ftpm-helper-probe
